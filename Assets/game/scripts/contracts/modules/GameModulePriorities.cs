@@ -24,6 +24,9 @@ namespace Game.Contracts.Modules
         /// <summary>Priority of <see cref="GameModuleIds.RenderSettings"/>.</summary>
         public const int RenderSettings = 1050;
 
+        /// <summary>Priority of <see cref="GameModuleIds.Roster"/>.</summary>
+        public const int Roster = 1060;
+
         /// <summary>Priority of <see cref="GameModuleIds.Gameplay"/>.</summary>
         public const int Gameplay = 1080;
     }

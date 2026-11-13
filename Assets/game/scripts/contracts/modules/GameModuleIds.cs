@@ -26,7 +26,10 @@ namespace Game.Contracts.Modules
         /// <summary>Render scale and brightness on Universal RP (compiled only when URP is installed).</summary>
         public const string RenderSettings = "game-render-settings";
 
-        /// <summary>Gameplay scene support: the pause menu popup.</summary>
+        /// <summary>Heroes, healers and the player's choice of each (<c>IRoster</c>).</summary>
+        public const string Roster = "game-roster";
+
+        /// <summary>Gameplay scene support: the pause menu, revive and result popups.</summary>
         public const string Gameplay = "game-gameplay";
     }
 }
