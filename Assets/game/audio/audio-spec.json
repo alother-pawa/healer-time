@@ -7,21 +7,135 @@
       "loop": false
     },
     {
+      "path": "ui/button-click",
+      "category": "ui",
+      "seconds": 0.08,
+      "loop": false
+    },
+    {
+      "path": "ui/page-swipe",
+      "category": "ui",
+      "seconds": 0.25,
+      "loop": false
+    },
+    {
+      "path": "ui/coin",
+      "category": "ui",
+      "seconds": 0.2,
+      "loop": false
+    },
+    {
       "path": "music/menu-theme",
       "category": "music",
       "seconds": 8.0,
       "loop": true
     },
     {
-      "path": "ambience/gameplay-room",
-      "category": "ambience",
-      "seconds": 6.0,
+      "path": "music/battle-theme",
+      "category": "music",
+      "seconds": 8.0,
       "loop": true
+    },
+    {
+      "path": "sfx/gem-swap",
+      "category": "sfx",
+      "seconds": 0.12,
+      "loop": false
+    },
+    {
+      "path": "sfx/gem-invalid",
+      "category": "sfx",
+      "seconds": 0.2,
+      "loop": false
+    },
+    {
+      "path": "sfx/gem-match",
+      "category": "sfx",
+      "seconds": 0.25,
+      "loop": false
+    },
+    {
+      "path": "sfx/board-shuffle",
+      "category": "sfx",
+      "seconds": 0.5,
+      "loop": false
+    },
+    {
+      "path": "sfx/bomb",
+      "category": "sfx",
+      "seconds": 0.6,
+      "loop": false
+    },
+    {
+      "path": "sfx/hero-attack",
+      "category": "sfx",
+      "seconds": 0.18,
+      "loop": false
+    },
+    {
+      "path": "sfx/hero-strike",
+      "category": "sfx",
+      "seconds": 0.4,
+      "loop": false
+    },
+    {
+      "path": "sfx/monster-attack",
+      "category": "sfx",
+      "seconds": 0.2,
+      "loop": false
     },
     {
       "path": "sfx/hit",
       "category": "sfx",
-      "seconds": 0.25,
+      "seconds": 0.15,
+      "loop": false
+    },
+    {
+      "path": "sfx/heal",
+      "category": "sfx",
+      "seconds": 0.45,
+      "loop": false
+    },
+    {
+      "path": "sfx/shield",
+      "category": "sfx",
+      "seconds": 0.4,
+      "loop": false
+    },
+    {
+      "path": "sfx/magic-charge",
+      "category": "sfx",
+      "seconds": 0.35,
+      "loop": false
+    },
+    {
+      "path": "sfx/healer-skill",
+      "category": "sfx",
+      "seconds": 0.7,
+      "loop": false
+    },
+    {
+      "path": "sfx/monster-death",
+      "category": "sfx",
+      "seconds": 0.4,
+      "loop": false
+    },
+    {
+      "path": "sfx/boss-appear",
+      "category": "sfx",
+      "seconds": 0.9,
+      "loop": false
+    },
+    {
+      "path": "sfx/hero-death",
+      "category": "sfx",
+      "seconds": 0.9,
+      "loop": false
+    },
+    {
+      "path": "sfx/revive",
+      "category": "sfx",
+      "seconds": 0.8,
       "loop": false
     }
   ]

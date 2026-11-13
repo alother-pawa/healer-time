@@ -3,8 +3,8 @@
   "sprites": [
     {
       "path": "ui-common/button-primary",
-      "width": 128,
-      "height": 128,
+      "width": 136,
+      "height": 136,
       "border": [
         32,
         32,
@@ -18,8 +18,8 @@
     },
     {
       "path": "ui-common/button-secondary",
-      "width": 128,
-      "height": 128,
+      "width": 136,
+      "height": 136,
       "border": [
         32,
         32,
@@ -33,8 +33,8 @@
     },
     {
       "path": "ui-common/focus-frame",
-      "width": 128,
-      "height": 128,
+      "width": 136,
+      "height": 136,
       "border": [
         32,
         32,
@@ -63,8 +63,8 @@
     },
     {
       "path": "ui-common/popup-background",
-      "width": 128,
-      "height": 128,
+      "width": 136,
+      "height": 136,
       "border": [
         32,
         32,
@@ -78,13 +78,13 @@
     },
     {
       "path": "ui-common/popup-header",
-      "width": 128,
-      "height": 128,
+      "width": 424,
+      "height": 84,
       "border": [
-        32,
-        32,
-        32,
-        32
+        56,
+        0,
+        56,
+        0
       ],
       "pivot": [
         0.5,
@@ -93,8 +93,8 @@
     },
     {
       "path": "ui-common/toast-background",
-      "width": 128,
-      "height": 128,
+      "width": 264,
+      "height": 148,
       "border": [
         32,
         32,
@@ -108,13 +108,43 @@
     },
     {
       "path": "ui-common/row-background",
-      "width": 128,
-      "height": 128,
+      "width": 264,
+      "height": 148,
       "border": [
         32,
         32,
         32,
         32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-common/panel-wood",
+      "width": 264,
+      "height": 148,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-common/coin-icon",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
       ],
       "pivot": [
         0.5,
@@ -167,24 +197,9 @@
       ]
     },
     {
-      "path": "backgrounds/first-launch-background",
+      "path": "backgrounds/gameplay-lower",
       "width": 1920,
-      "height": 1080,
-      "border": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "pivot": [
-        0.5,
-        0.5
-      ]
-    },
-    {
-      "path": "backgrounds/gameplay-background",
-      "width": 1920,
-      "height": 1080,
+      "height": 720,
       "border": [
         0,
         0,
@@ -303,8 +318,8 @@
     },
     {
       "path": "screens/settings/stepper-left",
-      "width": 56,
-      "height": 56,
+      "width": 54,
+      "height": 102,
       "border": [
         0,
         0,
@@ -318,8 +333,8 @@
     },
     {
       "path": "screens/settings/stepper-right",
-      "width": 56,
-      "height": 56,
+      "width": 54,
+      "height": 102,
       "border": [
         0,
         0,
@@ -332,24 +347,9 @@
       ]
     },
     {
-      "path": "screens/save-slots/slot-card-frame",
-      "width": 128,
-      "height": 128,
-      "border": [
-        32,
-        32,
-        32,
-        32
-      ],
-      "pivot": [
-        0.5,
-        0.5
-      ]
-    },
-    {
-      "path": "screens/save-slots/slot-empty-icon",
-      "width": 96,
-      "height": 96,
+      "path": "screens/main-menu/character-card",
+      "width": 160,
+      "height": 220,
       "border": [
         0,
         0,
@@ -362,9 +362,9 @@
       ]
     },
     {
-      "path": "screens/save-slots/slot-corrupted-icon",
-      "width": 96,
-      "height": 96,
+      "path": "screens/main-menu/character-card-selected",
+      "width": 160,
+      "height": 220,
       "border": [
         0,
         0,
@@ -377,9 +377,9 @@
       ]
     },
     {
-      "path": "screens/save-slots/thumbnail-placeholder",
-      "width": 320,
-      "height": 180,
+      "path": "screens/main-menu/arrow-left",
+      "width": 102,
+      "height": 102,
       "border": [
         0,
         0,
@@ -392,24 +392,9 @@
       ]
     },
     {
-      "path": "screens/first-launch/choice-chosen",
-      "width": 128,
-      "height": 128,
-      "border": [
-        32,
-        32,
-        32,
-        32
-      ],
-      "pivot": [
-        0.5,
-        0.5
-      ]
-    },
-    {
-      "path": "screens/first-launch/photosensitivity-icon",
-      "width": 80,
-      "height": 80,
+      "path": "screens/main-menu/arrow-right",
+      "width": 102,
+      "height": 102,
       "border": [
         0,
         0,
@@ -422,9 +407,9 @@
       ]
     },
     {
-      "path": "screens/achievements/achievement-first-action",
-      "width": 96,
-      "height": 96,
+      "path": "screens/main-menu/stage",
+      "width": 528,
+      "height": 120,
       "border": [
         0,
         0,
@@ -437,9 +422,9 @@
       ]
     },
     {
-      "path": "screens/achievements/achievement-all-actions",
-      "width": 96,
-      "height": 96,
+      "path": "screens/gameplay/gem-attack",
+      "width": 64,
+      "height": 64,
       "border": [
         0,
         0,
@@ -452,9 +437,9 @@
       ]
     },
     {
-      "path": "screens/achievements/achievement-first-save",
-      "width": 96,
-      "height": 96,
+      "path": "screens/gameplay/gem-heal",
+      "width": 64,
+      "height": 64,
       "border": [
         0,
         0,
@@ -467,9 +452,9 @@
       ]
     },
     {
-      "path": "screens/achievements/lock-icon",
-      "width": 40,
-      "height": 40,
+      "path": "screens/gameplay/gem-defense",
+      "width": 64,
+      "height": 64,
       "border": [
         0,
         0,
@@ -482,14 +467,14 @@
       ]
     },
     {
-      "path": "screens/credits/credits-viewport",
-      "width": 128,
-      "height": 128,
+      "path": "screens/gameplay/gem-magic",
+      "width": 64,
+      "height": 64,
       "border": [
-        32,
-        32,
-        32,
-        32
+        0,
+        0,
+        0,
+        0
       ],
       "pivot": [
         0.5,
@@ -497,14 +482,14 @@
       ]
     },
     {
-      "path": "screens/gameplay-hud/action-tile",
-      "width": 128,
-      "height": 128,
+      "path": "screens/gameplay/board-cell",
+      "width": 66,
+      "height": 66,
       "border": [
-        32,
-        32,
-        32,
-        32
+        12,
+        12,
+        12,
+        12
       ],
       "pivot": [
         0.5,
@@ -512,14 +497,14 @@
       ]
     },
     {
-      "path": "screens/gameplay-hud/action-tile-lit",
-      "width": 128,
-      "height": 128,
+      "path": "screens/gameplay/board-cell-selected",
+      "width": 70,
+      "height": 70,
       "border": [
-        32,
-        32,
-        32,
-        32
+        14,
+        14,
+        14,
+        14
       ],
       "pivot": [
         0.5,
@@ -527,7 +512,22 @@
       ]
     },
     {
-      "path": "screens/gameplay-hud/value-fill",
+      "path": "screens/gameplay/board-frame",
+      "width": 358,
+      "height": 132,
+      "border": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay/board-mask",
       "width": 128,
       "height": 128,
       "border": [
@@ -542,9 +542,24 @@
       ]
     },
     {
-      "path": "screens/gameplay-hud/stick-area",
-      "width": 150,
-      "height": 150,
+      "path": "screens/gameplay/item-slot",
+      "width": 132,
+      "height": 132,
+      "border": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay/item-potion",
+      "width": 64,
+      "height": 64,
       "border": [
         0,
         0,
@@ -557,9 +572,9 @@
       ]
     },
     {
-      "path": "screens/gameplay-hud/stick-knob",
-      "width": 44,
-      "height": 44,
+      "path": "screens/gameplay/item-bomb",
+      "width": 64,
+      "height": 64,
       "border": [
         0,
         0,
@@ -572,9 +587,9 @@
       ]
     },
     {
-      "path": "screens/gameplay-hud/overlay-panel",
-      "width": 128,
-      "height": 128,
+      "path": "screens/gameplay/item-shuffle",
+      "width": 64,
+      "height": 64,
       "border": [
         0,
         0,
@@ -587,7 +602,22 @@
       ]
     },
     {
-      "path": "screens/gameplay-hud/crosshair",
+      "path": "screens/gameplay/item-armor",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay/icon-plus",
       "width": 48,
       "height": 48,
       "border": [
@@ -602,9 +632,9 @@
       ]
     },
     {
-      "path": "screens/gameplay-hud/direction-up",
-      "width": 34,
-      "height": 34,
+      "path": "screens/gameplay/icon-pause",
+      "width": 48,
+      "height": 54,
       "border": [
         0,
         0,
@@ -617,9 +647,39 @@
       ]
     },
     {
-      "path": "screens/gameplay-hud/direction-down",
-      "width": 34,
-      "height": 34,
+      "path": "screens/gameplay/bar-track",
+      "width": 64,
+      "height": 32,
+      "border": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay/bar-fill-magic",
+      "width": 64,
+      "height": 32,
+      "border": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/props/battlefield",
+      "width": 1920,
+      "height": 448,
       "border": [
         0,
         0,
@@ -632,9 +692,69 @@
       ]
     },
     {
-      "path": "screens/gameplay-hud/direction-left",
-      "width": 34,
-      "height": 34,
+      "path": "game/props/hp-bar-track",
+      "width": 64,
+      "height": 32,
+      "border": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/props/hp-bar-fill",
+      "width": 64,
+      "height": 32,
+      "border": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "pivot": [
+        0.0,
+        0.5
+      ]
+    },
+    {
+      "path": "game/props/hp-bar-fill-enemy",
+      "width": 64,
+      "height": 32,
+      "border": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "pivot": [
+        0.0,
+        0.5
+      ]
+    },
+    {
+      "path": "game/props/armor-bar-fill",
+      "width": 64,
+      "height": 32,
+      "border": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "pivot": [
+        0.0,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-hit",
+      "width": 128,
+      "height": 128,
       "border": [
         0,
         0,
@@ -647,9 +767,9 @@
       ]
     },
     {
-      "path": "screens/gameplay-hud/direction-right",
-      "width": 34,
-      "height": 34,
+      "path": "game/effects/fx-heal",
+      "width": 128,
+      "height": 128,
       "border": [
         0,
         0,
@@ -662,9 +782,9 @@
       ]
     },
     {
-      "path": "screens/gameplay-hud/icon-move",
-      "width": 56,
-      "height": 56,
+      "path": "game/effects/fx-shield",
+      "width": 128,
+      "height": 128,
       "border": [
         0,
         0,
@@ -677,9 +797,9 @@
       ]
     },
     {
-      "path": "screens/gameplay-hud/icon-look",
-      "width": 56,
-      "height": 56,
+      "path": "game/effects/fx-magic",
+      "width": 128,
+      "height": 128,
       "border": [
         0,
         0,
@@ -692,99 +812,9 @@
       ]
     },
     {
-      "path": "screens/gameplay-hud/icon-jump",
-      "width": 56,
-      "height": 56,
-      "border": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "pivot": [
-        0.5,
-        0.5
-      ]
-    },
-    {
-      "path": "screens/gameplay-hud/icon-interact",
-      "width": 56,
-      "height": 56,
-      "border": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "pivot": [
-        0.5,
-        0.5
-      ]
-    },
-    {
-      "path": "screens/gameplay-hud/icon-attack",
-      "width": 56,
-      "height": 56,
-      "border": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "pivot": [
-        0.5,
-        0.5
-      ]
-    },
-    {
-      "path": "screens/gameplay-hud/icon-alt-attack",
-      "width": 56,
-      "height": 56,
-      "border": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "pivot": [
-        0.5,
-        0.5
-      ]
-    },
-    {
-      "path": "screens/gameplay-hud/icon-sprint",
-      "width": 56,
-      "height": 56,
-      "border": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "pivot": [
-        0.5,
-        0.5
-      ]
-    },
-    {
-      "path": "screens/gameplay-hud/icon-crouch",
-      "width": 56,
-      "height": 56,
-      "border": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "pivot": [
-        0.5,
-        0.5
-      ]
-    },
-    {
-      "path": "screens/gameplay-hud/icon-pause",
-      "width": 56,
-      "height": 56,
+      "path": "game/effects/fx-magic-orb",
+      "width": 96,
+      "height": 96,
       "border": [
         0,
         0,
@@ -1380,28 +1410,107 @@
         0.5,
         0.5
       ]
-    },
-    {
-      "path": "game/props/crate",
-      "width": 128,
-      "height": 128,
-      "border": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "pivot": [
-        0.5,
-        0.0
-      ]
     }
   ],
   "sheets": [
     {
-      "path": "game/characters/hero/hero",
+      "path": "game/characters/soldier/soldier",
+      "frameWidth": 336,
+      "frameHeight": 264,
+      "pivot": [
+        0.4375,
+        0.25
+      ],
+      "tags": [
+        {
+          "name": "idle",
+          "frames": 6,
+          "frameMs": 100,
+          "loop": true
+        },
+        {
+          "name": "walk",
+          "frames": 8,
+          "frameMs": 90,
+          "loop": true
+        },
+        {
+          "name": "attack",
+          "frames": 6,
+          "frameMs": 70,
+          "loop": false
+        },
+        {
+          "name": "attack-heavy",
+          "frames": 6,
+          "frameMs": 70,
+          "loop": false
+        },
+        {
+          "name": "hurt",
+          "frames": 4,
+          "frameMs": 80,
+          "loop": false
+        },
+        {
+          "name": "death",
+          "frames": 4,
+          "frameMs": 140,
+          "loop": false
+        }
+      ]
+    },
+    {
+      "path": "game/characters/orc/orc",
+      "frameWidth": 336,
+      "frameHeight": 264,
+      "pivot": [
+        0.4375,
+        0.25
+      ],
+      "tags": [
+        {
+          "name": "idle",
+          "frames": 6,
+          "frameMs": 100,
+          "loop": true
+        },
+        {
+          "name": "walk",
+          "frames": 8,
+          "frameMs": 90,
+          "loop": true
+        },
+        {
+          "name": "attack",
+          "frames": 6,
+          "frameMs": 80,
+          "loop": false
+        },
+        {
+          "name": "attack-heavy",
+          "frames": 6,
+          "frameMs": 80,
+          "loop": false
+        },
+        {
+          "name": "hurt",
+          "frames": 4,
+          "frameMs": 80,
+          "loop": false
+        },
+        {
+          "name": "death",
+          "frames": 4,
+          "frameMs": 140,
+          "loop": false
+        }
+      ]
+    },
+    {
+      "path": "game/characters/healer/healer",
       "frameWidth": 128,
-      "frameHeight": 256,
+      "frameHeight": 192,
       "pivot": [
         0.5,
         0.0
@@ -1410,30 +1519,19 @@
         {
           "name": "idle",
           "frames": 4,
-          "frameMs": 150,
+          "frameMs": 160,
           "loop": true
         },
         {
-          "name": "run",
+          "name": "cast",
           "frames": 6,
-          "frameMs": 100,
-          "loop": true
-        }
-      ]
-    },
-    {
-      "path": "game/effects/hit-spark",
-      "frameWidth": 128,
-      "frameHeight": 128,
-      "pivot": [
-        0.5,
-        0.5
-      ],
-      "tags": [
+          "frameMs": 80,
+          "loop": false
+        },
         {
-          "name": "play",
-          "frames": 5,
-          "frameMs": 60,
+          "name": "hurt",
+          "frames": 3,
+          "frameMs": 80,
           "loop": false
         }
       ]
