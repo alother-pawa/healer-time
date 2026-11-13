@@ -245,7 +245,7 @@ namespace Game.Systems.Gameplay
         /// <summary>World position of a character's middle (for effects that start or end there).</summary>
         internal Vector3 Middle(Target target)
         {
-            return ViewOf(target).transform.position + Vector3.up * 0.55f * ViewOf(target).transform.localScale.y;
+            return ViewOf(target).transform.position + Vector3.up * 0.55f * ViewOf(target).Scale;
         }
 
         /// <summary>Everything transient stops and hides at once (animations switched off, leaving the scene).</summary>
@@ -308,7 +308,7 @@ namespace Game.Systems.Gameplay
 
         private Vector3 Above(Target target)
         {
-            return ViewOf(target).transform.position + Vector3.up * 1.25f * ViewOf(target).transform.localScale.y;
+            return ViewOf(target).transform.position + Vector3.up * 1.25f * ViewOf(target).Scale;
         }
 
         private static T Take<T>(List<T> pool, T template) where T : Component

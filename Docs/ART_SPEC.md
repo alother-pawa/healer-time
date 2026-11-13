@@ -11,7 +11,6 @@ Một đơn vị thế giới = 128 px. Thư mục và pack theo chuẩn của p
 
 ## Còn là placeholder (cần art)
 
-- `ui-common/popup-backdrop`
 - `backgrounds/splash-background`
 - `backgrounds/menu-background`
 - `backgrounds/loading-background`
@@ -23,7 +22,6 @@ Một đơn vị thế giới = 128 px. Thư mục và pack theo chuẩn của p
 - `screens/settings/slider-fill`
 - `screens/settings/slider-handle`
 - `screens/main-menu/stage`
-- `screens/gameplay/board-mask`
 - `screens/gameplay/icon-plus`
 - `screens/gameplay/bar-track`
 - `screens/gameplay/bar-fill-magic`
@@ -44,7 +42,7 @@ Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.
 | `button-primary.png` | 136×136 | rounded | 32 | giữa | Nút chính (Play, OK, Resume) | Mega Cozy UI Pack (dobo_ui, bản demo): `Buttons/Inflated/InflatedlButton1_marine.png` ×4 |
 | `button-secondary.png` | 136×136 | rounded | 32 | giữa | Nút phụ, tab | Mega Cozy UI Pack (dobo_ui, bản demo): `Buttons/Square/SquareButton1_wood.png` ×4 |
 | `focus-frame.png` | 136×136 | outline | 32 | giữa | Khung quanh control đang chọn (phím/tay cầm) | Mega Cozy UI Pack (dobo_ui, bản demo): `Frames/Frame1_yellow.png` ×4, khoét giữa |
-| `popup-backdrop.png` | 128×128 | rect | — | giữa | Nền mờ phía sau popup | **placeholder** |
+| `popup-backdrop.png` | 128×128 | rect | — | giữa | Nền mờ phía sau popup | lớp màu phẳng (không cần art) |
 | `popup-background.png` | 136×136 | rounded | 32 | giữa | Khung panel của popup | Mega Cozy UI Pack (dobo_ui, bản demo): `Frames/Frame1_wood.png` ×4 |
 | `popup-header.png` | 424×84 | rounded | 56/0/56/0 | giữa | Dải tiêu đề popup (ruy băng) | Mega Cozy UI Pack (dobo_ui, bản demo): `Headers/Header1_green.png` ×4 |
 | `toast-background.png` | 264×148 | rounded | 32 | giữa | Nền thông báo nhỏ (toast) | Mega Cozy UI Pack (dobo_ui, bản demo): `Containers/SimpleColorContainers/SimpleColorContainer1_cream.png` ×4 |
@@ -105,7 +103,7 @@ Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.
 | `board-cell.png` | 66×66 | rounded | 12 | giữa | Ô nền của bàn ghép | Mega Cozy UI Pack (dobo_ui, bản demo): `Inventory/ItemSlots/ItemSlotsDefault/SlotDefaultl1_cream.png` ×2 |
 | `board-cell-selected.png` | 70×70 | outline | 14 | giữa | Ô đang chọn trên bàn ghép | Mega Cozy UI Pack (dobo_ui, bản demo): `Inventory/ItemSlots/ItemSlotsSelected/SlotHover1_cream.png` ×2 |
 | `board-frame.png` | 358×132 | outline | 24 | giữa | Khung gỗ quanh bàn ghép | Mega Cozy UI Pack (dobo_ui, bản demo): `Frames/EmptyWoodenFrame.png` ×2 |
-| `board-mask.png` | 128×128 | rect | — | giữa | Lớp che bàn ghép khi đang diễn hiệu ứng | **placeholder** |
+| `board-mask.png` | 128×128 | rect | — | giữa | Lớp che bàn ghép khi đang diễn hiệu ứng | lớp màu phẳng (không cần art) |
 | `item-slot.png` | 132×132 | rounded | 24 | giữa | Ô item | Mega Cozy UI Pack (dobo_ui, bản demo): `Inventory/ItemSlots/ItemSlotsDefault/SlotDefaultl1_cream.png` ×4 |
 | `item-potion.png` | 64×64 | rect | — | giữa | Item bình máu | Raven Fantasy Icons (Clockwork Raven): ô (17, 8) ×2 |
 | `item-bomb.png` | 64×64 | ellipse | — | giữa | Item bom xoá một vùng 3×3 | Raven Fantasy Icons (Clockwork Raven): ô (47, 11) ×2 |

@@ -135,7 +135,7 @@ namespace Game.Editor.Builders
             LocalizedLabel coins = Text(parts.Body, "CoinsLabel", new Vector2(0f, -260f), new Vector2(780f, 56f), 38f, Palette.Text,
                 "gameplay.result.coins");
 
-            RectTransform badge = UiFactory.Rect("NewBestBadge", parts.Body).Place(UiFactory.TopRight, new Vector2(20f, 30f), new Vector2(300f, 70f),
+            RectTransform badge = UiFactory.Rect("NewBestBadge", parts.Body).Place(UiFactory.TopRight, new Vector2(10f, -6f), new Vector2(260f, 64f),
                 new Vector2(1f, 1f));
             UiFactory.AddImage(badge, BuildUtility.Sprite("ui-common/popup-header")).raycastTarget = false;
             UiFactory.Label(badge, string.Empty, 32f, "BadgeLabel").Localize("gameplay.result.new-best").color = Palette.Text;
@@ -186,9 +186,9 @@ namespace Game.Editor.Builders
         {
             RectTransform root = UiFactory.Rect("Hud", header).Stretch();
             Component hud = root.gameObject.AddComponent(GameTypes.HudView);
-            LocalizedLabel score = Pill(root, "ScorePanel", new Vector2(24f, -20f), 300f, "gameplay.hud.score", null);
-            LocalizedLabel kills = Pill(root, "KillsPanel", new Vector2(340f, -20f), 240f, "gameplay.hud.kills", null);
-            LocalizedLabel coins = Pill(root, "CoinsPanel", new Vector2(596f, -20f), 240f, "gameplay.hud.coins", "ui-common/coin-icon");
+            LocalizedLabel score = Pill(root, "ScorePanel", new Vector2(24f, -20f), 280f, "gameplay.hud.score", null);
+            LocalizedLabel kills = Pill(root, "KillsPanel", new Vector2(316f, -20f), 220f, "gameplay.hud.kills", null);
+            LocalizedLabel coins = Pill(root, "CoinsPanel", new Vector2(548f, -20f), 200f, "gameplay.hud.coins", "ui-common/coin-icon");
 
             RectTransform monsterRect = UiFactory.Rect("MonsterPanel", root).Place(UiFactory.TopCenter, new Vector2(0f, -20f), new Vector2(360f, 72f));
             UiFactory.AddImage(monsterRect, BuildUtility.Sprite("ui-common/toast-background")).raycastTarget = false;
@@ -211,7 +211,8 @@ namespace Game.Editor.Builders
             float frameSide = BoardSide + 2f * FramePadding;
             RectTransform frame = UiFactory.Rect("Board", parts.Body)
                 .Place(UiFactory.BottomCenter, new Vector2(0f, BoardY), new Vector2(frameSide, frameSide), UiFactory.Center);
-            UiFactory.AddImage(frame, BuildUtility.Sprite("screens/gameplay/board-frame"));
+            // A frame: only its border is drawn, the gems show through the middle.
+            UiFactory.AddImage(frame, BuildUtility.Sprite("screens/gameplay/board-frame")).fillCenter = false;
             Component board = frame.gameObject.AddComponent(GameTypes.BoardView);
 
             RectTransform area = UiFactory.Rect("GemArea", frame).Place(UiFactory.Center, Vector2.zero, new Vector2(BoardSide, BoardSide));

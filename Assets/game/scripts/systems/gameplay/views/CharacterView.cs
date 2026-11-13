@@ -27,6 +27,11 @@ namespace Game.Systems.Gameplay
 
         private string _state = Idle;
         private string _loop = Idle;
+        private float _healthY = float.NaN;
+        private float _armorY = float.NaN;
+
+        /// <summary>Size of the body relative to its sheet (bars keep their size and sit over the head).</summary>
+        internal float Scale => _body.transform.localScale.y;
 
         /// <summary>The look of a character: animator, tint and scale (1 = sheet size).</summary>
         internal void Setup(RuntimeAnimatorController controller, Color tint, float scale)
@@ -34,7 +39,9 @@ namespace Game.Systems.Gameplay
             _animator.runtimeAnimatorController = controller;
             _body.color = tint;
             _body.flipX = _faceLeft;
-            transform.localScale = new Vector3(scale, scale, 1f);
+            _body.transform.localScale = new Vector3(scale, scale, 1f);
+            PlaceBar(_health, ref _healthY, scale);
+            PlaceBar(_armor, ref _armorY, scale);
             _loop = Idle;
             Play(Idle);
         }
@@ -112,6 +119,22 @@ namespace Game.Systems.Gameplay
             {
                 _armor.gameObject.SetActive(visible);
             }
+        }
+
+        private static void PlaceBar(WorldBar bar, ref float baseY, float scale)
+        {
+            if (bar == null)
+            {
+                return;
+            }
+
+            Transform t = bar.transform;
+            if (float.IsNaN(baseY))
+            {
+                baseY = t.localPosition.y;
+            }
+
+            t.localPosition = new Vector3(t.localPosition.x, baseY * scale, t.localPosition.z);
         }
 
         private void Update()

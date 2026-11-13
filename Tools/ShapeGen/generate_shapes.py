@@ -88,6 +88,7 @@ class Sprite:
     pivot: tuple = CENTER
     opacity: float = 1.0
     art: Art = None
+    plain: bool = False   # a flat colour layer that needs no art (dimmers): drawn without its name
 
 
 @dataclass
@@ -149,7 +150,7 @@ SPRITES = [
            art=cozy("Buttons/Square/SquareButton1_wood.png", 4)),
     Sprite("ui-common/focus-frame", (136, 136), "outline", FOCUS, "Khung quanh control đang chọn (phím/tay cầm)", border=32,
            art=cozy("Frames/Frame1_yellow.png", 4, clear_inset=5)),
-    Sprite("ui-common/popup-backdrop", S, "rect", "#000000", "Nền mờ phía sau popup", opacity=0.6),
+    Sprite("ui-common/popup-backdrop", S, "rect", "#000000", "Nền mờ phía sau popup", opacity=0.6, plain=True),
     Sprite("ui-common/popup-background", (136, 136), "rounded", CREAM, "Khung panel của popup", border=32,
            art=cozy("Frames/Frame1_wood.png", 4)),
     Sprite("ui-common/popup-header", (424, 84), "rounded", LEAF, "Dải tiêu đề popup (ruy băng)", border=(56, 0, 56, 0),
@@ -200,7 +201,7 @@ SPRITES = [
            art=cozy("Inventory/ItemSlots/ItemSlotsSelected/SlotHover1_cream.png", 2)),
     Sprite("screens/gameplay/board-frame", (358, 132), "outline", WOOD, "Khung gỗ quanh bàn ghép", border=24,
            art=cozy("Frames/EmptyWoodenFrame.png", 2)),
-    Sprite("screens/gameplay/board-mask", S, "rect", "#000000", "Lớp che bàn ghép khi đang diễn hiệu ứng", opacity=0.7),
+    Sprite("screens/gameplay/board-mask", S, "rect", "#000000", "Lớp che bàn ghép khi đang diễn hiệu ứng", opacity=0.7, plain=True),
     Sprite("screens/gameplay/item-slot", (132, 132), "rounded", CREAM, "Ô item", border=24,
            art=cozy("Inventory/ItemSlots/ItemSlotsDefault/SlotDefaultl1_cream.png", 4)),
     Sprite("screens/gameplay/item-potion", ICON, "rect", HEALTH, "Item bình máu", art=raven(17, 8, 2)),
@@ -366,6 +367,8 @@ def name_of(path):
 def placeholder_sprite(sprite):
     width, height = sprite.size
     image = shape(width, height, sprite.shape, sprite.colour, sprite.opacity)
+    if sprite.plain:
+        return image
     write_lines(image, name_box(width, height, sprite.border), [name_of(sprite.path)], text_colour(sprite.colour, sprite.shape))
     return image
 
@@ -486,6 +489,8 @@ def border_text(border):
 
 
 def source_text(entry):
+    if getattr(entry, "plain", False):
+        return "lớp màu phẳng (không cần art)"
     if entry.art is None:
         return "**placeholder**"
     art = entry.art
@@ -510,7 +515,8 @@ def brief():
         "- **Sheet:** mỗi hàng một tag (trên xuống dưới theo bảng), frame từ trái sang phải, mỗi ô đúng một frame, không chừa khe.",
         "",
     ]
-    placeholders = [s.path for s in SPRITES + SHEETS if s.art is None and not s.path.startswith("ui-glyphs/")]
+    placeholders = [s.path for s in SPRITES + SHEETS
+                    if s.art is None and not getattr(s, "plain", False) and not s.path.startswith("ui-glyphs/")]
     out += ["## Còn là placeholder (cần art)", ""] + [f"- `{p}`" for p in placeholders] + [
         "", "Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.", ""]
     packs = {}
