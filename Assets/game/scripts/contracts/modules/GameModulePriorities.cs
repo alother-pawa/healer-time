@@ -24,22 +24,7 @@ namespace Game.Contracts.Modules
         /// <summary>Priority of <see cref="GameModuleIds.RenderSettings"/>.</summary>
         public const int RenderSettings = 1050;
 
-        /// <summary>Priority of <see cref="GameModuleIds.SaveSlots"/>.</summary>
-        public const int SaveSlots = 1060;
-
-        /// <summary>Priority of <see cref="GameModuleIds.InputActivity"/>.</summary>
-        public const int InputActivity = 1070;
-
         /// <summary>Priority of <see cref="GameModuleIds.Gameplay"/>.</summary>
         public const int Gameplay = 1080;
-
-        /// <summary>Priority of <see cref="GameModuleIds.Credits"/>.</summary>
-        public const int Credits = 1090;
-
-        /// <summary>Priority of <see cref="GameModuleIds.FirstLaunch"/>.</summary>
-        public const int FirstLaunch = 1100;
-
-        /// <summary>Priority of <see cref="GameModuleIds.Achievements"/>.</summary>
-        public const int Achievements = 1110;
     }
 }

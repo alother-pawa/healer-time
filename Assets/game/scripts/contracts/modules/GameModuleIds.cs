@@ -26,29 +26,7 @@ namespace Game.Contracts.Modules
         /// <summary>Render scale and brightness on Universal RP (compiled only when URP is installed).</summary>
         public const string RenderSettings = "game-render-settings";
 
-        /// <summary>
-        /// Save slot panel, slot metadata, playtime and checkpoints (<c>IPlayMenu</c>, <c>IPlaytime</c>, <c>ICheckpoint</c>).
-        /// </summary>
-        public const string SaveSlots = "game-save-slots";
-
-        /// <summary>
-        /// Per-action input state and recent input history of the gameplay actions (<c>IInputActivity</c>); game-agnostic, a
-        /// candidate for a package.
-        /// </summary>
-        public const string InputActivity = "game-input-activity";
-
         /// <summary>Gameplay scene support: the pause menu popup.</summary>
         public const string Gameplay = "game-gameplay";
-
-        /// <summary>Credits popup (<c>ICreditsMenu</c>) scrolling the credits data.</summary>
-        public const string Credits = "game-credits";
-
-        /// <summary>First-launch flag (<c>IFirstLaunch</c>) and the first-launch screen.</summary>
-        public const string FirstLaunch = "game-first-launch";
-
-        /// <summary>
-        /// Achievements popup (<c>IAchievementsMenu</c>), the demo's unlock rules, the offline unlock toast and rich presence.
-        /// </summary>
-        public const string Achievements = "game-achievements";
     }
 }

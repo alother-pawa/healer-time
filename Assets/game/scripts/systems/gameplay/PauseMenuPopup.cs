@@ -10,19 +10,18 @@ using UnityEngine.UI;
 namespace Game.Systems.Gameplay
 {
     /// <summary>
-    /// The pause menu: Resume, Save, Settings, Quit to main menu, Quit to desktop. A view only: every button forwards to the
+    /// The pause menu: Resume, Settings, Quit to main menu, Quit to desktop. A view only: every button forwards to the
     /// <see cref="IPauseMenuHost"/> payload (the gameplay screen), which owns the pause and the flows. While shown it requests
     /// the Menu cursor policy over the gameplay one, and <c>_resumeAction</c> (<c>Menu/Pause</c>: Escape, Start) resumes
     /// while the menu's scope has owned focus since the previous frame (not while Settings or a dialog is on top, nor in the
     /// frame the Escape that closed one of them arrives); Cancel/Back closes it through the
     /// desktop popup handler. Hiding by any path reports to the host, so the pause is always released.
-    /// REFERENCES: the five buttons; the root carries the <c>FocusScope</c> (Resume first) and an <c>InputContextRequest</c>
+    /// REFERENCES: the four buttons; the root carries the <c>FocusScope</c> (Resume first) and an <c>InputContextRequest</c>
     /// for the Menu context.
     /// </summary>
     internal sealed class PauseMenuPopup : PopupBase
     {
         [SerializeField] private Button _resumeButton;
-        [SerializeField] private Button _saveButton;
         [SerializeField] private Button _settingsButton;
         [SerializeField] private Button _quitToMenuButton;
         [SerializeField] private Button _quitToDesktopButton;
@@ -44,7 +43,6 @@ namespace Game.Systems.Gameplay
             CoreServiceLocator.TryGet(out _cursor);
             _resumeValid = _input != null && _input.HasAction(_resumeAction);
             _resumeButton.onClick.AddListener(() => Forward(host => host.Resume()));
-            _saveButton.onClick.AddListener(() => Forward(host => host.Save()));
             _settingsButton.onClick.AddListener(() => Forward(host => host.OpenSettings()));
             _quitToMenuButton.onClick.AddListener(() => Forward(host => host.QuitToMenu()));
             _quitToDesktopButton.onClick.AddListener(() => Forward(host => host.QuitToDesktop()));

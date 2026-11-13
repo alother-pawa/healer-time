@@ -20,7 +20,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/game/scenes/Gameplay.unity
     guid: 29ca76430257578458fc2f7762017fcd
-  - enabled: 1
-    path: Assets/game/scenes/FirstLaunch.unity
-    guid: 7d105faa341daac4d87c30e545b0f8db
   m_configObjects: {}

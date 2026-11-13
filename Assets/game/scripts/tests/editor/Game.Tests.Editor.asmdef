@@ -20,12 +20,7 @@
     "Game.Systems.UIShell",
     "Game.Systems.Splash",
     "Game.Systems.Settings",
-    "Game.Systems.SaveSlots",
     "Game.Systems.Gameplay",
-    "Game.Systems.InputActivity",
-    "Game.Systems.Credits",
-    "Game.Systems.FirstLaunch",
-    "Game.Systems.Achievements",
     "Game.Editor.Builders"
   ],
   "includePlatforms": [

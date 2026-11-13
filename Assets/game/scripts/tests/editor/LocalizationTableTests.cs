@@ -18,11 +18,11 @@ namespace Game.Tests.Editor
     /// </summary>
     public sealed class LocalizationTableTests
     {
-        private const string TablePath = "Assets/game/localization/Resources/Paowa/Localization/pc-base.csv";
+        private const string TablePath = "Assets/game/localization/Resources/Paowa/Localization/healer-time.csv";
         private const string DefaultLanguage = "en";
         private const string LanguageNamePrefix = "language.";
         private const string ResourcesFolder = "Paowa/Localization";
-        private const string TableName = "pc-base";
+        private const string TableName = "healer-time";
         private const string ResourcePathHint = ResourcesFolder + "/" + TableName;
         private static readonly Regex Placeholder = new Regex(@"\{\d+(?:[,:][^}]*)?\}");
         private static readonly Regex KeyShape = new Regex(@"^[a-z][a-z0-9-]*(?:\.[a-z0-9-]+)+$");

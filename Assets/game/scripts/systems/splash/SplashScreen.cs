@@ -1,7 +1,6 @@
 using System;
 using Game.Contracts.Navigation;
 using Game.Contracts.Presentation;
-using Game.Contracts.Session;
 using Game.Foundation.Localization;
 using Paowa.Core.Foundation.Services;
 using UnityEngine;
@@ -17,8 +16,7 @@ namespace Game.Systems.Splash
     /// so its services are ready here. The sequence starts once the switch into this scene is fully revealed; any key,
     /// gamepad button or mouse button requests a skip, which shortens the animation but never the preload (a small loading
     /// indicator shows while the preload is still running). Modifier keys alone and keys pressed with Alt or the system
-    /// key held (Alt+Tab) are not skips. The view is redrawn from the sequence every frame. While <see cref="IFirstLaunch"/>
-    /// is pending the splash goes to the first-launch scene instead of the next scene.
+    /// key held (Alt+Tab) are not skips. The view is redrawn from the sequence every frame.
     /// REFERENCES: <c>_logoGroup</c> fades the logo; <c>_loadingIndicator</c> shows while waiting for the preload;
     /// <c>_config</c> holds timing, preload and destination.
     /// </summary>
@@ -175,10 +173,6 @@ namespace Game.Systems.Splash
         private async Awaitable LeaveAsync()
         {
             SceneKey next = _config.NextScene;
-            if (_config.FirstLaunchScene != null && CoreServiceLocator.TryGet(out IFirstLaunch firstLaunch) && firstLaunch.IsPending)
-            {
-                next = _config.FirstLaunchScene;
-            }
 
             if (_navigator == null || next == null)
             {

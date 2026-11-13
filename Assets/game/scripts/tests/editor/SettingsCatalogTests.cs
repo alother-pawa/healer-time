@@ -47,17 +47,14 @@ namespace Game.Tests.Editor
             Expect<SliderSettingDefinition>(byId, problems, SettingApplyMode.Immediate, SettingIds.AudioMasterVolume,
                 SettingIds.AudioMusicVolume, SettingIds.AudioSfxVolume, SettingIds.AudioUIVolume,
                 SettingIds.AudioVoiceVolume, DesktopSettingIds.DisplayRenderScale, DesktopSettingIds.DisplayBrightness,
-                GameSettingIds.CameraShake, GamepadSettingIds.VibrationIntensity, GameSettingIds.MouseSensitivity,
-                GameSettingIds.StickSensitivity, GameSettingIds.TextScale);
+                GameSettingIds.CameraShake, GamepadSettingIds.VibrationIntensity, GameSettingIds.TextScale);
             Expect<ToggleSettingDefinition>(byId, problems, SettingApplyMode.Immediate, SettingIds.AudioMasterMuted,
                 SettingIds.AudioMuteInBackground, DesktopSettingIds.DisplayVSync, SettingIds.PauseOnFocusLoss,
-                GameSettingIds.Animations, GameSettingIds.ShowHints, GamepadSettingIds.Vibration, GameSettingIds.InvertY,
-                GameSettingIds.ReduceFlashing, GameSettingIds.Subtitles);
+                GameSettingIds.Animations, GamepadSettingIds.Vibration, GameSettingIds.ReduceFlashing);
             Expect<ChoiceSettingDefinition>(byId, problems, SettingApplyMode.Deferred, DesktopSettingIds.DisplayResolution,
                 DesktopSettingIds.DisplayFullScreenMode, DesktopSettingIds.DisplayRefreshRate, DesktopSettingIds.DisplayMonitor);
             Expect<ChoiceSettingDefinition>(byId, problems, SettingApplyMode.Immediate, SettingIds.Language,
-                DesktopSettingIds.DisplayFrameRateCap, DesktopSettingIds.DisplayQuality, GameSettingIds.SprintMode,
-                GameSettingIds.CrouchMode);
+                DesktopSettingIds.DisplayFrameRateCap, DesktopSettingIds.DisplayQuality);
             Expect<SliderSettingDefinition>(byId, problems, SettingApplyMode.Deferred, GameSettingIds.UIScale);
             Assert.That(problems, Is.Empty, string.Join("\n", problems));
         }

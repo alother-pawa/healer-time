@@ -8,11 +8,5 @@ namespace Game.Contracts.Interaction
 
         /// <summary>Gameplay controls.</summary>
         public const string Gameplay = "Gameplay";
-
-        /// <summary>
-        /// Development tools in gameplay (input history overlay, checkpoint key); requested only in development builds and
-        /// locked with <see cref="Gameplay"/> while the game is paused.
-        /// </summary>
-        public const string Debug = "Debug";
     }
 }

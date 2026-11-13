@@ -1,3 +1,4 @@
+using Game.Contracts.Navigation;
 using Game.Foundation.UI;
 using Paowa.UI.Navigation;
 using TMPro;
@@ -8,10 +9,9 @@ namespace Game.Editor.Builders
 {
     /// <summary>
     /// Canvases of the content scenes, one prefab each: the splash (logo, studio name, loading indicator, driven by
-    /// <c>SplashScreen</c>), the main menu (title, Play/Settings/Achievements/Credits/Quit, version, prompt bar, its own selection
-    /// highlight) and, through <see cref="GameplayPrefabBuilder"/> and <see cref="FirstLaunchPrefabBuilder"/>, the gameplay
-    /// demo and the first-launch screen. Content canvases
-    /// sort at 0, under the persistent UI scene's canvases.
+    /// <c>SplashScreen</c>), the main menu (title, Play/Settings/Quit, version, prompt bar, its own selection highlight) and,
+    /// through <see cref="GameplayPrefabBuilder"/>, the gameplay canvas. Content canvases sort at 0, under the persistent UI
+    /// scene's canvases.
     /// </summary>
     internal static class MenuPrefabBuilder
     {
@@ -31,8 +31,6 @@ namespace Game.Editor.Builders
         {
             ("PlayButton", "ui-common/button-primary", "menu.play"),
             ("SettingsButton", "ui-common/button-secondary", "menu.settings"),
-            ("AchievementsButton", "ui-common/button-secondary", "menu.achievements"),
-            ("CreditsButton", "ui-common/button-secondary", "menu.credits"),
             ("QuitButton", "ui-common/button-secondary", "menu.quit"),
         };
 
@@ -41,7 +39,6 @@ namespace Game.Editor.Builders
             BuildSplash();
             BuildMainMenu();
             GameplayPrefabBuilder.BuildCanvas();
-            FirstLaunchPrefabBuilder.BuildCanvas();
         }
 
         // The logo group (logo and studio name) starts transparent: SplashScreen draws its alpha from the sequence.
@@ -112,10 +109,10 @@ namespace Game.Editor.Builders
             Fields.Set(scope, ("_firstSelected", buttons[0]), ("_trapFocus", true),
                 ("_cancelMode", new EnumName(nameof(FocusCancelMode.PassThrough))));
             Fields.Set(menu, ("_playButton", buttons[0]), ("_settingsButton", buttons[1]),
-                ("_achievementsButton", buttons[2]), ("_creditsButton", buttons[3]), ("_quitButton", buttons[4]), ("_versionText", version),
+                ("_quitButton", buttons[2]), ("_versionText", version),
+                ("_gameplayScene", BuildUtility.Load<SceneKey>(BuildPaths.SceneKeyGameplay)),
                 ("_quitTitleKey", "quit.title"), ("_quitMessageKey", "quit.message"), ("_quitConfirmKey", "quit.confirm"),
-                ("_quitCancelKey", "common.cancel"), ("_playNoticeTitleKey", "play.notice.title"),
-                ("_playNoticeMessageKey", "play.notice.message"), ("_playNoticeConfirmKey", "common.ok"));
+                ("_quitCancelKey", "common.cancel"));
             BuildUtility.SavePrefab(canvas.gameObject, BuildPaths.MainMenuCanvas);
         }
     }

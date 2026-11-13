@@ -13,13 +13,12 @@ using UnityEngine.UI;
 namespace Game.Systems.MainMenu
 {
     /// <summary>
-    /// The main menu: Play opens <see cref="IPlayMenu"/> (a notice until the save-slot flow registers it), Settings opens
-    /// <see cref="ISettingsMenu"/>, Achievements opens <see cref="IAchievementsMenu"/>, Credits opens
-    /// <see cref="ICreditsMenu"/>, Quit asks for confirmation and then quits through <see cref="IAppLifecycleService"/> (leaves Play Mode in the Editor). Cancel/Back with nothing else
+    /// The main menu: Play starts a run (<see cref="IGameNavigator"/> to the gameplay scene), Settings opens
+    /// <see cref="ISettingsMenu"/>, Quit asks for confirmation and then quits through <see cref="IAppLifecycleService"/> (leaves Play Mode in the Editor). Cancel/Back with nothing else
     /// to close opens the same Quit confirmation: the screen is a Cancel handler below the UI package's popup handler. While shown
     /// it requests the Menu cursor policy (visible in Pointer mode, hidden in Navigation mode). The version label shows
     /// Core's <see cref="BuildInfo.DisplayText"/> ("v1.2.0 (build 128, commit 3f2a9c1)", "v1.2.0 (dev)" without a stamp).
-    /// REFERENCES: the five buttons; <c>_versionText</c>; the <c>*Key</c> fields are the localization keys of the dialogs.
+    /// REFERENCES: the three buttons; <c>_gameplayScene</c> is the scene Play opens; <c>_versionText</c>; the <c>*Key</c> fields are the localization keys of the dialogs.
     /// </summary>
     internal sealed class MainMenuScreen : MonoBehaviour, IUICancelHandler
     {
@@ -28,22 +27,19 @@ namespace Game.Systems.MainMenu
 
         [SerializeField] private Button _playButton;
         [SerializeField] private Button _settingsButton;
-        [SerializeField] private Button _achievementsButton;
-        [SerializeField] private Button _creditsButton;
         [SerializeField] private Button _quitButton;
         [SerializeField] private TMP_Text _versionText;
         [SerializeField] private string _quitTitleKey;
         [SerializeField] private string _quitMessageKey;
         [SerializeField] private string _quitConfirmKey;
         [SerializeField] private string _quitCancelKey;
-        [SerializeField] private string _playNoticeTitleKey;
-        [SerializeField] private string _playNoticeMessageKey;
-        [SerializeField] private string _playNoticeConfirmKey;
+        [SerializeField] private SceneKey _gameplayScene;
 
         private ICancelStack _cancelStack;
         private ICursorService _cursor;
         private IDisposable _cursorRequest;
         private bool _confirmingQuit;
+        private bool _starting;
 
         int IUICancelHandler.Priority => QuitCancelPriority;
 
@@ -66,8 +62,6 @@ namespace Game.Systems.MainMenu
             CoreServiceLocator.TryGet(out _cursor);
             _playButton.onClick.AddListener(OpenPlay);
             _settingsButton.onClick.AddListener(OpenSettings);
-            _achievementsButton.onClick.AddListener(ShowAchievements);
-            _creditsButton.onClick.AddListener(ShowCredits);
             _quitButton.onClick.AddListener(() => _ = QuitAsync());
         }
 
@@ -97,16 +91,29 @@ namespace Game.Systems.MainMenu
 
         private void OpenPlay()
         {
-            if (CoreServiceLocator.TryGet(out IPlayMenu play))
+            if (_starting || _gameplayScene == null || !CoreServiceLocator.TryGet(out IGameNavigator navigator))
             {
-                play.Open();
                 return;
             }
 
-            if (CoreServiceLocator.TryGet(out IConfirmDialog confirm))
+            _ = StartRunAsync(navigator);
+        }
+
+        // One press starts one switch; a refused switch (another one running) lets Play work again.
+        private async Awaitable StartRunAsync(IGameNavigator navigator)
+        {
+            _starting = true;
+            try
             {
-                // A notice: the answer does not matter, so nothing awaits it.
-                _ = confirm.ConfirmAsync(new ConfirmRequest(_playNoticeTitleKey, _playNoticeMessageKey, _playNoticeConfirmKey, null));
+                await navigator.GoToAsync(_gameplayScene);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
+            }
+            finally
+            {
+                _starting = false;
             }
         }
 
@@ -119,30 +126,6 @@ namespace Game.Systems.MainMenu
             else
             {
                 Debug.LogWarning("[Game] The settings module is not running; the Settings button does nothing.", this);
-            }
-        }
-
-        private void ShowAchievements()
-        {
-            if (CoreServiceLocator.TryGet(out IAchievementsMenu achievements))
-            {
-                achievements.Open();
-            }
-            else
-            {
-                Debug.LogWarning("[Game] The achievements module is not running; the Achievements button does nothing.", this);
-            }
-        }
-
-        private void ShowCredits()
-        {
-            if (CoreServiceLocator.TryGet(out ICreditsMenu credits))
-            {
-                credits.Open();
-            }
-            else
-            {
-                Debug.LogWarning("[Game] The credits module is not running; the Credits button does nothing.", this);
             }
         }
 

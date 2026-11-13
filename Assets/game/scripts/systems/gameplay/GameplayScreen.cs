@@ -3,89 +3,59 @@ using System.Collections.Generic;
 using Game.Contracts.Interaction;
 using Game.Contracts.Navigation;
 using Game.Contracts.Presentation;
-using Game.Contracts.Save;
-using Game.Contracts.Settings;
-using Game.Foundation.Localization;
 using Paowa.Core.Foundation.Lifecycle;
 using Paowa.Core.Foundation.Services;
 using Paowa.Core.Messaging;
-using Paowa.Desktop;
-using Paowa.Gamepad;
 using Paowa.Input;
 using Paowa.Pause;
-using Paowa.Save;
 using Paowa.UI;
+using Paowa.UI.Navigation;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Game.Systems.Gameplay
 {
     /// <summary>
-    /// The gameplay scene of the demo: while enabled it keeps the Gameplay input context on, requests the config's cursor
-    /// policy (Locked by default), counts playtime, allows automatic pauses and keeps uGUI navigation events off, so WASD,
-    /// Space, the stick and South never drive a UI selection while playing (no focus scope is active either). The tiles draw
-    /// themselves from <see cref="IInputActivity"/>.
+    /// The gameplay scene host: while enabled it keeps the Gameplay input context on, allows automatic pauses and keeps uGUI
+    /// navigation events off (the board is played with the pointer, no focus scope is active while playing).
     /// Pause (<see cref="PauseController"/>): <c>_pauseAction</c> (Escape, Start) or a focus/controller-lost pause opens the
     /// pause menu popup, which holds the pause; navigation events turn on while it is open. The popup forwards its buttons
-    /// here (<see cref="IPauseMenuHost"/>): Resume, Save (<see cref="ICheckpoint.Save"/>), Settings (<see cref="ISettingsMenu"/>
-    /// over the pause menu), Quit to main menu / Quit to desktop (<see cref="GameplayExitFlow"/>: ask, save, then leave).
-    /// Attack plays the config's rumble through the gamepad package's <see cref="IRumbleService"/> (which applies the
-    /// vibration setting and intensity and stops on pause, focus loss, device switch and quit); leaving stops it.
-    /// Sprint and Crouch follow the hold/toggle setting (<see cref="IGameSettings.ToggleSprint"/>/<c>ToggleCrouch</c>) through
-    /// a <see cref="HoldToggle"/> each, ticked here every frame and shown by <c>_stance</c>; leaving resets them.
-    /// Development builds also request the Debug context: <c>_checkpointAction</c> (F5, d-pad down) saves a checkpoint with a
-    /// thumbnail, and the dev hints show.
-    /// REFERENCES: <c>_config</c> is the gameplay config (pause popup, menu scene, cursor, look, rumble); <c>_devHints</c> is
-    /// the prompt row of the development keys; <c>_stance</c> shows the sprint/crouch states; the <c>*Key</c> fields are the checkpoint label and the texts of the
-    /// questions and notices.
+    /// here (<see cref="IPauseMenuHost"/>): Resume, Settings (<see cref="ISettingsMenu"/> over the pause menu), Quit to main
+    /// menu / Quit to desktop (asked through <see cref="IConfirmDialog"/>; a run is never saved, so the question says the
+    /// run ends).
+    /// REFERENCES: <c>_config</c> is the gameplay config (pause popup, menu scene); the <c>*Key</c> fields are the texts of the
+    /// questions.
     /// </summary>
     internal sealed class GameplayScreen : MonoBehaviour, IPauseMenuHost
     {
         [SerializeField] private GameplayConfig _config;
-        [SerializeField] private GameObject _devHints;
-        [SerializeField] private StanceView _stance;
-        [SerializeField] private string _sprintAction = "Gameplay/Sprint";
-        [SerializeField] private string _crouchAction = "Gameplay/Crouch";
         [SerializeField] private string _pauseAction = "Gameplay/Pause";
-        [SerializeField] private string _attackAction = "Gameplay/Attack";
-        [SerializeField] private string _checkpointAction = "Debug/Checkpoint";
-        [SerializeField] private string _checkpointLabelKey;
-        [SerializeField] private string _checkpointSavedKey;
-        [SerializeField] private string _savedKey;
-        [SerializeField] private string _saveFailedKey;
-        [SerializeField] private string _noSlotKey;
         [SerializeField] private string _quitToMenuTitleKey;
         [SerializeField] private string _quitToMenuMessageKey;
         [SerializeField] private string _quitToMenuConfirmKey;
         [SerializeField] private string _quitToDesktopTitleKey;
         [SerializeField] private string _quitToDesktopMessageKey;
         [SerializeField] private string _quitToDesktopConfirmKey;
-        [SerializeField] private string _unsavedTitleKey;
-        [SerializeField] private string _unsavedMessageKey;
-        [SerializeField] private string _unsavedConfirmKey;
         [SerializeField] private string _cancelKey;
 
         private readonly List<IDisposable> _handles = new List<IDisposable>();
-        private readonly HoldToggle _sprint = new HoldToggle();
-        private readonly HoldToggle _crouch = new HoldToggle();
-        private IGameSettings _settings;
         private IInputService _input;
         private IPauseService _pause;
-        private ICursorService _cursor;
         private IGameNavigator _navigator;
-        private IPlaytime _playtime;
-        private ICheckpoint _checkpoint;
         private IAppLifecycleService _lifecycle;
-        private IRumbleService _rumble;
+        private IConfirmDialog _confirm;
         private IEventBus _events;
         private PauseController _controller;
-        private GameplayExitFlow _exit;
-        private bool _devTools;
         private bool _pauseValid;
-        private bool _checkpointValid;
-        private bool _checkpointing;
         private bool _leaving;
+        private bool _asking;
         private bool _navigationOpened;
+
+        /// <summary>True while the pause menu is open or the game is paused for any reason.</summary>
+        internal bool IsPaused => _controller.IsMenuOpen || (_pause != null && _pause.IsPaused);
+
+        /// <summary>True once the scene is being left; nothing new should start.</summary>
+        internal bool IsLeaving => _leaving;
 
         public void Resume()
         {
@@ -95,11 +65,6 @@ namespace Game.Systems.Gameplay
         public void OnResumePressed()
         {
             _controller.OnResumePressed();
-        }
-
-        public void Save()
-        {
-            _exit.SaveNow();
         }
 
         public void OpenSettings()
@@ -116,12 +81,14 @@ namespace Game.Systems.Gameplay
 
         public void QuitToMenu()
         {
-            _ = RunAsync(_exit.QuitToMenuAsync(LeaveToMenuAsync));
+            _ = AskThenAsync(new ConfirmRequest(_quitToMenuTitleKey, _quitToMenuMessageKey, _quitToMenuConfirmKey, _cancelKey),
+                () => _ = LeaveToMenuAsync());
         }
 
         public void QuitToDesktop()
         {
-            _ = RunAsync(_exit.QuitToDesktopAsync(QuitApplication));
+            _ = AskThenAsync(new ConfirmRequest(_quitToDesktopTitleKey, _quitToDesktopMessageKey, _quitToDesktopConfirmKey, _cancelKey),
+                QuitApplication);
         }
 
         public void OnPauseMenuHidden()
@@ -129,34 +96,25 @@ namespace Game.Systems.Gameplay
             _controller.OnMenuHidden();
         }
 
+        /// <summary>Leaves for the main menu without asking (the result popup's Menu button).</summary>
+        internal void GoToMenu()
+        {
+            _ = LeaveToMenuAsync();
+        }
+
         private void Awake()
         {
             CoreServiceLocator.TryGet(out _input);
             CoreServiceLocator.TryGet(out _pause);
-            CoreServiceLocator.TryGet(out _cursor);
             CoreServiceLocator.TryGet(out _navigator);
-            CoreServiceLocator.TryGet(out _playtime);
-            CoreServiceLocator.TryGet(out _checkpoint);
             CoreServiceLocator.TryGet(out _lifecycle);
-            CoreServiceLocator.TryGet(out _rumble);
+            CoreServiceLocator.TryGet(out _confirm);
             CoreServiceLocator.TryGet(out _events);
-            CoreServiceLocator.TryGet(out _settings);
-            CoreServiceLocator.TryGet(out ISaveService save);
-            CoreServiceLocator.TryGet(out IConfirmDialog confirm);
             CoreServiceLocator.TryGet(out IUIManager ui);
 
-            _devTools = Debug.isDebugBuild;
-            if (_devHints != null)
-            {
-                _devHints.SetActive(_devTools);
-            }
-
             _pauseValid = _input != null && _input.HasAction(_pauseAction) && ui != null && _config != null && _config.PausePopup != null;
-            _checkpointValid = _devTools && _input != null && _input.HasAction(_checkpointAction) && _checkpoint != null;
             IPauseMenuView view = _pauseValid ? new PopupPauseMenuView(ui, _config.PausePopup.ViewId, this) : null;
             _controller = new PauseController(_pause, view, () => Time.frameCount);
-            _exit = new GameplayExitFlow(_checkpoint, _playtime, () => save != null ? save.CurrentSlotId : null,
-                confirm != null ? (Func<ConfirmRequest, Awaitable<bool>>)confirm.ConfirmAsync : null, Notify, ExitKeys());
             if (!_pauseValid)
             {
                 Debug.LogWarning("[Game] The pause menu is unavailable (no pause action, UI manager or gameplay config); "
@@ -171,26 +129,11 @@ namespace Game.Systems.Gameplay
             if (_input != null)
             {
                 _handles.Add(_input.RequestContext(InputContextIds.Gameplay));
-                if (_devTools && _input.HasAction(_checkpointAction))
-                {
-                    _handles.Add(_input.RequestContext(InputContextIds.Debug));
-                }
-            }
-
-            if (_cursor != null && _config != null)
-            {
-                _handles.Add(_cursor.Request(_config.CursorPolicy));
             }
 
             if (_events != null)
             {
                 _handles.Add(_events.Subscribe<PauseChangedEvent>(OnPauseChanged));
-                _handles.Add(_events.Subscribe<InputActivityRecordedEvent>(OnInputRecorded));
-            }
-
-            if (_playtime != null)
-            {
-                _playtime.StartCounting();
             }
 
             if (_pauseValid)
@@ -201,15 +144,7 @@ namespace Game.Systems.Gameplay
 
         private void OnDisable()
         {
-            _sprint.Reset();
-            _crouch.Reset();
             _controller.Exit();
-            StopRumble();
-            if (_playtime != null)
-            {
-                _playtime.StopCounting();
-            }
-
             foreach (IDisposable handle in _handles)
             {
                 handle.Dispose();
@@ -227,7 +162,7 @@ namespace Game.Systems.Gameplay
         private void Update()
         {
             // While a scene switch runs (loading cover) an automatic pause request waits: the menu opens once it ends.
-            if (!_leaving && !_checkpointing && (_navigator == null || !_navigator.IsNavigating))
+            if (!_leaving && (_navigator == null || !_navigator.IsNavigating))
             {
                 _controller.Tick();
                 if (_pauseValid && _input.WasPressedThisFrame(_pauseAction))
@@ -235,33 +170,18 @@ namespace Game.Systems.Gameplay
                     _controller.OnPausePressed();
                 }
             }
-
-            TickHoldToggle(_sprint, _sprintAction, _settings != null && _settings.ToggleSprint);
-            TickHoldToggle(_crouch, _crouchAction, _settings != null && _settings.ToggleCrouch);
-
-            bool paused = _controller.IsMenuOpen || (_pause != null && _pause.IsPaused);
-            if (_checkpointValid && !paused && !_leaving && !_checkpointing && _input.WasPressedThisFrame(_checkpointAction))
-            {
-                _ = CheckpointAsync();
-            }
         }
 
-        // Navigation events: off while playing (enforced every frame, also after the loading screen restores its value),
-        // switched on once when the pause menu opens and then left to the menus (Settings turns them off during a rebind).
+        // Navigation events: off while playing unless a popup owns focus (enforced every frame, also after the loading
+        // screen restores its value), switched on once when the pause menu opens and then left to the menus.
         private void LateUpdate()
         {
-            if (_stance != null)
-            {
-                _stance.Render(_sprint.IsActive, _settings != null && _settings.ToggleSprint, _crouch.IsActive,
-                    _settings != null && _settings.ToggleCrouch);
-            }
-
             if (_leaving || (_navigator != null && _navigator.IsNavigating))
             {
                 return;
             }
 
-            if (_controller.IsMenuOpen)
+            if (_controller.IsMenuOpen || PopupOpen())
             {
                 if (!_navigationOpened)
                 {
@@ -276,11 +196,9 @@ namespace Game.Systems.Gameplay
             SetNavigation(false);
         }
 
-        // While paused or locked the action reads released: hold mode turns off, toggle mode keeps its state.
-        private void TickHoldToggle(HoldToggle state, string action, bool toggleMode)
+        private static bool PopupOpen()
         {
-            bool valid = _input != null && _input.HasAction(action);
-            state.Tick(toggleMode, valid && _input.WasPressedThisFrame(action), valid && _input.IsPressed(action));
+            return CoreServiceLocator.TryGet(out IUIFocusService focus) && focus.TopScope != null;
         }
 
         private void OnPauseChanged(PauseChangedEvent evt)
@@ -288,25 +206,21 @@ namespace Game.Systems.Gameplay
             _controller.OnPauseChanged(evt.Reason, evt.ReasonActive);
         }
 
-        private void OnInputRecorded(InputActivityRecordedEvent evt)
+        // Without the dialog the button press itself is the answer.
+        private async Awaitable AskThenAsync(ConfirmRequest question, Action then)
         {
-            if (evt.Entry.Phase == InputActivityPhase.Pressed && evt.Entry.Action == _attackAction && _config != null
-                && _rumble != null && !_leaving)
+            if (_asking || _leaving)
             {
-                RumbleTuning rumble = _config.AttackRumble;
-                _rumble.Play(rumble.LowFrequency, rumble.HighFrequency, rumble.DurationSeconds);
+                return;
             }
-        }
 
-        // Development checkpoint: saved before the end-of-frame capture, and no pause opens until it finished, so the
-        // thumbnail shows the game.
-        private async Awaitable CheckpointAsync()
-        {
-            _checkpointing = true;
+            _asking = true;
             try
             {
-                bool saved = await _checkpoint.SaveCheckpointAsync(_checkpointLabelKey);
-                Notify(saved ? _checkpointSavedKey : _saveFailedKey);
+                if (_confirm == null || await _confirm.ConfirmAsync(question))
+                {
+                    then();
+                }
             }
             catch (Exception exception)
             {
@@ -314,14 +228,19 @@ namespace Game.Systems.Gameplay
             }
             finally
             {
-                _checkpointing = false;
+                _asking = false;
             }
         }
 
-        // Leaving for the main menu after the save: no pause, menu or rumble may outlive the scene; navigation goes back
-        // on before the loading screen records it. When the switch does not start, gameplay carries on.
-        private async Awaitable<bool> LeaveToMenuAsync()
+        // No pause or menu may outlive the scene; navigation goes back on before the loading screen records it. When the
+        // switch does not start, gameplay carries on paused.
+        private async Awaitable LeaveToMenuAsync()
         {
+            if (_leaving)
+            {
+                return;
+            }
+
             BeginLeaving();
             bool left = false;
             try
@@ -331,12 +250,13 @@ namespace Game.Systems.Gameplay
                 {
                     Debug.LogWarning("[Game] The main menu could not open (another scene switch is running?); staying in gameplay.", this);
                 }
-
-                return left;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception, this);
             }
             finally
             {
-                // Still here: back to the paused state the player left from.
                 if (!left && this != null && isActiveAndEnabled)
                 {
                     _leaving = false;
@@ -366,56 +286,7 @@ namespace Game.Systems.Gameplay
         {
             _leaving = true;
             _controller.Exit();
-            StopRumble();
             SetNavigation(true);
-        }
-
-        private async Awaitable RunAsync(Awaitable<bool> flow)
-        {
-            try
-            {
-                await flow;
-            }
-            catch (Exception exception)
-            {
-                Debug.LogException(exception, this);
-            }
-        }
-
-        private void Notify(string key)
-        {
-            if (!string.IsNullOrEmpty(key) && CoreServiceLocator.TryGet(out IToastService toasts))
-            {
-                toasts.Show(Loc.Get(key));
-            }
-        }
-
-        private GameplayExitKeys ExitKeys()
-        {
-            return new GameplayExitKeys
-            {
-                QuitToMenuTitle = _quitToMenuTitleKey,
-                QuitToMenuMessage = _quitToMenuMessageKey,
-                QuitToMenuConfirm = _quitToMenuConfirmKey,
-                QuitToDesktopTitle = _quitToDesktopTitleKey,
-                QuitToDesktopMessage = _quitToDesktopMessageKey,
-                QuitToDesktopConfirm = _quitToDesktopConfirmKey,
-                UnsavedTitle = _unsavedTitleKey,
-                UnsavedMessage = _unsavedMessageKey,
-                UnsavedConfirm = _unsavedConfirmKey,
-                Cancel = _cancelKey,
-                Saved = _savedKey,
-                SaveFailed = _saveFailedKey,
-                NoSlot = _noSlotKey,
-            };
-        }
-
-        private void StopRumble()
-        {
-            if (_rumble != null)
-            {
-                _rumble.Stop();
-            }
         }
 
         private static void SetNavigation(bool enabled)

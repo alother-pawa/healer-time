@@ -30,10 +30,6 @@ namespace Game.Editor.Builders
         internal const string DataInput = Data + "/input";
         internal const string DataSplash = Data + "/splash";
         internal const string DataSettings = Data + "/settings";
-        internal const string DataSave = Data + "/save";
-        internal const string DataCredits = Data + "/credits";
-        internal const string DataFirstLaunch = Data + "/first-launch";
-        internal const string DataAchievements = Data + "/achievements";
         internal const string DataPaowa = Data + "/Resources/Paowa";
         internal const string DataConfig = Data + "/Resources/game/config";
 
@@ -46,9 +42,7 @@ namespace Game.Editor.Builders
         internal const string PrefabsSplash = Prefabs + "/splash";
         internal const string PrefabsMainMenu = Prefabs + "/main-menu";
         internal const string PrefabsSettings = Prefabs + "/settings";
-        internal const string PrefabsSaveSlots = Prefabs + "/save-slots";
         internal const string PrefabsGameplay = Prefabs + "/gameplay";
-        internal const string PrefabsFirstLaunch = Prefabs + "/first-launch";
 
         // Prefabs, in the order they are built.
         internal const string ToastBase = PrefabsShell + "/Toast_Base.prefab";
@@ -67,22 +61,16 @@ namespace Game.Editor.Builders
         internal const string SettingRowButton = PrefabsSettings + "/SettingRow_Button.prefab";
         internal const string PopupSettings = PrefabsPopups + "/Popup_Settings.prefab";
         internal const string PopupDisplayConfirm = PrefabsPopups + "/Popup_DisplayConfirm.prefab";
-        internal const string SaveSlotCard = PrefabsSaveSlots + "/SaveSlotCard.prefab";
-        internal const string PopupSaveSlots = PrefabsPopups + "/Popup_SaveSlots.prefab";
         internal const string PopupPauseMenu = PrefabsPopups + "/Popup_PauseMenu.prefab";
-        internal const string PopupCredits = PrefabsPopups + "/Popup_Credits.prefab";
-        internal const string PopupAchievements = PrefabsPopups + "/Popup_Achievements.prefab";
         internal const string SplashCanvas = PrefabsSplash + "/SplashCanvas.prefab";
         internal const string MainMenuCanvas = PrefabsMainMenu + "/MainMenuCanvas.prefab";
         internal const string GameplayCanvas = PrefabsGameplay + "/GameplayCanvas.prefab";
-        internal const string FirstLaunchCanvas = PrefabsFirstLaunch + "/FirstLaunchCanvas.prefab";
 
         // Assets referenced across builders.
         internal const string SceneKeyUI = DataSceneKeys + "/SceneKey_UI.asset";
         internal const string SceneKeySplash = DataSceneKeys + "/SceneKey_Splash.asset";
         internal const string SceneKeyMainMenu = DataSceneKeys + "/SceneKey_MainMenu.asset";
         internal const string SceneKeyGameplay = DataSceneKeys + "/SceneKey_Gameplay.asset";
-        internal const string SceneKeyFirstLaunch = DataSceneKeys + "/SceneKey_FirstLaunch.asset";
         internal const string ToastAnimation = DataUI + "/ToastAnimation_Default.asset";
         internal const string LoadingTransition = DataUI + "/LoadingTransition_Default.asset";
         internal const string PopupAnimation = DataUI + "/PopupAnimation_Default.asset";
@@ -95,23 +83,6 @@ namespace Game.Editor.Builders
         internal const string PlatformSettings = DataPaowa + "/PlatformSettings.asset";
         internal const string UIShellConfig = DataConfig + "/UIShellConfig.asset";
         internal const string SettingsConfig = DataConfig + "/SettingsConfig.asset";
-        internal const string SaveSlotsConfig = DataConfig + "/SaveSlotsConfig.asset";
-        internal const string CreditsConfig = DataConfig + "/CreditsConfig.asset";
-
-        /// <summary>Achievements popup and rich presence per scene (written every run).</summary>
-        internal const string AchievementsConfig = DataConfig + "/AchievementsConfig.asset";
-
-        /// <summary>
-        /// The achievement catalog assigned in <c>DesktopSettings</c>, with one definition per sample achievement beside it.
-        /// Created once with the demo's achievements, then owned by the game.
-        /// </summary>
-        internal const string AchievementCatalog = DataAchievements + "/AchievementCatalog.asset";
-
-        /// <summary>The credits content and scroll pacing. Created once with sample entries, then owned by the game.</summary>
-        internal const string CreditsData = DataCredits + "/CreditsData.asset";
-
-        /// <summary>First-launch destination (written every run) and quick choices (kept).</summary>
-        internal const string FirstLaunchConfig = DataFirstLaunch + "/FirstLaunchConfig.asset";
 
         /// <summary>
         /// Build stamp read by Core's <c>BuildInfo</c> (<c>Resources/Paowa/BuildInfo</c>): written by the build pipeline
@@ -119,23 +90,8 @@ namespace Game.Editor.Builders
         /// </summary>
         internal const string BuildInfoFile = DataPaowa + "/BuildInfo.txt";
 
-        /// <summary>
-        /// Gameplay config: the builder writes its references (pause popup, menu scene) every run; tuning values (cursor,
-        /// look, rumble) keep what the game set.
-        /// </summary>
+        /// <summary>Gameplay config: the builder writes its references (pause popup, menu scene) every run.</summary>
         internal const string GameplayConfig = DataConfig + "/GameplayConfig.asset";
-
-        /// <summary>Tracked actions (written every run from the Gameplay map) and history size of the input activity.</summary>
-        internal const string InputActivityConfig = DataConfig + "/InputActivityConfig.asset";
-
-        /// <summary>
-        /// The game's save settings (slot ids, data version, migrators, thumbnail size). Created once, never overwritten, so a
-        /// data version bump and its migrator survive a rebuild.
-        /// </summary>
-        internal const string SaveSlotsData = DataSave + "/SaveSlotsData.asset";
-
-        /// <summary>Example migration step (no-op from data version 0), created with <see cref="SaveSlotsData"/>.</summary>
-        internal const string SaveMigratorNoOp = DataSave + "/migrations/SaveMigrator_From0_NoOp.asset";
 
         /// <summary>The base's settings (builder-owned: rewritten on every run).</summary>
         internal const string SettingsCatalogBase = DataSettings + "/SettingsCatalog_Base.asset";
@@ -164,11 +120,8 @@ namespace Game.Editor.Builders
         internal const string SceneSplash = Scenes + "/Splash.unity";
         internal const string SceneMainMenu = Scenes + "/MainMenu.unity";
 
-        /// <summary>Gameplay demo entered by New game / Continue (action tiles, pause menu).</summary>
+        /// <summary>Gameplay scene entered by Play (battlefield, board, items, pause menu).</summary>
         internal const string SceneGameplay = Scenes + "/Gameplay.unity";
-
-        /// <summary>First-launch screen, entered from the splash once per install.</summary>
-        internal const string SceneFirstLaunch = Scenes + "/FirstLaunch.unity";
 
         /// <summary>Editor-only scene showing every game image (not in the build).</summary>
         internal const string SceneArtPreview = Scenes + "/ArtPreview.unity";

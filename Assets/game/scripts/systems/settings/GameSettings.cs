@@ -19,16 +19,9 @@ namespace Game.Systems.Settings
         private static readonly HashSet<string> Ids = new HashSet<string>(StringComparer.Ordinal)
         {
             GameSettingIds.CameraShake,
-            GameSettingIds.ShowHints,
-            GameSettingIds.MouseSensitivity,
-            GameSettingIds.StickSensitivity,
-            GameSettingIds.InvertY,
             GameSettingIds.UIScale,
             GameSettingIds.TextScale,
             GameSettingIds.ReduceFlashing,
-            GameSettingIds.SprintMode,
-            GameSettingIds.CrouchMode,
-            GameSettingIds.Subtitles,
         };
 
         private readonly IEventBus _eventBus;
@@ -41,13 +34,9 @@ namespace Game.Systems.Settings
 
         public float CameraShake => Float(GameSettingIds.CameraShake, Neutral);
 
-        public bool ShowHints => Bool(GameSettingIds.ShowHints, true);
 
-        public float MouseSensitivity => Float(GameSettingIds.MouseSensitivity, Neutral);
 
-        public float StickSensitivity => Float(GameSettingIds.StickSensitivity, Neutral);
 
-        public bool InvertY => Bool(GameSettingIds.InvertY, false);
 
         public float UIScale => Float(GameSettingIds.UIScale, Neutral);
 
@@ -55,11 +44,8 @@ namespace Game.Systems.Settings
 
         public bool ReduceFlashing => Bool(GameSettingIds.ReduceFlashing, false);
 
-        public bool ToggleSprint => Text(GameSettingIds.SprintMode) == GameSettingIds.PressModeToggle;
 
-        public bool ToggleCrouch => Text(GameSettingIds.CrouchMode) == GameSettingIds.PressModeToggle;
 
-        public bool Subtitles => Bool(GameSettingIds.Subtitles, true);
 
         public bool Handles(SettingDefinition definition)
         {
@@ -84,10 +70,6 @@ namespace Game.Systems.Settings
             return _values.TryGetValue(id, out SettingValue value) ? value.AsFloat() : fallback;
         }
 
-        private string Text(string id)
-        {
-            return _values.TryGetValue(id, out SettingValue value) ? value.AsString() : string.Empty;
-        }
 
         private bool Bool(string id, bool fallback)
         {

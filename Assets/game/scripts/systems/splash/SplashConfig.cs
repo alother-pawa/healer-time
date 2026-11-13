@@ -18,8 +18,6 @@ namespace Game.Systems.Splash
         [Tooltip("Optional shaders warmed up during the splash.")]
         [SerializeField] private ShaderVariantCollection _shaderVariants;
         [SerializeField] private SceneKey _nextScene;
-        [Tooltip("Scene shown instead of the next scene while the first launch is pending (language, notices).")]
-        [SerializeField] private SceneKey _firstLaunchScene;
 
         internal float FadeInSeconds => _fadeInSeconds;
 
@@ -34,7 +32,5 @@ namespace Game.Systems.Splash
         internal ShaderVariantCollection ShaderVariants => _shaderVariants;
 
         internal SceneKey NextScene => _nextScene;
-
-        internal SceneKey FirstLaunchScene => _firstLaunchScene;
     }
 }

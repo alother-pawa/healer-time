@@ -38,12 +38,11 @@ namespace Game.Tests.Editor
                 }
             },
             { "Menu", new[] { "TabPrevious", "TabNext", "Pause", "Apply", "Revert", "Defaults", "Delete" } },
-            { "Gameplay", new[] { "Move", "Look", "Jump", "Interact", "Attack", "AltAttack", "Sprint", "Crouch", "Pause" } },
-            { "Debug", new[] { "ToggleOverlay", "Checkpoint" } },
+            { "Gameplay", new[] { "Item1", "Item2", "Item3", "Item4", "Pause" } },
         };
 
         // Maps driven by Core contexts, whose bindings must carry a control scheme.
-        private static readonly string[] SchemeMaps = { "Menu", "Gameplay", "Debug" };
+        private static readonly string[] SchemeMaps = { "Menu", "Gameplay" };
 
         [Test]
         public void TheAssetLoadsFromCoresResourcePath()
@@ -69,23 +68,6 @@ namespace Game.Tests.Editor
         public void MenuHasNoBackAction()
         {
             Assert.That(Load().FindAction("Menu/Back"), Is.Null, "Back is UI/Cancel, handled by the Cancel stack.");
-        }
-
-        // Look is normalized in code (LookNormalizer: mouse pixels vs stick rate, sensitivity, invert Y); a processor on the
-        // action or its bindings would scale it twice.
-        [Test]
-        public void LookHasNoProcessors()
-        {
-            InputAction look = Load().FindAction("Gameplay/Look", true);
-            var problems = new List<string>();
-            if (!string.IsNullOrEmpty(look.processors))
-            {
-                problems.Add($"action: {look.processors}");
-            }
-
-            problems.AddRange(look.bindings.Where(binding => !string.IsNullOrEmpty(binding.processors))
-                .Select(binding => $"{binding.path}: {binding.processors}"));
-            Assert.That(problems, Is.Empty, string.Join(", ", problems));
         }
 
         [Test]

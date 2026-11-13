@@ -23,13 +23,13 @@ namespace Game.Tests.Editor
 
         private static readonly string[] ScreenCanvases =
         {
-            BuildPaths.SplashCanvas, BuildPaths.MainMenuCanvas, BuildPaths.GameplayCanvas, BuildPaths.FirstLaunchCanvas,
+            BuildPaths.SplashCanvas, BuildPaths.MainMenuCanvas, BuildPaths.GameplayCanvas,
         };
 
         private static readonly string[] Scenes =
         {
             BuildPaths.SceneBoot, BuildPaths.SceneUI, BuildPaths.SceneSplash, BuildPaths.SceneMainMenu, BuildPaths.SceneGameplay,
-            BuildPaths.SceneFirstLaunch, BuildPaths.SceneArtPreview,
+            BuildPaths.SceneArtPreview,
         };
 
         [Test]

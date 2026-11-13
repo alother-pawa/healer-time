@@ -24,7 +24,6 @@ namespace Game.Editor.Builders
         private static readonly string[] BuildScenes =
         {
             BuildPaths.SceneBoot, BuildPaths.SceneUI, BuildPaths.SceneSplash, BuildPaths.SceneMainMenu, BuildPaths.SceneGameplay,
-            BuildPaths.SceneFirstLaunch,
         };
 
         /// <summary>Sprite import, fallback font and player settings.</summary>

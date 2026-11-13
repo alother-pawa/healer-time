@@ -15,7 +15,7 @@ namespace Game.Editor.Builders
     /// <c>data/settings/&lt;tab&gt;/</c>): five tabs (Gameplay, Audio &amp; Language, Controls, Key Bindings, Graphics) and their
     /// rows. Ids in <c>DesktopSettingIds</c> are applied by the plugin, ids in <c>GameSettingIds</c> by the game's settings
     /// module; the Key Bindings rows point at the game's input actions (primary and secondary keyboard slots, one gamepad
-    /// slot, a reset per device), the Controls tab keeps sensitivity, invert and vibration. The base
+    /// slot, a reset per device), the Controls tab keeps controller vibration. The base
     /// catalog is rewritten on every run; the game catalog that includes it is only created, so a game's own definitions
     /// and tabs added to it survive a rebuild (a new tab also needs a rebuild for its page in the settings popup).
     /// Labels and descriptions are localization keys.
@@ -43,28 +43,19 @@ namespace Game.Editor.Builders
         // Gameplay actions with a keyboard row: asset name, action, composite part, label key, keyboard slots.
         private static readonly (string name, string action, string part, string labelKey, int slots)[] KeyboardBindings =
         {
-            ("MoveUp", "Gameplay/Move", "up", "settings.bind.move-up", 2),
-            ("MoveDown", "Gameplay/Move", "down", "settings.bind.move-down", 2),
-            ("MoveLeft", "Gameplay/Move", "left", "settings.bind.move-left", 2),
-            ("MoveRight", "Gameplay/Move", "right", "settings.bind.move-right", 2),
-            ("Jump", "Gameplay/Jump", "", "settings.bind.jump", 2),
-            ("Interact", "Gameplay/Interact", "", "settings.bind.interact", 2),
-            ("Attack", "Gameplay/Attack", "", "settings.bind.attack", 2),
-            ("AltAttack", "Gameplay/AltAttack", "", "settings.bind.alt-attack", 2),
-            ("Sprint", "Gameplay/Sprint", "", "settings.bind.sprint", 2),
-            ("Crouch", "Gameplay/Crouch", "", "settings.bind.crouch", 2),
+            ("Item1", "Gameplay/Item1", "", "settings.bind.item-1", 2),
+            ("Item2", "Gameplay/Item2", "", "settings.bind.item-2", 2),
+            ("Item3", "Gameplay/Item3", "", "settings.bind.item-3", 2),
+            ("Item4", "Gameplay/Item4", "", "settings.bind.item-4", 2),
             ("Pause", "Gameplay/Pause", "", "settings.bind.pause", 2),
         };
 
         private static readonly (string name, string action, string labelKey)[] GamepadBindings =
         {
-            ("Move", "Gameplay/Move", "settings.bind.move"),
-            ("Jump", "Gameplay/Jump", "settings.bind.jump"),
-            ("Interact", "Gameplay/Interact", "settings.bind.interact"),
-            ("Attack", "Gameplay/Attack", "settings.bind.attack"),
-            ("AltAttack", "Gameplay/AltAttack", "settings.bind.alt-attack"),
-            ("Sprint", "Gameplay/Sprint", "settings.bind.sprint"),
-            ("Crouch", "Gameplay/Crouch", "settings.bind.crouch"),
+            ("Item1", "Gameplay/Item1", "settings.bind.item-1"),
+            ("Item2", "Gameplay/Item2", "settings.bind.item-2"),
+            ("Item3", "Gameplay/Item3", "settings.bind.item-3"),
+            ("Item4", "Gameplay/Item4", "settings.bind.item-4"),
             ("Pause", "Gameplay/Pause", "settings.bind.pause"),
         };
 
@@ -77,7 +68,6 @@ namespace Game.Editor.Builders
         /// <summary>Writes every definition and the base catalog, creates the game catalog if missing; returns the game catalog.</summary>
         internal static SettingsCatalog Build()
         {
-            DeleteMovedDefinitions();
             var definitions = new List<SettingDefinition>();
             AddGameplay(definitions);
             AddAudioLanguage(definitions);
@@ -162,8 +152,6 @@ namespace Game.Editor.Builders
         {
             definitions.Add(Toggle(Gameplay, "Animations", GameSettingIds.Animations, "settings.gameplay.animations",
                 "settings.gameplay.animations.desc", true));
-            definitions.Add(Toggle(Gameplay, "ShowHints", GameSettingIds.ShowHints, "settings.gameplay.show-hints",
-                "settings.gameplay.show-hints.desc", true));
             definitions.Add(Toggle(Gameplay, "PauseOnFocusLoss", SettingIds.PauseOnFocusLoss, "settings.gameplay.pause-on-focus-loss",
                 "settings.gameplay.pause-on-focus-loss.desc", true));
             // Up to 130%: fixed-size boxes (setting rows, buttons) still fit their text.
@@ -173,30 +161,6 @@ namespace Game.Editor.Builders
                 "settings.gameplay.camera-shake.desc", 0f, 1f, 0.1f, 1f, Percent, 100f));
             definitions.Add(Toggle(Gameplay, "ReduceFlashing", GameSettingIds.ReduceFlashing, "settings.gameplay.reduce-flashing",
                 "settings.gameplay.reduce-flashing.desc", false));
-            definitions.Add(PressMode("SprintMode", GameSettingIds.SprintMode, "settings.gameplay.sprint-mode",
-                "settings.gameplay.sprint-mode.desc"));
-            definitions.Add(PressMode("CrouchMode", GameSettingIds.CrouchMode, "settings.gameplay.crouch-mode",
-                "settings.gameplay.crouch-mode.desc"));
-            definitions.Add(Toggle(Gameplay, "Subtitles", GameSettingIds.Subtitles, "settings.gameplay.subtitles",
-                "settings.gameplay.subtitles.desc", true));
-        }
-
-        // Hold (default) or Toggle, static options.
-        private static ChoiceSettingDefinition PressMode(string name, string id, string labelKey, string descriptionKey)
-        {
-            ChoiceSettingDefinition definition = Choice(Gameplay, name, id, labelKey, descriptionKey, string.Empty,
-                GameSettingIds.PressModeHold, SettingApplyMode.Immediate);
-            (string value, string labelKey)[] options =
-            {
-                (GameSettingIds.PressModeHold, "settings.press-mode.hold"), (GameSettingIds.PressModeToggle, "settings.press-mode.toggle"),
-            };
-            Fields.SetList(definition, "_options", options.Length, (element, i) =>
-            {
-                Fields.Relative(element, "_value", options[i].value);
-                Fields.Relative(element, "_label", options[i].labelKey);
-                Fields.Relative(element, "_labelIsKey", true);
-            });
-            return definition;
         }
 
         private static void AddAudioLanguage(List<SettingDefinition> definitions)
@@ -235,12 +199,6 @@ namespace Game.Editor.Builders
 
         private static void AddControls(List<SettingDefinition> definitions)
         {
-            definitions.Add(Slider(Controls, "MouseSensitivity", GameSettingIds.MouseSensitivity, "settings.controls.mouse-sensitivity",
-                "settings.controls.mouse-sensitivity.desc", 0.1f, 3f, 0.1f, 1f, Multiplier, 1f));
-            definitions.Add(Slider(Controls, "StickSensitivity", GameSettingIds.StickSensitivity, "settings.controls.stick-sensitivity",
-                "settings.controls.stick-sensitivity.desc", 0.1f, 3f, 0.1f, 1f, Multiplier, 1f));
-            definitions.Add(Toggle(Controls, "InvertY", GameSettingIds.InvertY, "settings.controls.invert-y",
-                "settings.controls.invert-y.desc", false));
             // Applied by the gamepad package's rumble (IRumbleService.Enabled / Intensity).
             definitions.Add(Toggle(Controls, "Vibration", GamepadSettingIds.Vibration, "settings.controls.vibration",
                 "settings.controls.vibration.desc", true));
@@ -352,37 +310,6 @@ namespace Game.Editor.Builders
             var definition = Definition<ButtonSettingDefinition>(tab, name, id, labelKey, descriptionKey, SettingApplyMode.Immediate);
             Fields.Set(definition, ("_actionId", actionId), ("_argument", argument));
             return definition;
-        }
-
-        // Definitions that moved to another tab: P5 moved vibration from Gameplay to Controls, the key binding rows moved from
-        // Controls to Key Bindings. The assets left in the old tab folder are no longer in any catalog. Setting ids (and so
-        // the saved values) did not change.
-        private static void DeleteMovedDefinitions()
-        {
-            var moved = new List<string> { $"{Gameplay}/Setting_Vibration", $"{Gameplay}/Setting_VibrationIntensity" };
-            moved.Add($"{Controls}/Setting_ResetKeyboard");
-            moved.Add($"{Controls}/Setting_ResetGamepad");
-            foreach ((string name, _, _, _, int slots) in KeyboardBindings)
-            {
-                for (int slot = 0; slot < slots; slot++)
-                {
-                    moved.Add($"{Controls}/Setting_Keyboard{name}{slot}");
-                }
-            }
-
-            foreach ((string name, _, _) in GamepadBindings)
-            {
-                moved.Add($"{Controls}/Setting_Gamepad{name}");
-            }
-
-            foreach (string name in moved)
-            {
-                string path = $"{BuildPaths.DataSettings}/{name}.asset";
-                if (AssetDatabase.LoadAssetAtPath<ScriptableObject>(path) != null && !AssetDatabase.DeleteAsset(path))
-                {
-                    Debug.LogWarning($"[Game] Could not delete the moved setting definition {path}; delete it by hand.");
-                }
-            }
         }
 
         private static T Definition<T>(string tab, string name, string id, string labelKey, string descriptionKey, SettingApplyMode mode)

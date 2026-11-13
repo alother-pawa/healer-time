@@ -45,10 +45,7 @@ namespace Game.Editor.Builders
             BuildBase();
             BuildConfirm();
             SettingsPrefabBuilder.Build();
-            SaveSlotsPrefabBuilder.Build();
             GameplayPrefabBuilder.BuildPauseMenu();
-            CreditsPrefabBuilder.BuildPopup();
-            AchievementsPrefabBuilder.BuildPopup();
         }
 
         private static void BuildBase()

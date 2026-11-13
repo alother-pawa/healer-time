@@ -9,9 +9,6 @@ namespace Game.Systems.Gameplay
         /// <summary>The menu's pause action (Start/Escape) was pressed while the menu owned focus.</summary>
         void OnResumePressed();
 
-        /// <summary>Save button.</summary>
-        void Save();
-
         /// <summary>Settings button.</summary>
         void OpenSettings();
 

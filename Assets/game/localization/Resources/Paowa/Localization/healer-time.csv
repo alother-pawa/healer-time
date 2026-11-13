@@ -1,0 +1,150 @@
+key,en,ja
+# Game and languages: each language's own name for the settings language selector
+game.title,Healer Time,Healer Time
+studio.name,Paowa,Paowa
+language.en,English,English
+language.ja,日本語,日本語
+# Loading screen and splash
+loading.label,Loading...,読み込み中...
+# Shared buttons
+common.ok,OK,OK
+common.cancel,Cancel,キャンセル
+common.close,Close,閉じる
+# Button prompts (glyph + label)
+prompt.confirm,Confirm,決定
+prompt.back,Back,戻る
+prompt.switch-tab,Switch tab,タブ切替
+prompt.quit,Quit,終了
+prompt.apply,Apply,適用
+prompt.revert,Revert,元に戻す
+prompt.defaults,Defaults,初期設定
+prompt.delete,Delete,削除
+prompt.pause,Pause,ポーズ
+prompt.resume,Resume,再開
+prompt.scroll,Scroll,スクロール
+prompt.skip,Skip,スキップ
+# Main menu (the version label is Core's BuildInfo text, not translated)
+menu.play,Play,プレイ
+menu.settings,Settings,設定
+menu.quit,Quit,終了
+quit.title,Quit the game?,ゲームを終了しますか？
+quit.message,You will return to the desktop.,デスクトップに戻ります。
+quit.confirm,Quit,終了
+# Settings popup: tabs and footer and confirmations ({0} in settings.defaults.message = the tab name)
+settings.title,Settings,設定
+settings.tab.gameplay,Gameplay,ゲームプレイ
+settings.tab.audio-language,Audio & Language,サウンドと言語
+settings.tab.controls,Controls,操作
+settings.tab.key-bindings,Key Bindings,キー設定
+settings.tab.graphics,Graphics,グラフィック
+settings.apply,Apply,適用
+settings.revert,Revert,元に戻す
+settings.defaults,Defaults,初期設定
+settings.defaults.title,Reset this tab?,このタブをリセットしますか？
+settings.defaults.message,Every setting on {0} returns to its default value.,{0}のすべての設定が初期値に戻ります。
+settings.defaults.confirm,Reset,リセット
+settings.pending.title,Apply changes?,変更を適用しますか？
+settings.pending.message,Some changes are not applied yet. Apply them or discard them?,まだ適用されていない変更があります。適用するか破棄しますか？
+settings.pending.discard,Discard,破棄
+settings.button.message,This cannot be undone.,この操作は取り消せません。
+# Row values
+settings.value.on,On,オン
+settings.value.off,Off,オフ
+settings.value.keep,Unchanged,変更なし
+# Gameplay
+settings.gameplay.animations,Animations,アニメーション
+settings.gameplay.animations.desc,"Play transitions and effects. When off, every result shows at once.",画面遷移やエフェクトを再生します。オフにすると結果がすぐに表示されます。
+settings.gameplay.camera-shake,Camera shake,カメラの揺れ
+settings.gameplay.camera-shake.desc,Strength of the camera shake on impacts. 0% turns it off.,衝撃時のカメラの揺れの強さです。0%で揺れなくなります。
+settings.gameplay.pause-on-focus-loss,Pause when inactive,非アクティブ時に一時停止
+settings.gameplay.pause-on-focus-loss.desc,Pause the game when its window loses focus (Alt+Tab).,ウィンドウのフォーカスが外れたとき（Alt+Tab）にゲームを一時停止します。
+settings.gameplay.text-size,Text size,文字サイズ
+settings.gameplay.text-size.desc,Size of the game's text. 100% is the standard size.,ゲーム内の文字の大きさです。100%が標準のサイズです。
+settings.gameplay.reduce-flashing,Reduce flashing,点滅を抑える
+settings.gameplay.reduce-flashing.desc,Remove flashes and pulsing effects.,フラッシュや脈打つような演出をなくします。
+# Audio and language
+settings.audio.master-volume,Master volume,マスター音量
+settings.audio.music-volume,Music volume,音楽の音量
+settings.audio.sfx-volume,Sound effects volume,効果音の音量
+settings.audio.ui-volume,Interface volume,UIの音量
+settings.audio.voice-volume,Voice volume,ボイスの音量
+settings.audio.volume.desc,Loudness of this sound category. A short sound plays as it changes.,このカテゴリの音量です。変更すると短い音が鳴ります。
+settings.audio.master-muted,Mute all,すべてミュート
+settings.audio.music-muted,Mute music,音楽をミュート
+settings.audio.sfx-muted,Mute sound effects,効果音をミュート
+settings.audio.ui-muted,Mute interface,UIをミュート
+settings.audio.voice-muted,Mute voices,ボイスをミュート
+settings.audio.muted.desc,Silence this sound category without changing its volume.,音量を変えずにこのカテゴリを無音にします。
+settings.audio.mute-in-background,Mute in background,バックグラウンドでミュート
+settings.audio.mute-in-background.desc,Silence the game while its window is not focused.,ウィンドウが非アクティブの間、ゲームを無音にします。
+settings.language,Language,言語
+settings.language.desc,Language of every text in the game. It changes at once.,ゲーム内のすべてのテキストの言語です。すぐに切り替わります。
+# Controls ({0} in settings.rebind.swap.message = a key or button; {1} = the action that already uses it)
+settings.controls.vibration,Controller vibration,コントローラーの振動
+settings.controls.vibration.desc,Let the controller vibrate.,コントローラーを振動させます。
+settings.controls.vibration-intensity,Vibration strength,振動の強さ
+settings.controls.vibration-intensity.desc,Strength of the controller vibration.,コントローラーの振動の強さです。
+settings.controls.scheme.keyboardmouse,Keyboard & Mouse,キーボードとマウス
+settings.controls.scheme.gamepad,Controller,コントローラー
+settings.controls.reset-keyboard,Reset keyboard & mouse controls,キーボードとマウスの操作をリセット
+settings.controls.reset-keyboard.desc,Every keyboard and mouse binding returns to its default.,キーボードとマウスの割り当てがすべて初期設定に戻ります。
+settings.controls.reset-gamepad,Reset controller controls,コントローラーの操作をリセット
+settings.controls.reset-gamepad.desc,Every controller binding returns to its default.,コントローラーの割り当てがすべて初期設定に戻ります。
+settings.bind.item-1,Use item 1,アイテム1を使う
+settings.bind.item-2,Use item 2,アイテム2を使う
+settings.bind.item-3,Use item 3,アイテム3を使う
+settings.bind.item-4,Use item 4,アイテム4を使う
+settings.bind.pause,Pause,ポーズ
+settings.bind.desc,"Select a slot, then press the new key or button. Esc or Start cancels.",枠を選んでから新しいキーかボタンを押してください。EscかStartでキャンセルします。
+settings.rebind.listening.keyboard,Press a key… (Esc/Start to cancel),キーを押してください…（Esc/Startでキャンセル）
+settings.rebind.listening.gamepad,Press a button… (Start/Esc to cancel),ボタンを押してください…（Start/Escでキャンセル）
+settings.rebind.unbound,Not set,未設定
+settings.rebind.swap.title,Already in use,すでに使用されています
+settings.rebind.swap.message,{0} is already used by {1}. Swap the two?,{0}はすでに「{1}」に割り当てられています。入れ替えますか？
+settings.rebind.swap.confirm,Swap,入れ替える
+# Graphics (display.mode.* label the plugin full-screen modes; {0} in settings.display.keep.message = seconds left)
+settings.display.monitor,Monitor,モニター
+settings.display.monitor.desc,Screen the game is shown on. Pick it before the resolution.,ゲームを表示する画面です。解像度より先に選んでください。
+settings.display.fullscreen-mode,Display mode,表示モード
+settings.display.fullscreen-mode.desc,"Full screen, borderless window or window.",フルスクリーン、ボーダーレスウィンドウ、ウィンドウから選びます。
+settings.display.resolution,Resolution,解像度
+settings.display.resolution.desc,"Size of the picture. Apply, then keep it before the countdown ends.",画面のサイズです。適用後、カウントダウンが終わる前に確定してください。
+settings.display.refresh-rate,Refresh rate,リフレッシュレート
+settings.display.refresh-rate.desc,Used in exclusive full screen only.,排他的フルスクリーンでのみ使われます。
+settings.display.vsync,VSync,垂直同期
+settings.display.vsync.desc,Sync frames with the monitor to avoid tearing. The frame rate limit needs it off.,モニターとフレームを同期してティアリングを防ぎます。フレームレート上限はオフのときのみ有効です。
+settings.display.frame-rate-cap,Frame rate limit,フレームレート上限
+settings.display.frame-rate-cap.desc,Highest frame rate while VSync is off.,垂直同期がオフのときの最大フレームレートです。
+settings.display.quality,Quality,画質
+settings.display.quality.desc,Graphics quality preset.,グラフィックの画質プリセットです。
+settings.display.render-scale,Render scale,レンダースケール
+settings.display.render-scale.desc,"Resolution the 3D scene is drawn at. Lower is faster, higher is sharper.",3Dシーンを描画する解像度です。低いほど軽く、高いほど鮮明になります。
+settings.display.brightness,Brightness,明るさ
+settings.display.brightness.desc,Brightness of the game picture.,ゲーム画面の明るさです。
+settings.graphics.ui-scale,Interface size,UIの大きさ
+settings.graphics.ui-scale.desc,Size of menus and on-screen text. Apply to see it.,メニューや画面上の文字の大きさです。適用すると反映されます。
+settings.fps.30,30 FPS,30 FPS
+settings.fps.60,60 FPS,60 FPS
+settings.fps.120,120 FPS,120 FPS
+settings.fps.144,144 FPS,144 FPS
+settings.fps.unlimited,Unlimited,無制限
+display.mode.exclusive,Exclusive full screen,排他的フルスクリーン
+display.mode.borderless,Borderless window,ボーダーレスウィンドウ
+display.mode.maximized,Maximized window,最大化ウィンドウ
+display.mode.windowed,Window,ウィンドウ
+settings.display.keep.title,Keep these display settings?,この表示設定を維持しますか？
+settings.display.keep.message,The previous settings return in {0} s.,{0}秒後に元の設定に戻ります。
+settings.display.keep.confirm,Keep,維持する
+settings.display.keep.revert,Revert,元に戻す
+# Pause menu and leaving gameplay
+gameplay.pause.title,Paused,ポーズ中
+gameplay.pause.resume,Resume,再開
+gameplay.pause.settings,Settings,設定
+gameplay.pause.quit-menu,Quit to main menu,メインメニューに戻る
+gameplay.pause.quit-desktop,Quit to desktop,デスクトップに戻る
+gameplay.quit-menu.title,Quit to the main menu?,メインメニューに戻りますか？
+gameplay.quit-menu.message,The current run ends; coins earned so far are kept.,現在のランは終了します。獲得したコインは残ります。
+gameplay.quit-menu.confirm,Main menu,メインメニュー
+gameplay.quit-desktop.title,Quit the game?,ゲームを終了しますか？
+gameplay.quit-desktop.message,The current run ends and you return to the desktop.,現在のランは終了し、デスクトップに戻ります。
+gameplay.quit-desktop.confirm,Quit,終了

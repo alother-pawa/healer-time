@@ -14,7 +14,7 @@ namespace Game.Tests.Editor
         [SetUp]
         public void SetUp()
         {
-            _root = Path.Combine(Path.GetTempPath(), "pc-base-build-tests", Guid.NewGuid().ToString("N"));
+            _root = Path.Combine(Path.GetTempPath(), "healer-time-build-tests", Guid.NewGuid().ToString("N"));
         }
 
         [TearDown]

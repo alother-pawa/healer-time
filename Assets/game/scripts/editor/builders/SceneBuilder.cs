@@ -12,7 +12,7 @@ namespace Game.Editor.Builders
     /// Builds the scenes from empty scenes and saves them over any existing file (GUIDs are kept), then opens Boot.
     /// Scenes hold prefab instances plus the objects that only make sense in one scene (cameras, entries, the audio
     /// listener); scene-only references between them are wired here. Flow: Boot loads UI (persistent), then Splash, which
-    /// goes to MainMenu (to FirstLaunch first, once per install); New game and Continue go to the Gameplay demo.
+    /// goes to MainMenu; Play goes to Gameplay.
     /// Every scene has the same root groups (Docs/STRUCTURE.md), kept even when empty so the place of a new object is
     /// obvious; objects that must stay at the scene root (DontDestroyOnLoad) are created at runtime, never here:
     /// <code>
@@ -28,7 +28,7 @@ namespace Game.Editor.Builders
         private const string MainCameraTag = "MainCamera";
         private static readonly string[] WorldGroups = { "Environment", "Characters", "Props", "Effects" };
 
-        /// <summary>Builds UI, Boot, Splash, MainMenu, Gameplay and FirstLaunch.</summary>
+        /// <summary>Builds UI, Boot, Splash, MainMenu, Gameplay and the editor-only ArtPreview.</summary>
         internal static void Build()
         {
             BuildUI();
@@ -36,7 +36,6 @@ namespace Game.Editor.Builders
             BuildContent(BuildPaths.SceneSplash, "SplashCamera", BuildPaths.SplashCanvas, "SplashCanvas", false);
             BuildContent(BuildPaths.SceneMainMenu, "MenuCamera", BuildPaths.MainMenuCanvas, "MainMenuCanvas", false);
             BuildContent(BuildPaths.SceneGameplay, "GameplayCamera", BuildPaths.GameplayCanvas, "GameplayCanvas", true);
-            BuildContent(BuildPaths.SceneFirstLaunch, "FirstLaunchCamera", BuildPaths.FirstLaunchCanvas, "FirstLaunchCanvas", false);
             BuildArtPreview(ArtSpec.Load());
             EditorSceneManager.OpenScene(BuildPaths.SceneBoot);
         }
