@@ -165,7 +165,6 @@ SPRITES = [
     Sprite("backgrounds/splash-background", SCREEN, "rect", "#F3DDB3", "Nền splash"),
     Sprite("backgrounds/menu-background", SCREEN, "rect", "#F3DDB3", "Nền Main Menu (đồng cỏ, trời)"),
     Sprite("backgrounds/loading-background", SCREEN, "rect", "#F3DDB3", "Nền màn loading"),
-    Sprite("backgrounds/gameplay-lower", (1920, 720), "rect", "#8C5A3C", "Nền phần dưới màn gameplay (sau bàn ghép, item, healer)"),
     # screens/splash
     Sprite("screens/splash/splash-logo", px(320), "rounded", MAGIC, "Logo studio"),
     # screens/loading
@@ -214,6 +213,8 @@ SPRITES = [
     Sprite("screens/gameplay/bar-fill-magic", BAR, "bar", MAGIC, "Phần đầy thanh Magic", border=12),
     # game: world images. Size from the world size; bars are sliced, characters are sheets (below).
     Sprite("game/props/battlefield", (1920, 448), "rect", SKY, "Nền chiến trường nhìn ngang (trời, cỏ), mặt đất ở 1/3 dưới",
+           pivot=CENTER),
+    Sprite("game/props/camp", (1920, 704), "rect", "#8C5A3C", "Nền phần dưới màn gameplay: trại của healer, sau bàn ghép và item",
            pivot=CENTER),
     Sprite("game/props/hp-bar-track", BAR, "bar", WOOD_DARK, "Rãnh thanh máu trên đầu nhân vật", border=12),
     Sprite("game/props/hp-bar-fill", BAR, "bar", "#46A758", "Máu của hero", border=12, pivot=(0.0, 0.5)),

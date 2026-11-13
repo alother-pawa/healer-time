@@ -15,6 +15,7 @@ namespace Game.Editor.Builders
         private const string MainMenu = "Game.Systems.MainMenu";
         private const string Splash = "Game.Systems.Splash";
         private const string Gameplay = "Game.Systems.Gameplay";
+        private const string Roster = "Game.Systems.Roster";
 
         internal static Type UIShellRoot => Resolve(UIShell, UIShell, "UIShellRoot");
         internal static Type ToastHost => Resolve(UIShell, UIShell, "ToastHost");
@@ -40,6 +41,23 @@ namespace Game.Editor.Builders
         internal static Type GameplayScreen => Resolve(Gameplay, Gameplay, "GameplayScreen");
         internal static Type GameplayConfig => Resolve(Gameplay, Gameplay, "GameplayConfig");
         internal static Type PauseMenuPopup => Resolve(Gameplay, Gameplay, "PauseMenuPopup");
+        internal static Type BalanceConfig => Resolve(Gameplay, Gameplay, "BalanceConfig");
+        internal static Type ItemDefinition => Resolve(Gameplay, Gameplay, "ItemDefinition");
+        internal static Type GemDefinition => Resolve(Gameplay, Gameplay, "GemDefinition");
+        internal static Type MonsterDefinition => Resolve(Gameplay, Gameplay, "MonsterDefinition");
+        internal static Type RunController => Resolve(Gameplay, Gameplay, "RunController");
+        internal static Type BoardView => Resolve(Gameplay, Gameplay, "BoardView");
+        internal static Type HudView => Resolve(Gameplay, Gameplay, "HudView");
+        internal static Type ItemBarView => Resolve(Gameplay, Gameplay, "ItemBarView");
+        internal static Type ItemSlotView => Resolve(Gameplay, Gameplay, "ItemSlotView");
+        internal static Type UiBar => Resolve(Gameplay, Gameplay, "UiBar");
+        internal static Type ShowcaseBanner => Resolve(Gameplay, Gameplay, "ShowcaseBanner");
+        internal static Type BattlefieldView => Resolve(Gameplay, Gameplay, "BattlefieldView");
+        internal static Type CharacterView => Resolve(Gameplay, Gameplay, "CharacterView");
+        internal static Type WorldBar => Resolve(Gameplay, Gameplay, "WorldBar");
+        internal static Type RevivePopup => Resolve(Gameplay, Gameplay, "RevivePopup");
+        internal static Type ResultPopup => Resolve(Gameplay, Gameplay, "ResultPopup");
+        internal static Type RosterConfig => Resolve(Roster, Roster, "RosterConfig");
 
         private static Type Resolve(string assembly, string ns, string name)
         {

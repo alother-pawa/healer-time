@@ -39,6 +39,7 @@ namespace Game.Editor.Builders
             BuildSplash();
             BuildMainMenu();
             GameplayPrefabBuilder.BuildCanvas();
+            GameplayPrefabBuilder.BuildBattlefield();
         }
 
         // The logo group (logo and studio name) starts transparent: SplashScreen draws its alpha from the sequence.

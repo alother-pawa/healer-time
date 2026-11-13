@@ -45,7 +45,7 @@ namespace Game.Editor.Builders
             BuildBase();
             BuildConfirm();
             SettingsPrefabBuilder.Build();
-            GameplayPrefabBuilder.BuildPauseMenu();
+            GameplayPrefabBuilder.BuildPopups();
         }
 
         private static void BuildBase()

@@ -148,3 +148,56 @@ gameplay.quit-menu.confirm,Main menu,メインメニュー
 gameplay.quit-desktop.title,Quit the game?,ゲームを終了しますか？
 gameplay.quit-desktop.message,The current run ends and you return to the desktop.,現在のランは終了し、デスクトップに戻ります。
 gameplay.quit-desktop.confirm,Quit,終了
+# Gameplay HUD ({0} = the number)
+gameplay.hud.score,Score {0},スコア {0}
+gameplay.hud.kills,Defeated {0},撃破 {0}
+gameplay.hud.coins,{0},{0}
+gameplay.hud.monster,Monster {0},モンスター {0}
+gameplay.hud.boss,Boss! (#{0}),ボス！(#{0})
+gameplay.hud.magic,Magic,マジック
+# Showcase captions over the board ({0} = amount; combo {0} = cascade steps)
+gameplay.showcase.attack,Attack! {0},アタック！ {0}
+gameplay.showcase.heal,Heal +{0},回復 +{0}
+gameplay.showcase.defense,Shield +{0},シールド +{0}
+gameplay.showcase.magic,Magic +{0},マジック +{0}
+gameplay.showcase.combo,Combo ×{0},コンボ ×{0}
+# Items ({0} in gameplay.item.bought = item name)
+gameplay.item.bought,{0} bought,{0}を購入しました
+gameplay.item.no-coins,Not enough coins,コインが足りません
+gameplay.item.cannot-use,Can't use that now,今は使えません
+gameplay.item.pick-target,Pick a spot on the board,盤面の場所を選んでください
+item.potion.name,Health potion,回復薬
+item.bomb.name,Bomb,爆弾
+item.shuffle.name,Shuffle,シャッフル
+item.armor.name,Armor,アーマー
+# Revive and result popups
+gameplay.revive.title,The hero fell!,勇者が倒れた！
+gameplay.revive.message,Revive for {0} coins?,{0}コインで復活しますか？
+gameplay.revive.balance,You have {0},所持 {0}
+gameplay.revive.confirm,Revive,復活
+gameplay.revive.give-up,Give up,あきらめる
+gameplay.result.title,Run over,ラン終了
+gameplay.result.score,Score {0},スコア {0}
+gameplay.result.best,Best {0},ベスト {0}
+gameplay.result.kills,Monsters defeated: {0},撃破数: {0}
+gameplay.result.coins,Coins earned: {0},獲得コイン: {0}
+gameplay.result.new-best,New best!,新記録！
+gameplay.result.replay,Play again,もう一度
+gameplay.result.menu,Main menu,メインメニュー
+"# Gems, monsters, heroes, healers"
+gem.attack.name,Attack,アタック
+gem.heal.name,Heal,回復
+gem.defense.name,Defense,防御
+gem.magic.name,Magic,マジック
+monster.orc.name,Orc,オーク
+monster.orc-brute.name,Orc Brute,オークブルート
+monster.orc-shaman.name,Orc Shaman,オークシャーマン
+monster.orc-warlord.name,Orc Warlord,オークウォーロード
+hero.soldier.name,Soldier,ソルジャー
+hero.soldier.description,"Sturdy and steady: plenty of health, even blows.",頑丈で安定：体力が多く、攻撃も安定。
+hero.veteran.name,Veteran,ベテラン
+hero.veteran.description,"Hits harder and faster, but has less health.",攻撃は強く速いが、体力は少なめ。
+healer.cleric.name,Cleric,クレリック
+healer.cleric.description,A full bar casts a strong holy strike.,ゲージ満タンで強力な聖なる一撃。
+healer.druid.name,Druid,ドルイド
+healer.druid.description,Fills faster; the strike also heals the hero more.,ゲージが早くたまり、一撃で勇者を多めに回復。

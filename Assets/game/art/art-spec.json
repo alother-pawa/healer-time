@@ -197,21 +197,6 @@
       ]
     },
     {
-      "path": "backgrounds/gameplay-lower",
-      "width": 1920,
-      "height": 720,
-      "border": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "pivot": [
-        0.5,
-        0.5
-      ]
-    },
-    {
       "path": "screens/splash/splash-logo",
       "width": 320,
       "height": 320,
@@ -680,6 +665,21 @@
       "path": "game/props/battlefield",
       "width": 1920,
       "height": 448,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/props/camp",
+      "width": 1920,
+      "height": 704,
       "border": [
         0,
         0,

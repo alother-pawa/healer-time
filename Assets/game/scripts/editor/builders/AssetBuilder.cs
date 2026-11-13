@@ -48,8 +48,10 @@ namespace Game.Editor.Builders
                 ("_keyboardMouseScheme", SettingsCatalogBuilder.KeyboardMouse), ("_gamepadScheme", SettingsCatalogBuilder.Gamepad),
                 ("_glyphSet", glyphs));
             Fields.Set(BuildUtility.Asset<SettingsProfile>(BuildPaths.SettingsProfile), ("_catalog", settings));
+            GameDataBuilder.Build();
             Fields.Set(BuildUtility.Asset(GameTypes.GameplayConfig, BuildPaths.GameplayConfig),
-                ("_menuScene", BuildUtility.Load<SceneKey>(BuildPaths.SceneKeyMainMenu)));
+                ("_menuScene", BuildUtility.Load<SceneKey>(BuildPaths.SceneKeyMainMenu)), ("_balance", GameDataBuilder.Balance));
+            Fields.Set(BuildUtility.Asset(GameTypes.GameplayConfig, BuildPaths.GameplayConfig), GameplaySounds);
             AssetDatabase.SaveAssets();
         }
 
@@ -62,8 +64,30 @@ namespace Game.Editor.Builders
                 ("_popup", BuildUtility.PrefabComponent(BuildPaths.PopupSettings, GameTypes.SettingsPopup)),
                 ("_displayConfirmPopup", BuildUtility.PrefabComponent(BuildPaths.PopupDisplayConfirm, GameTypes.DisplayConfirmPopup)));
             Fields.Set(BuildUtility.Asset(GameTypes.GameplayConfig, BuildPaths.GameplayConfig),
-                ("_pausePopup", BuildUtility.PrefabComponent(BuildPaths.PopupPauseMenu, GameTypes.PauseMenuPopup)));
+                ("_pausePopup", BuildUtility.PrefabComponent(BuildPaths.PopupPauseMenu, GameTypes.PauseMenuPopup)),
+                ("_revivePopup", BuildUtility.PrefabComponent(BuildPaths.PopupRevive, GameTypes.RevivePopup)),
+                ("_resultPopup", BuildUtility.PrefabComponent(BuildPaths.PopupResult, GameTypes.ResultPopup)));
             AssetDatabase.SaveAssets();
+        }
+
+        // The gameplay sounds (Tools/AudioGen), by field of GameplaySounds.
+        private static (string, object)[] GameplaySounds => new (string, object)[]
+        {
+            ("_sounds._music", Clip("music/battle-theme")), ("_sounds._gemSwap", Clip("sfx/gem-swap")),
+            ("_sounds._gemInvalid", Clip("sfx/gem-invalid")), ("_sounds._gemMatch", Clip("sfx/gem-match")),
+            ("_sounds._shuffle", Clip("sfx/board-shuffle")), ("_sounds._bomb", Clip("sfx/bomb")),
+            ("_sounds._heroAttack", Clip("sfx/hero-attack")), ("_sounds._heroStrike", Clip("sfx/hero-strike")),
+            ("_sounds._monsterAttack", Clip("sfx/monster-attack")), ("_sounds._hit", Clip("sfx/hit")), ("_sounds._heal", Clip("sfx/heal")),
+            ("_sounds._shield", Clip("sfx/shield")), ("_sounds._magicCharge", Clip("sfx/magic-charge")),
+            ("_sounds._healerSkill", Clip("sfx/healer-skill")), ("_sounds._monsterDeath", Clip("sfx/monster-death")),
+            ("_sounds._bossAppear", Clip("sfx/boss-appear")), ("_sounds._heroDeath", Clip("sfx/hero-death")),
+            ("_sounds._revive", Clip("sfx/revive")), ("_sounds._coin", Clip("ui/coin")), ("_sounds._click", Clip("ui/button-click")),
+        };
+
+        /// <summary>A sound of <c>Assets/game/audio</c> by its path without extension (Tools/AudioGen).</summary>
+        internal static AudioClip Clip(string path)
+        {
+            return BuildUtility.Load<AudioClip>($"{BuildPaths.Audio}/{path}.wav");
         }
 
         private static void CreateSceneKey(string path, string sceneName, bool plainTransition)

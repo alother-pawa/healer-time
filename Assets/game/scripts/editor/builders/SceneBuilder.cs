@@ -35,7 +35,7 @@ namespace Game.Editor.Builders
             BuildBoot();
             BuildContent(BuildPaths.SceneSplash, "SplashCamera", BuildPaths.SplashCanvas, "SplashCanvas", false);
             BuildContent(BuildPaths.SceneMainMenu, "MenuCamera", BuildPaths.MainMenuCanvas, "MainMenuCanvas", false);
-            BuildContent(BuildPaths.SceneGameplay, "GameplayCamera", BuildPaths.GameplayCanvas, "GameplayCanvas", true);
+            BuildGameplay();
             BuildArtPreview(ArtSpec.Load());
             EditorSceneManager.OpenScene(BuildPaths.SceneBoot);
         }
@@ -153,6 +153,29 @@ namespace Game.Editor.Builders
             }
 
             x += width + 0.5f;
+        }
+
+        // The gameplay scene: a camera rig (the camera is the shake pivot, at rest at zero) showing 1080 px tall at 128 px per
+        // unit, the battlefield prefab in World and the canvas in UI; the scene-only references between them are wired here.
+        private static void BuildGameplay()
+        {
+            Scene scene = NewScene();
+            SceneGroups groups = AddGroups(true);
+            GameObject rig = WorldFactory.Child("CameraRig", groups.Cameras, new Vector3(0f, 0f, -10f));
+            GameObject cameraObject = WorldFactory.Child("GameplayCamera", rig.transform);
+            WorldFactory.AddCamera(cameraObject, Palette.Sky).orthographicSize = UiFactory.ReferenceResolution.y / 2f / ArtSpec.Load().pixelsPerUnit;
+            cameraObject.tag = MainCameraTag;
+
+            Transform environment = GameObject.Find("World").transform.Find("Environment");
+            GameObject battlefield = Place(BuildPaths.Battlefield, "Battlefield", environment);
+            GameObject canvas = Place(BuildPaths.GameplayCanvas, "GameplayCanvas", groups.UI);
+            Component view = BuildUtility.Require(battlefield, GameTypes.BattlefieldView);
+            Fields.Set(view, ("_cameraPivot", cameraObject.transform));
+            BuildUtility.RecordOverrides(view);
+            Component run = BuildUtility.Require(BuildUtility.Child(canvas.transform, "Screen").gameObject, GameTypes.RunController);
+            Fields.Set(run, ("_battlefield", view));
+            BuildUtility.RecordOverrides(run);
+            Save(scene, BuildPaths.SceneGameplay);
         }
 
         // A content scene: its camera (no audio listener: the UI scene owns the only one) and its canvas prefab; gameplay

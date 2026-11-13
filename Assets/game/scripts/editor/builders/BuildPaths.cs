@@ -65,6 +65,9 @@ namespace Game.Editor.Builders
         internal const string SplashCanvas = PrefabsSplash + "/SplashCanvas.prefab";
         internal const string MainMenuCanvas = PrefabsMainMenu + "/MainMenuCanvas.prefab";
         internal const string GameplayCanvas = PrefabsGameplay + "/GameplayCanvas.prefab";
+        internal const string Battlefield = PrefabsGameplay + "/Battlefield.prefab";
+        internal const string PopupRevive = PrefabsPopups + "/Popup_Revive.prefab";
+        internal const string PopupResult = PrefabsPopups + "/Popup_Result.prefab";
 
         // Assets referenced across builders.
         internal const string SceneKeyUI = DataSceneKeys + "/SceneKey_UI.asset";
@@ -83,6 +86,15 @@ namespace Game.Editor.Builders
         internal const string PlatformSettings = DataPaowa + "/PlatformSettings.asset";
         internal const string UIShellConfig = DataConfig + "/UIShellConfig.asset";
         internal const string SettingsConfig = DataConfig + "/SettingsConfig.asset";
+
+        /// <summary>Heroes and healers in menu order (lists written every run).</summary>
+        internal const string RosterConfig = DataConfig + "/RosterConfig.asset";
+
+        /// <summary>Every product of the economy package's shop (the item restocks), at the path the package loads.</summary>
+        internal const string ShopCatalog = DataPaowa + "/ShopCatalog.asset";
+
+        /// <summary>Starting coins and items, given once per install (created once, then owned by the game).</summary>
+        internal const string EconomySettings = DataPaowa + "/EconomySettings.asset";
 
         /// <summary>
         /// Build stamp read by Core's <c>BuildInfo</c> (<c>Resources/Paowa/BuildInfo</c>): written by the build pipeline

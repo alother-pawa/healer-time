@@ -47,6 +47,9 @@ namespace Game.Systems.Gameplay
 
         internal float Armor { get; private set; }
 
+        /// <summary>Most armor the hero can hold.</summary>
+        internal float ArmorCap => HeroMaxHealth * _tuning.ArmorCap;
+
         internal float Magic { get; private set; }
 
         internal float MagicCapacity => _healer.MagicCapacity;
@@ -181,7 +184,7 @@ namespace Game.Systems.Gameplay
                 return 0f;
             }
 
-            float gained = Math.Min(amount, Math.Max(0f, HeroMaxHealth * _tuning.ArmorCap - Armor));
+            float gained = Math.Min(amount, Math.Max(0f, ArmorCap - Armor));
             Armor += gained;
             events.Add(Event(BattleEventKind.ArmorGained, gained, 0f, 0, gem));
             return gained;
@@ -220,7 +223,7 @@ namespace Game.Systems.Gameplay
             RevivesUsed++;
             IsOver = false;
             HeroHealth = HeroMaxHealth * _tuning.ReviveHealth;
-            Armor = Math.Min(HeroMaxHealth * _tuning.ArmorCap, _tuning.ReviveArmor);
+            Armor = Math.Min(ArmorCap, _tuning.ReviveArmor);
             _monsterAttackTimer = 0f;
             events.Add(Event(BattleEventKind.Revived, HeroHealth, 0f, 0, -1));
             return true;

@@ -96,6 +96,18 @@ namespace Game.Systems.Gameplay
             _controller.OnMenuHidden();
         }
 
+        /// <summary>When true the pause menu does not open (the run is over and its popups own the screen).</summary>
+        internal bool PauseBlocked { get; set; }
+
+        /// <summary>The on-screen pause button: opens the pause menu like the pause key.</summary>
+        internal void RequestPause()
+        {
+            if (_pauseValid && !PauseBlocked && !_leaving && (_navigator == null || !_navigator.IsNavigating))
+            {
+                _controller.OnPausePressed();
+            }
+        }
+
         /// <summary>Leaves for the main menu without asking (the result popup's Menu button).</summary>
         internal void GoToMenu()
         {
@@ -164,8 +176,12 @@ namespace Game.Systems.Gameplay
             // While a scene switch runs (loading cover) an automatic pause request waits: the menu opens once it ends.
             if (!_leaving && (_navigator == null || !_navigator.IsNavigating))
             {
-                _controller.Tick();
-                if (_pauseValid && _input.WasPressedThisFrame(_pauseAction))
+                if (!PauseBlocked)
+                {
+                    _controller.Tick();
+                }
+
+                if (_pauseValid && !PauseBlocked && _input.WasPressedThisFrame(_pauseAction))
                 {
                     _controller.OnPausePressed();
                 }

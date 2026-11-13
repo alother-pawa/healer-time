@@ -15,7 +15,6 @@ Một đơn vị thế giới = 128 px. Thư mục và pack theo chuẩn của p
 - `backgrounds/splash-background`
 - `backgrounds/menu-background`
 - `backgrounds/loading-background`
-- `backgrounds/gameplay-lower`
 - `screens/splash/splash-logo`
 - `screens/loading/loading-bar-track`
 - `screens/loading/loading-bar-mask`
@@ -29,6 +28,7 @@ Một đơn vị thế giới = 128 px. Thư mục và pack theo chuẩn của p
 - `screens/gameplay/bar-track`
 - `screens/gameplay/bar-fill-magic`
 - `game/props/battlefield`
+- `game/props/camp`
 - `game/props/hp-bar-track`
 - `game/props/hp-bar-fill`
 - `game/props/hp-bar-fill-enemy`
@@ -59,7 +59,6 @@ Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.
 | `splash-background.png` | 1920×1080 | rect | — | giữa | Nền splash | **placeholder** |
 | `menu-background.png` | 1920×1080 | rect | — | giữa | Nền Main Menu (đồng cỏ, trời) | **placeholder** |
 | `loading-background.png` | 1920×1080 | rect | — | giữa | Nền màn loading | **placeholder** |
-| `gameplay-lower.png` | 1920×720 | rect | — | giữa | Nền phần dưới màn gameplay (sau bàn ghép, item, healer) | **placeholder** |
 
 ## `screens/splash`
 
@@ -122,6 +121,7 @@ Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.
 | Ảnh | Kích thước (px) | Hình | 9-slice | Pivot | Dùng cho | Nguồn |
 |---|---|---|---|---|---|---|
 | `battlefield.png` | 1920×448 | rect | — | giữa | Nền chiến trường nhìn ngang (trời, cỏ), mặt đất ở 1/3 dưới | **placeholder** |
+| `camp.png` | 1920×704 | rect | — | giữa | Nền phần dưới màn gameplay: trại của healer, sau bàn ghép và item | **placeholder** |
 | `hp-bar-track.png` | 64×32 | bar | 12 | giữa | Rãnh thanh máu trên đầu nhân vật | **placeholder** |
 | `hp-bar-fill.png` | 64×32 | bar | 12 | 0.0, 0.5 | Máu của hero | **placeholder** |
 | `hp-bar-fill-enemy.png` | 64×32 | bar | 12 | 0.0, 0.5 | Máu của quái | **placeholder** |
