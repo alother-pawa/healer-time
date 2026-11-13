@@ -1,0 +1,46 @@
+{
+  "name": "Game.Tests.Editor",
+  "rootNamespace": "Game.Tests.Editor",
+  "references": [
+    "UnityEngine.TestRunner",
+    "UnityEditor.TestRunner",
+    "Unity.InputSystem",
+    "UnityEngine.UI",
+    "Paowa.Core",
+    "Paowa.Desktop",
+    "Paowa.Gamepad",
+    "Paowa.Input",
+    "Paowa.Input.Rebinding",
+    "Paowa.Pause",
+    "Paowa.Save",
+    "Paowa.Settings",
+    "Paowa.UI.Navigation",
+    "Game.Contracts",
+    "Game.Foundation",
+    "Game.Systems.UIShell",
+    "Game.Systems.Splash",
+    "Game.Systems.Settings",
+    "Game.Systems.SaveSlots",
+    "Game.Systems.Gameplay",
+    "Game.Systems.InputActivity",
+    "Game.Systems.Credits",
+    "Game.Systems.FirstLaunch",
+    "Game.Systems.Achievements",
+    "Game.Editor.Builders"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": [
+    "nunit.framework.dll"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

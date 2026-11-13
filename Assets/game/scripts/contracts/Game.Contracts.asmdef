@@ -1,0 +1,19 @@
+{
+  "name": "Game.Contracts",
+  "rootNamespace": "Game.Contracts",
+  "references": [
+    "Paowa.Core",
+    "Paowa.Gamepad",
+    "Paowa.Input",
+    "Paowa.Save"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

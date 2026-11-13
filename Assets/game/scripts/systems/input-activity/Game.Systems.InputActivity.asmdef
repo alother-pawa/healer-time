@@ -1,0 +1,23 @@
+{
+  "name": "Game.Systems.InputActivity",
+  "rootNamespace": "Game.Systems.InputActivity",
+  "references": [
+    "Paowa.Core",
+    "Paowa.DevConsole",
+    "Paowa.Gamepad",
+    "Paowa.Input",
+    "Paowa.UI.Navigation",
+    "Game.Contracts",
+    "Game.Foundation",
+    "Unity.TextMeshPro"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

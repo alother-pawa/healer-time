@@ -1,0 +1,30 @@
+{
+  "name": "Game.Systems.Gameplay",
+  "rootNamespace": "Game.Systems.Gameplay",
+  "references": [
+    "Paowa.Core",
+    "Paowa.Desktop",
+    "Paowa.DevConsole",
+    "Paowa.Gamepad",
+    "Paowa.Input",
+    "Paowa.Localization",
+    "Paowa.Pause",
+    "Paowa.Save",
+    "Paowa.UI",
+    "Paowa.UI.Navigation",
+    "Game.Contracts",
+    "Game.Foundation",
+    "UnityEngine.UI",
+    "Unity.TextMeshPro",
+    "DOTween.Modules"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

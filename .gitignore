@@ -23,3 +23,14 @@ __pycache__/
 # Build stamp written by Game > Build before each player build and removed after it.
 /Assets/game/data/Resources/Paowa/BuildInfo.txt
 /Assets/game/data/Resources/Paowa/BuildInfo.txt.meta
+
+# Written by Game > Build All from the builders (scenes, prefabs, configs, atlases); never edited by hand.
+/Assets/game/prefabs/
+/Assets/game/scenes/
+/Assets/game/art/atlases/
+/Assets/game/data/*
+!/Assets/game/data/input/
+# Unity regenerates the .meta of the game's own files; third-party folders keep theirs.
+/Assets/game.meta
+/Assets/game/**/*.meta
+/Assets/game/data/input/*.asset

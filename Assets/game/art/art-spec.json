@@ -1,0 +1,1442 @@
+{
+  "pixelsPerUnit": 128,
+  "sprites": [
+    {
+      "path": "ui-common/button-primary",
+      "width": 128,
+      "height": 128,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-common/button-secondary",
+      "width": 128,
+      "height": 128,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-common/focus-frame",
+      "width": 128,
+      "height": 128,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-common/popup-backdrop",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-common/popup-background",
+      "width": 128,
+      "height": 128,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-common/popup-header",
+      "width": 128,
+      "height": 128,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-common/toast-background",
+      "width": 128,
+      "height": 128,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-common/row-background",
+      "width": 128,
+      "height": 128,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "backgrounds/splash-background",
+      "width": 1920,
+      "height": 1080,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "backgrounds/menu-background",
+      "width": 1920,
+      "height": 1080,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "backgrounds/loading-background",
+      "width": 1920,
+      "height": 1080,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "backgrounds/first-launch-background",
+      "width": 1920,
+      "height": 1080,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "backgrounds/gameplay-background",
+      "width": 1920,
+      "height": 1080,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/splash/splash-logo",
+      "width": 320,
+      "height": 320,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/loading/loading-bar-track",
+      "width": 64,
+      "height": 32,
+      "border": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/loading/loading-bar-mask",
+      "width": 64,
+      "height": 32,
+      "border": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/loading/loading-bar-fill",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/settings/slider-track",
+      "width": 64,
+      "height": 32,
+      "border": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/settings/slider-fill",
+      "width": 64,
+      "height": 32,
+      "border": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/settings/slider-handle",
+      "width": 40,
+      "height": 40,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/settings/stepper-left",
+      "width": 56,
+      "height": 56,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/settings/stepper-right",
+      "width": 56,
+      "height": 56,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/save-slots/slot-card-frame",
+      "width": 128,
+      "height": 128,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/save-slots/slot-empty-icon",
+      "width": 96,
+      "height": 96,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/save-slots/slot-corrupted-icon",
+      "width": 96,
+      "height": 96,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/save-slots/thumbnail-placeholder",
+      "width": 320,
+      "height": 180,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/first-launch/choice-chosen",
+      "width": 128,
+      "height": 128,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/first-launch/photosensitivity-icon",
+      "width": 80,
+      "height": 80,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/achievements/achievement-first-action",
+      "width": 96,
+      "height": 96,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/achievements/achievement-all-actions",
+      "width": 96,
+      "height": 96,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/achievements/achievement-first-save",
+      "width": 96,
+      "height": 96,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/achievements/lock-icon",
+      "width": 40,
+      "height": 40,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/credits/credits-viewport",
+      "width": 128,
+      "height": 128,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/action-tile",
+      "width": 128,
+      "height": 128,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/action-tile-lit",
+      "width": 128,
+      "height": 128,
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/value-fill",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/stick-area",
+      "width": 150,
+      "height": 150,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/stick-knob",
+      "width": 44,
+      "height": 44,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/overlay-panel",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/crosshair",
+      "width": 48,
+      "height": 48,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/direction-up",
+      "width": 34,
+      "height": 34,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/direction-down",
+      "width": 34,
+      "height": 34,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/direction-left",
+      "width": 34,
+      "height": 34,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/direction-right",
+      "width": 34,
+      "height": 34,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/icon-move",
+      "width": 56,
+      "height": 56,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/icon-look",
+      "width": 56,
+      "height": 56,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/icon-jump",
+      "width": 56,
+      "height": 56,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/icon-interact",
+      "width": 56,
+      "height": 56,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/icon-attack",
+      "width": 56,
+      "height": 56,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/icon-alt-attack",
+      "width": 56,
+      "height": 56,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/icon-sprint",
+      "width": 56,
+      "height": 56,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/icon-crouch",
+      "width": 56,
+      "height": 56,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay-hud/icon-pause",
+      "width": 56,
+      "height": 56,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/key",
+      "width": 64,
+      "height": 64,
+      "border": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/key-arrow-up",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/key-arrow-down",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/key-arrow-left",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/key-arrow-right",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/mouse-left",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/mouse-right",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/mouse-middle",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/mouse-scroll",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/mouse-move",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/xbox-face-south",
+      "width": 64,
+      "height": 64,
+      "border": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/xbox-face-east",
+      "width": 64,
+      "height": 64,
+      "border": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/xbox-face-west",
+      "width": 64,
+      "height": 64,
+      "border": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/xbox-face-north",
+      "width": 64,
+      "height": 64,
+      "border": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/playstation-face-south",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/playstation-face-east",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/playstation-face-west",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/playstation-face-north",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/switch-face-south",
+      "width": 64,
+      "height": 64,
+      "border": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/switch-face-east",
+      "width": 64,
+      "height": 64,
+      "border": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/switch-face-west",
+      "width": 64,
+      "height": 64,
+      "border": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/switch-face-north",
+      "width": 64,
+      "height": 64,
+      "border": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/generic-face-south",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/generic-face-east",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/generic-face-west",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/generic-face-north",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/gamepad-shoulder-left",
+      "width": 64,
+      "height": 40,
+      "border": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/gamepad-shoulder-right",
+      "width": 64,
+      "height": 40,
+      "border": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/gamepad-trigger-left",
+      "width": 64,
+      "height": 48,
+      "border": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/gamepad-trigger-right",
+      "width": 64,
+      "height": 48,
+      "border": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/gamepad-stick-left",
+      "width": 64,
+      "height": 64,
+      "border": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/gamepad-stick-right",
+      "width": 64,
+      "height": 64,
+      "border": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/gamepad-dpad",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/gamepad-dpad-up",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/gamepad-dpad-down",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/gamepad-dpad-left",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/gamepad-dpad-right",
+      "width": 64,
+      "height": 64,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/gamepad-start",
+      "width": 64,
+      "height": 40,
+      "border": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "ui-glyphs/gamepad-select",
+      "width": 64,
+      "height": 40,
+      "border": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/props/crate",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.0
+      ]
+    }
+  ],
+  "sheets": [
+    {
+      "path": "game/characters/hero/hero",
+      "frameWidth": 128,
+      "frameHeight": 256,
+      "pivot": [
+        0.5,
+        0.0
+      ],
+      "tags": [
+        {
+          "name": "idle",
+          "frames": 4,
+          "frameMs": 150,
+          "loop": true
+        },
+        {
+          "name": "run",
+          "frames": 6,
+          "frameMs": 100,
+          "loop": true
+        }
+      ]
+    },
+    {
+      "path": "game/effects/hit-spark",
+      "frameWidth": 128,
+      "frameHeight": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "tags": [
+        {
+          "name": "play",
+          "frames": 5,
+          "frameMs": 60,
+          "loop": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "Game.Systems.Achievements",
+  "rootNamespace": "Game.Systems.Achievements",
+  "references": [
+    "Paowa.Core",
+    "Paowa.Desktop",
+    "Paowa.DevConsole",
+    "Paowa.Localization",
+    "Paowa.Platform",
+    "Paowa.UI",
+    "Paowa.UI.Navigation",
+    "Game.Contracts",
+    "Game.Foundation",
+    "UnityEngine.UI",
+    "Unity.TextMeshPro"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

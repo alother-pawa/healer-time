@@ -1,0 +1,25 @@
+{
+  "name": "Game.Foundation",
+  "rootNamespace": "Game.Foundation",
+  "references": [
+    "Paowa.Core",
+    "Paowa.DevConsole",
+    "Paowa.Gamepad",
+    "Paowa.Input",
+    "Paowa.Localization",
+    "Paowa.UI",
+    "Game.Contracts",
+    "UnityEngine.UI",
+    "Unity.TextMeshPro",
+    "DOTween.Modules"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

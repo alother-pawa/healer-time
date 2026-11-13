@@ -1,0 +1,19 @@
+{
+  "name": "Game.Systems.AnimationSettings",
+  "rootNamespace": "Game.Systems.AnimationSettings",
+  "references": [
+    "Paowa.Core",
+    "Paowa.UI",
+    "Paowa.UI.Navigation",
+    "Game.Contracts"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

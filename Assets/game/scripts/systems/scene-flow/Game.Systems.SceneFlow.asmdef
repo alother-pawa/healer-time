@@ -1,0 +1,17 @@
+{
+  "name": "Game.Systems.SceneFlow",
+  "rootNamespace": "Game.Systems.SceneFlow",
+  "references": [
+    "Paowa.Core",
+    "Game.Contracts"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

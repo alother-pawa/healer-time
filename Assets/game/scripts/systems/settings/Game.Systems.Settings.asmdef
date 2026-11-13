@@ -1,0 +1,30 @@
+{
+  "name": "Game.Systems.Settings",
+  "rootNamespace": "Game.Systems.Settings",
+  "references": [
+    "Paowa.Core",
+    "Paowa.Audio",
+    "Paowa.Desktop",
+    "Paowa.DevConsole",
+    "Paowa.Gamepad",
+    "Paowa.Input",
+    "Paowa.Input.Rebinding",
+    "Paowa.Localization",
+    "Paowa.Settings",
+    "Paowa.UI",
+    "Paowa.UI.Navigation",
+    "Game.Contracts",
+    "Game.Foundation",
+    "UnityEngine.UI",
+    "Unity.TextMeshPro"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

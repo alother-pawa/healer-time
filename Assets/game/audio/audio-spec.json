@@ -1,0 +1,28 @@
+{
+  "sounds": [
+    {
+      "path": "ui/volume-preview",
+      "category": "ui",
+      "seconds": 0.12,
+      "loop": false
+    },
+    {
+      "path": "music/menu-theme",
+      "category": "music",
+      "seconds": 8.0,
+      "loop": true
+    },
+    {
+      "path": "ambience/gameplay-room",
+      "category": "ambience",
+      "seconds": 6.0,
+      "loop": true
+    },
+    {
+      "path": "sfx/hit",
+      "category": "sfx",
+      "seconds": 0.25,
+      "loop": false
+    }
+  ]
+}

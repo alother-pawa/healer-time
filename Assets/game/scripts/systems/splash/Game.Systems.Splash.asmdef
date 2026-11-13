@@ -1,0 +1,19 @@
+{
+  "name": "Game.Systems.Splash",
+  "rootNamespace": "Game.Systems.Splash",
+  "references": [
+    "Paowa.Core",
+    "Game.Contracts",
+    "Game.Foundation",
+    "Unity.InputSystem"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

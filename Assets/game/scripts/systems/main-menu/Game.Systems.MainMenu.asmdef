@@ -1,0 +1,22 @@
+{
+  "name": "Game.Systems.MainMenu",
+  "rootNamespace": "Game.Systems.MainMenu",
+  "references": [
+    "Paowa.Core",
+    "Paowa.Desktop",
+    "Paowa.UI",
+    "Game.Contracts",
+    "Game.Foundation",
+    "UnityEngine.UI",
+    "Unity.TextMeshPro"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

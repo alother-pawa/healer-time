@@ -1,5 +1,141 @@
 {
   "dependencies": {
+    "com.paowa.audio": {
+      "version": "file:../../../packages/systems/com.paowa.audio",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.1.0"
+      }
+    },
+    "com.paowa.core": {
+      "version": "file:../../../packages/core/com.paowa.core",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
+    "com.paowa.desktop": {
+      "version": "file:../../../packages/systems/com.paowa.desktop",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.1.0"
+      }
+    },
+    "com.paowa.devconsole": {
+      "version": "file:../../../packages/systems/com.paowa.devconsole",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.1.0",
+        "com.unity.inputsystem": "1.20.1",
+        "com.unity.ugui": "2.0.0"
+      }
+    },
+    "com.paowa.economy": {
+      "version": "file:../../../packages/mechanics/com.paowa.economy",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.2.0"
+      }
+    },
+    "com.paowa.gamefeel": {
+      "version": "file:../../../packages/systems/com.paowa.gamefeel",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.1.0"
+      }
+    },
+    "com.paowa.gamepad": {
+      "version": "file:../../../packages/systems/com.paowa.gamepad",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.1.0",
+        "com.paowa.input": "1.1.0"
+      }
+    },
+    "com.paowa.input": {
+      "version": "file:../../../packages/systems/com.paowa.input",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.1.0"
+      }
+    },
+    "com.paowa.input.rebinding": {
+      "version": "file:../../../packages/systems/com.paowa.input.rebinding",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.1.0",
+        "com.paowa.input": "1.1.0"
+      }
+    },
+    "com.paowa.localization": {
+      "version": "file:../../../packages/systems/com.paowa.localization",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.2.0",
+        "com.unity.ugui": "2.0.0"
+      }
+    },
+    "com.paowa.pause": {
+      "version": "file:../../../packages/systems/com.paowa.pause",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.1.0"
+      }
+    },
+    "com.paowa.platform": {
+      "version": "file:../../../packages/systems/com.paowa.platform",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.1.0"
+      }
+    },
+    "com.paowa.save": {
+      "version": "file:../../../packages/systems/com.paowa.save",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.1.0"
+      }
+    },
+    "com.paowa.settings": {
+      "version": "file:../../../packages/systems/com.paowa.settings",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.1.0"
+      }
+    },
+    "com.paowa.ui": {
+      "version": "file:../../../packages/systems/com.paowa.ui",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.1.0",
+        "com.unity.ugui": "2.0.0"
+      }
+    },
+    "com.paowa.ui.navigation": {
+      "version": "file:../../../packages/systems/com.paowa.ui.navigation",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.paowa.core": "1.1.0",
+        "com.paowa.ui": "1.0.0",
+        "com.paowa.input": "1.1.0",
+        "com.unity.inputsystem": "1.20.1",
+        "com.unity.ugui": "2.0.0"
+      }
+    },
     "com.unity.2d.animation": {
       "version": "15.1.0",
       "depth": 0,
@@ -152,8 +288,8 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
-      "version": "1.19.0",
-      "depth": 0,
+      "version": "1.20.1",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.uielements": "1.0.0"
