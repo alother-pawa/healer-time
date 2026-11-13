@@ -26,6 +26,7 @@ prompt.skip,Skip,スキップ
 # Main menu (the version label is Core's BuildInfo text, not translated)
 menu.play,Play,プレイ
 menu.settings,Settings,設定
+menu.characters,Characters,キャラクター
 menu.quit,Quit,終了
 quit.title,Quit the game?,ゲームを終了しますか？
 quit.message,You will return to the desktop.,デスクトップに戻ります。
@@ -201,3 +202,9 @@ healer.cleric.name,Cleric,クレリック
 healer.cleric.description,A full bar casts a strong holy strike.,ゲージ満タンで強力な聖なる一撃。
 healer.druid.name,Druid,ドルイド
 healer.druid.description,Fills faster; the strike also heals the hero more.,ゲージが早くたまり、一撃で勇者を多めに回復。
+# Character page ({0} {1} {2} in the stats = the character numbers)
+characters.title,Characters,キャラクター
+characters.tab.hero,Hero,勇者
+characters.tab.healer,Healer,ヒーラー
+characters.stats.hero,Health {0} · Attack {1} · Strike ×{2},体力 {0} · 攻撃 {1} · 一撃 ×{2}
+characters.stats.healer,Magic {0} · Skill {1} · Heal {2},マジック {0} · スキル {1} · 回復 {2}

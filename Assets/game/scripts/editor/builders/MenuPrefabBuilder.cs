@@ -1,4 +1,5 @@
 using Game.Contracts.Navigation;
+using Game.Foundation.Localization;
 using Game.Foundation.UI;
 using Paowa.UI.Navigation;
 using TMPro;
@@ -21,15 +22,14 @@ namespace Game.Editor.Builders
         private const float TitleSize = 104f;
         private const float MenuButtonLabelSize = 44f;
         private const float VersionSize = 26f;
-        private const float MenuButtonSpacing = 120f;
-        private const float MenuTopButtonY = 140f;
+        private const float MenuButtonSpacing = 380f;
         private static readonly Vector2 LogoSize = new Vector2(320f, 320f);
-        private static readonly Vector2 MenuButtonSize = new Vector2(520f, 100f);
+        private static readonly Vector2 MenuButtonSize = new Vector2(340f, 96f);
 
         /// <summary>Main menu buttons, top to bottom: child name, sprite, label key.</summary>
         private static readonly (string name, string sprite, string key)[] MenuButtons =
         {
-            ("PlayButton", "ui-common/button-primary", "menu.play"),
+            ("CharactersButton", "ui-common/button-secondary", "menu.characters"),
             ("SettingsButton", "ui-common/button-secondary", "menu.settings"),
             ("QuitButton", "ui-common/button-secondary", "menu.quit"),
         };
@@ -71,7 +71,8 @@ namespace Game.Editor.Builders
             BuildUtility.SavePrefab(canvas.gameObject, BuildPaths.SplashCanvas);
         }
 
-        // The screen is the focus scope (Play first), keeps the Menu input context on and owns the Quit-on-Cancel handler.
+        // Two pages in Body (home at 0, characters one page to the right; the screen slides them). The screen is the focus
+        // scope (Play first), keeps the Menu input context on and owns the Cancel handler (back to home, or Quit).
         private static void BuildMainMenu()
         {
             ScreenParts parts = ScreenParts.Create("MainMenuCanvas", ContentSortOrder, true, "backgrounds/menu-background");
@@ -82,19 +83,47 @@ namespace Game.Editor.Builders
             screen.gameObject.AddComponent<InputContextRequest>();
             Component menu = screen.gameObject.AddComponent(GameTypes.MainMenuScreen);
 
-            UiFactory.AddText(UiFactory.Rect("TitleLabel", parts.Header).Place(UiFactory.TopCenter, new Vector2(0f, -150f), new Vector2(1400f, 160f)),
+            RectTransform pages = UiFactory.Rect("Pages", parts.Body).Stretch();
+            RectTransform home = UiFactory.Rect("HomePage", pages).Stretch();
+            UiFactory.AddText(UiFactory.Rect("TitleLabel", home).Place(UiFactory.TopCenter, new Vector2(0f, -90f), new Vector2(1400f, 150f)),
                 string.Empty, TitleSize, Palette.Text).Localize("game.title").raycastTarget = false;
 
-            var buttons = new Button[MenuButtons.Length];
+            RectTransform wallet = UiFactory.Rect("Wallet", home).Place(UiFactory.TopLeft, new Vector2(40f, -36f), new Vector2(260f, 80f));
+            UiFactory.AddImage(wallet, BuildUtility.Sprite("ui-common/panel-wood")).raycastTarget = false;
+            UiFactory.AddImage(UiFactory.Rect("CoinIcon", wallet).Place(UiFactory.MiddleLeft, new Vector2(16f, 0f), new Vector2(52f, 52f)),
+                BuildUtility.Sprite("ui-common/coin-icon")).raycastTarget = false;
+            TextMeshProUGUI coins = UiFactory.AddText(UiFactory.Rect("CoinsLabel", wallet).Stretch(76f, 0f, 16f, 0f), "0", 40f,
+                Palette.TextLight, TextAlignmentOptions.MidlineLeft);
+            coins.raycastTarget = false;
+
+            UiFactory.AddImage(UiFactory.Rect("Stage", home).Place(UiFactory.Center, new Vector2(0f, 40f), new Vector2(760f, 150f)),
+                BuildUtility.Sprite("screens/main-menu/stage")).raycastTarget = false;
+            Component heroPreview = Preview(home, "HeroPreview", new Vector2(-150f, 70f), new Vector2(504f, 396f), false);
+            Component healerPreview = Preview(home, "HealerPreview", new Vector2(190f, 80f), new Vector2(192f, 288f), false);
+
+            RectTransform playRect = UiFactory.Rect("PlayButton", home).Place(UiFactory.Center, new Vector2(0f, -210f), new Vector2(560f, 130f));
+            Button play = UiFactory.AddButton(playRect, BuildUtility.Sprite("ui-common/button-primary"));
+            UiFactory.Label(playRect, string.Empty, 64f).Localize("menu.play");
+
+            var row = new Button[MenuButtons.Length];
             for (int i = 0; i < MenuButtons.Length; i++)
             {
-                RectTransform rect = UiFactory.Rect(MenuButtons[i].name, parts.Body)
-                    .Place(UiFactory.Center, new Vector2(0f, MenuTopButtonY - i * MenuButtonSpacing), MenuButtonSize);
-                buttons[i] = UiFactory.AddButton(rect, BuildUtility.Sprite(MenuButtons[i].sprite));
+                RectTransform rect = UiFactory.Rect(MenuButtons[i].name, home)
+                    .Place(UiFactory.Center, new Vector2((i - 1) * MenuButtonSpacing, -370f), MenuButtonSize);
+                row[i] = UiFactory.AddButton(rect, BuildUtility.Sprite(MenuButtons[i].sprite));
                 UiFactory.Label(rect, string.Empty, MenuButtonLabelSize).Localize(MenuButtons[i].key);
             }
 
-            UiFactory.LinkVertical(buttons);
+            UiFactory.LinkHorizontal(row);
+            UiFactory.LinkDown(row[1], play);
+            foreach (Button button in row)
+            {
+                Navigation navigation = button.navigation;
+                navigation.selectOnUp = play;
+                button.navigation = navigation;
+            }
+
+            Component characters = BuildCharactersPage(parts, pages, out Button back);
 
             // The version stamp is written at runtime (Core's BuildInfo); it is not translated.
             TextMeshProUGUI version = UiFactory.AddText(UiFactory.Rect("VersionLabel", parts.Footer)
@@ -103,18 +132,107 @@ namespace Game.Editor.Builders
             version.raycastTarget = false;
 
             GameObject bar = PrefabBuilder.PromptBarInstance(parts.Footer, 24f, 64f, PrefabBuilder.Prompts.SwitchTab);
-            PrefabBuilder.SetPromptLabel(bar, PrefabBuilder.Prompts.Back, "prompt.quit");
+            PrefabBuilder.SetPromptLabel(bar, PrefabBuilder.Prompts.Back, "prompt.back");
 
             ShellPrefabBuilder.AddSelectionHighlight(parts.Overlay);
 
-            Fields.Set(scope, ("_firstSelected", buttons[0]), ("_trapFocus", true),
+            Fields.Set(scope, ("_firstSelected", play), ("_trapFocus", true),
                 ("_cancelMode", new EnumName(nameof(FocusCancelMode.PassThrough))));
-            Fields.Set(menu, ("_playButton", buttons[0]), ("_settingsButton", buttons[1]),
-                ("_quitButton", buttons[2]), ("_versionText", version),
+            Fields.Set(menu, ("_pages", pages), ("_characters", characters),
+                ("_playButton", play), ("_charactersButton", row[0]), ("_settingsButton", row[1]), ("_quitButton", row[2]),
+                ("_backButton", back), ("_heroPreview", heroPreview), ("_healerPreview", healerPreview), ("_coinsText", coins),
+                ("_versionText", version), ("_coin", BuildUtility.Load<ScriptableObject>(BuildPaths.Data + "/economy/Currency_Coin.asset")),
                 ("_gameplayScene", BuildUtility.Load<SceneKey>(BuildPaths.SceneKeyGameplay)),
+                ("_music", AssetBuilder.Clip("music/menu-theme")), ("_swipe", AssetBuilder.Clip("ui/page-swipe")),
                 ("_quitTitleKey", "quit.title"), ("_quitMessageKey", "quit.message"), ("_quitConfirmKey", "quit.confirm"),
                 ("_quitCancelKey", "common.cancel"));
             BuildUtility.SavePrefab(canvas.gameObject, BuildPaths.MainMenuCanvas);
+        }
+
+        // Back (top left), title, Hero/Healer tabs, the card list (cards cloned from a template) and the detail panel.
+        private static Component BuildCharactersPage(ScreenParts parts, RectTransform pages, out Button back)
+        {
+            // One page width to the right of the home page.
+            RectTransform page = UiFactory.Rect("CharactersPage", pages).Stretch();
+            page.anchorMin = new Vector2(1f, 0f);
+            page.anchorMax = new Vector2(2f, 1f);
+            Component view = page.gameObject.AddComponent(GameTypes.CharacterPage);
+
+            RectTransform backRect = UiFactory.Rect("BackButton", page).Place(UiFactory.TopLeft, new Vector2(40f, -36f), new Vector2(102f, 102f));
+            back = UiFactory.AddButton(backRect, BuildUtility.Sprite("screens/main-menu/arrow-left"));
+            UiFactory.AddText(UiFactory.Rect("TitleLabel", page).Place(UiFactory.TopCenter, new Vector2(0f, -50f), new Vector2(1200f, 110f)),
+                string.Empty, 80f, Palette.Text).Localize("characters.title").raycastTarget = false;
+
+            Button heroTab = Tab(page, "HeroTab", new Vector2(-560f, 230f), "characters.tab.hero", out GameObject heroMark);
+            Button healerTab = Tab(page, "HealerTab", new Vector2(-220f, 230f), "characters.tab.healer", out GameObject healerMark);
+            UiFactory.LinkHorizontal(heroTab, healerTab);
+
+            RectTransform list = UiFactory.Rect("CardList", page).Place(UiFactory.Center, new Vector2(-390f, -40f), new Vector2(760f, 300f));
+            HorizontalLayoutGroup layout = UiFactory.AddRow(list.gameObject, 28f, TextAnchor.MiddleCenter);
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+
+            RectTransform card = UiFactory.Rect("CardTemplate", parts.Templates).Place(UiFactory.Center, Vector2.zero, new Vector2(200f, 275f));
+            Button cardButton = UiFactory.AddButton(card, BuildUtility.Sprite("screens/main-menu/character-card"));
+            Component cardPreview = Preview(card, "Preview", new Vector2(0f, 30f), new Vector2(190f, 150f), false);
+            TextMeshProUGUI cardName = UiFactory.AddText(UiFactory.Rect("NameLabel", card).BottomStretch(14f, 56f, 8f, 8f), string.Empty, 30f,
+                Palette.Text).Localize("hero.soldier.name");
+            cardName.raycastTarget = false;
+            Component cardView = card.gameObject.AddComponent(GameTypes.CharacterCard);
+            Fields.Set(cardView, ("_button", cardButton), ("_background", card.GetComponent<Image>()),
+                ("_normal", BuildUtility.Sprite("screens/main-menu/character-card")),
+                ("_chosen", BuildUtility.Sprite("screens/main-menu/character-card-selected")), ("_preview", cardPreview),
+                ("_name", cardName.GetComponent<LocalizedLabel>()));
+
+            RectTransform detail = UiFactory.Rect("Detail", page).Place(UiFactory.Center, new Vector2(430f, -40f), new Vector2(720f, 640f));
+            UiFactory.AddImage(detail, BuildUtility.Sprite("ui-common/popup-background")).raycastTarget = false;
+            Component preview = Preview(detail, "Preview", new Vector2(0f, 150f), new Vector2(504f, 396f), true);
+            TextMeshProUGUI name = UiFactory.AddText(UiFactory.Rect("NameLabel", detail).Place(UiFactory.Center, new Vector2(0f, -70f),
+                new Vector2(640f, 70f)), string.Empty, 54f, Palette.Text).Localize("hero.soldier.name");
+            name.raycastTarget = false;
+            name.fontStyle = FontStyles.Bold;
+            TextMeshProUGUI description = UiFactory.AddText(UiFactory.Rect("DescriptionLabel", detail).Place(UiFactory.Center, new Vector2(0f, -150f),
+                new Vector2(640f, 90f)), string.Empty, 32f, Palette.Text).Localize("hero.soldier.description");
+            description.raycastTarget = false;
+            description.textWrappingMode = TextWrappingModes.Normal;
+            TextMeshProUGUI stats = UiFactory.AddText(UiFactory.Rect("StatsLabel", detail).Place(UiFactory.Center, new Vector2(0f, -240f),
+                new Vector2(640f, 60f)), string.Empty, 30f, Palette.TextMuted).Localize("characters.stats.hero");
+            stats.raycastTarget = false;
+
+            Fields.Set(view, ("_heroTab", heroTab), ("_healerTab", healerTab), ("_heroTabMark", heroMark), ("_healerTabMark", healerMark),
+                ("_list", list), ("_cardTemplate", cardView), ("_preview", preview), ("_name", name.GetComponent<LocalizedLabel>()),
+                ("_description", description.GetComponent<LocalizedLabel>()), ("_stats", stats.GetComponent<LocalizedLabel>()),
+                ("_heroStatsKey", "characters.stats.hero"), ("_healerStatsKey", "characters.stats.healer"));
+            return view;
+        }
+
+        private static Button Tab(RectTransform parent, string name, Vector2 position, string key, out GameObject mark)
+        {
+            RectTransform rect = UiFactory.Rect(name, parent).Place(UiFactory.Center, position, new Vector2(320f, 90f));
+            Button button = UiFactory.AddButton(rect, BuildUtility.Sprite("ui-common/button-secondary"));
+            UiFactory.Label(rect, string.Empty, 40f).Localize(key);
+            RectTransform markRect = UiFactory.Rect("OpenMark", rect).Stretch(-10f, -10f, -10f, -10f);
+            UiFactory.AddImage(markRect, BuildUtility.Sprite("ui-common/focus-frame")).raycastTarget = false;
+            mark = markRect.gameObject;
+            return button;
+        }
+
+        // A character preview: an image playing idle frames (set at runtime), mirrored when it faces left.
+        private static Component Preview(RectTransform parent, string name, Vector2 position, Vector2 size, bool faceLeft)
+        {
+            RectTransform rect = UiFactory.Rect(name, parent).Place(UiFactory.Center, position, size);
+            Image image = UiFactory.AddImage(rect, null);
+            image.raycastTarget = false;
+            image.preserveAspect = true;
+            image.enabled = false;
+            if (faceLeft)
+            {
+                rect.localScale = new Vector3(-1f, 1f, 1f);
+            }
+
+            var flipbook = rect.gameObject.AddComponent<SpriteFlipbook>();
+            Fields.Set(flipbook, ("_image", image));
+            return flipbook;
         }
     }
 }

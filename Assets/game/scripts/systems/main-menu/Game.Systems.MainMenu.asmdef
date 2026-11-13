@@ -8,7 +8,10 @@
     "Game.Contracts",
     "Game.Foundation",
     "UnityEngine.UI",
-    "Unity.TextMeshPro"
+    "Unity.TextMeshPro",
+    "Paowa.Audio",
+    "Paowa.Economy",
+    "DOTween.Modules"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

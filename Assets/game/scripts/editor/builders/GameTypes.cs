@@ -36,6 +36,8 @@ namespace Game.Editor.Builders
         internal static Type DisplayConfirmPopup => Resolve(Settings, Settings, "DisplayConfirmPopup");
         internal static Type RebindCancelButton => Resolve(Settings, Settings, "RebindCancelButton");
         internal static Type MainMenuScreen => Resolve(MainMenu, MainMenu, "MainMenuScreen");
+        internal static Type CharacterPage => Resolve(MainMenu, MainMenu, "CharacterPage");
+        internal static Type CharacterCard => Resolve(MainMenu, MainMenu, "CharacterCard");
         internal static Type SplashScreen => Resolve(Splash, Splash, "SplashScreen");
         internal static Type SplashConfig => Resolve(Splash, Splash, "SplashConfig");
         internal static Type GameplayScreen => Resolve(Gameplay, Gameplay, "GameplayScreen");
