@@ -67,7 +67,7 @@ Mỗi đòn đánh (hero, quái, đòn mạnh từ gem Attack, chiêu healer) vu
 
 ## Art và âm thanh
 
-Danh sách đầy đủ và nguồn từng ảnh: [Docs/ART_SPEC.md](Docs/ART_SPEC.md) (mục "Còn là placeholder"); âm thanh: [Docs/AUDIO_SPEC.md](Docs/AUDIO_SPEC.md) (toàn bộ là placeholder). Art lấy từ `workspace/sprite-asset`: `character-for-healer-time` (hero: Martial Hero, Fantasy Warrior, Hero Knight, Huntress; healer: Evil Wizard 2 và 3; quái: Goblin, Skeleton, Mushroom, Flying Eye, Fire Worm, boss Medieval King), Raven Fantasy Icons (gem, item, hiệu ứng, coin), Mega Cozy UI Pack và FantasyUIfree (nút, khung, ô, thanh máu boss). Thay art: ghi đè PNG/WAV cùng tên rồi Build All.
+Danh sách đầy đủ và nguồn từng ảnh: [Docs/ART_SPEC.md](Docs/ART_SPEC.md) (mục "Còn là placeholder"); âm thanh: [Docs/AUDIO_SPEC.md](Docs/AUDIO_SPEC.md) (cột Nguồn). Art lấy từ `workspace/sprite-asset`: `character-for-healer-time` (hero: Martial Hero, Fantasy Warrior, Hero Knight, Huntress; healer: Evil Wizard 2 và 3; quái: Goblin, Skeleton, Mushroom, Flying Eye, Fire Worm, boss Medieval King), Raven Fantasy Icons (gem, item, coin), Mega Cozy UI Pack và FantasyUIfree (nút, khung, ô, thanh máu boss), Free Effect Bullet Impact Explosion 32x32 (hiệu ứng trúng đòn, hồi máu, giáp, phép), 0x72 Dungeon Tileset II (CC0; nền chiến trường, khu item, nền sau bàn gem, nền menu và loading ghép từ tile). Âm thanh hiệu ứng và UI: Comigo's Bleeps n Bloops; nhạc nền còn là placeholder. Font chữ: Fibberish (CC BY 3.0), file gốc ở `Assets/game/fonts/`, font asset do builder sinh. Thay art: ghi đè PNG/WAV cùng tên rồi Build All.
 
 ## Kiểm
 

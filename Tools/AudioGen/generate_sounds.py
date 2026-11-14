@@ -2,10 +2,11 @@
 
 Run from the repository root:  python Tools/AudioGen/generate_sounds.py   (standard library only)
 
-Placeholders only: each sound is a synthesized WAV at the length and in the form the final sound must have (a short
-tone for UI and effects, a seamless loop of notes for music, a seamless noise loop for ambience, syllable-like tones
-for voice), so the game runs and every sound is heard where it plays. Final audio replaces a file keeping its name (and
-Unity GUID). Output is byte-identical on every run.
+Each sound is either a WAV copied from a sound pack in workspace/sprite-asset (`source`), or a synthesized placeholder
+at the length and in the form the final sound must have (a short tone for UI and effects, a seamless loop of notes for
+music, a seamless noise loop for ambience, syllable-like tones for voice), so the game runs and every sound is heard
+where it plays. A sound whose pack is not on this machine keeps the WAV already on disk. Final audio replaces a file
+keeping its name (and Unity GUID). Output is byte-identical on every run.
 
 Declared here, once per sound (SOUNDS): path under Assets/game/audio (the folder is the category), category, length,
 loop, what it is for.
@@ -19,6 +20,7 @@ import json
 import math
 import pathlib
 import random
+import shutil
 import struct
 import wave
 from dataclasses import dataclass
@@ -27,6 +29,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / "Assets/game/audio"
 SPEC_JSON = OUTPUT / "audio-spec.json"
 SPEC_DOC = ROOT / "Docs/AUDIO_SPEC.md"
+PACK = ROOT.parents[1] / "sprite-asset" / "Comigo's Bleeps n Bloops"
+PACK_NAME = "Comigo's Bleeps n Bloops"
 RATE = 44100
 
 # What each category asks of the final sound, and how the builders import it.
@@ -46,6 +50,7 @@ class Sound:
     loop: bool
     note: str
     pitch: float = 440.0   # Base frequency of the placeholder; only tells sounds apart.
+    source: str = ""       # WAV file of the sound pack used instead of a placeholder
 
     @property
     def category(self):
@@ -54,31 +59,32 @@ class Sound:
 
 SOUNDS = [
     # ui
-    Sound("ui/volume-preview", 0.12, False, "Phát ở nhóm âm của thanh âm lượng khi kéo (Settings), để nghe ngay mức mới", 660.0),
-    Sound("ui/button-click", 0.08, False, "Bấm nút menu, popup", 880.0),
-    Sound("ui/page-swipe", 0.25, False, "Trượt trang Main Menu ↔ Chọn nhân vật", 520.0),
+    Sound("ui/volume-preview", 0.12, False, "Phát ở nhóm âm của thanh âm lượng khi kéo (Settings), để nghe ngay mức mới", 660.0,
+          "Press_04.wav"),
+    Sound("ui/button-click", 0.08, False, "Bấm nút menu, popup", 880.0, "Press_03.wav"),
+    Sound("ui/page-swipe", 0.25, False, "Trượt trang Main Menu ↔ Chọn nhân vật", 520.0, "Press_01.wav"),
     Sound("ui/coin", 0.2, False, "Nhận coin (hạ quái), mua item", 1320.0),
     # music
     Sound("music/menu-theme", 8.0, True, "Nhạc Main Menu, lặp liền mạch", 220.0),
     Sound("music/battle-theme", 8.0, True, "Nhạc trong trận, lặp liền mạch", 196.0),
     # sfx: board
-    Sound("sfx/gem-swap", 0.12, False, "Hai gem đổi chỗ", 600.0),
+    Sound("sfx/gem-swap", 0.12, False, "Hai gem đổi chỗ", 600.0, "Press_05.wav"),
     Sound("sfx/gem-invalid", 0.2, False, "Đổi chỗ không tạo match, gem trượt về", 160.0),
-    Sound("sfx/gem-match", 0.25, False, "Một nhóm gem nổ (cao dần theo combo)", 740.0),
+    Sound("sfx/gem-match", 0.25, False, "Một nhóm gem nổ (cao dần theo combo)", 740.0, "BreakGlass_01.wav"),
     Sound("sfx/board-shuffle", 0.5, False, "Bàn tự xáo khi hết nước đi, hoặc item xáo", 300.0),
-    Sound("sfx/bomb", 0.6, False, "Item bom nổ trên bàn", 90.0),
+    Sound("sfx/bomb", 0.6, False, "Item bom nổ trên bàn", 90.0, "BlastImpact_01.wav"),
     # sfx: battle
-    Sound("sfx/hero-attack", 0.18, False, "Hero vung đòn thường", 330.0),
-    Sound("sfx/hero-strike", 0.4, False, "Đòn mạnh của hero từ gem Attack", 250.0),
-    Sound("sfx/monster-attack", 0.2, False, "Quái đánh", 140.0),
-    Sound("sfx/hit", 0.15, False, "Trúng đòn (hero hoặc quái)", 180.0),
-    Sound("sfx/heal", 0.45, False, "Hồi máu từ gem Heal hoặc bình máu", 523.0),
-    Sound("sfx/shield", 0.4, False, "Nhận giáp ảo từ gem Defense hoặc item", 392.0),
-    Sound("sfx/magic-charge", 0.35, False, "Thanh Magic của healer nạp thêm", 659.0),
-    Sound("sfx/healer-skill", 0.7, False, "Healer tung đòn hỗ trợ khi thanh Magic đầy", 784.0),
-    Sound("sfx/monster-death", 0.4, False, "Quái gục", 120.0),
-    Sound("sfx/boss-appear", 0.9, False, "Boss xuất hiện", 98.0),
-    Sound("sfx/hero-death", 0.9, False, "Hero gục, hết lượt", 110.0),
+    Sound("sfx/hero-attack", 0.18, False, "Hero vung đòn thường", 330.0, "ShootShort.wav"),
+    Sound("sfx/hero-strike", 0.4, False, "Đòn mạnh của hero từ gem Attack", 250.0, "HeavyShot_01.wav"),
+    Sound("sfx/monster-attack", 0.2, False, "Quái đánh", 140.0, "Shoot_02.wav"),
+    Sound("sfx/hit", 0.15, False, "Trúng đòn (hero hoặc quái)", 180.0, "Impact_01.wav"),
+    Sound("sfx/heal", 0.45, False, "Hồi máu từ gem Heal hoặc bình máu", 523.0, "PowerUp_01.wav"),
+    Sound("sfx/shield", 0.4, False, "Nhận giáp ảo từ gem Defense hoặc item", 392.0, "MetalBars_01.wav"),
+    Sound("sfx/magic-charge", 0.35, False, "Thanh Magic của healer nạp thêm", 659.0, "EnergyZap.wav"),
+    Sound("sfx/healer-skill", 0.7, False, "Healer tung đòn hỗ trợ khi thanh Magic đầy", 784.0, "HeavyZap.wav"),
+    Sound("sfx/monster-death", 0.4, False, "Quái gục", 120.0, "BlastImpact_02.wav"),
+    Sound("sfx/boss-appear", 0.9, False, "Boss xuất hiện", 98.0, "Alarm_01.wav"),
+    Sound("sfx/hero-death", 0.9, False, "Hero gục, hết lượt", 110.0, "Shutdown.wav"),
 ]
 
 
@@ -164,10 +170,20 @@ def brief():
     ]
     for name, info in CATEGORIES.items():
         out.append(f"| `{name}` | {info['channels']} | {info['level']} | {info['import']} |")
-    out += ["", "| File | Nhóm | Độ dài | Lặp | Dùng cho |", "|---|---|---|---|---|"]
+    out += ["", "| File | Nhóm | Độ dài | Lặp | Dùng cho | Nguồn |", "|---|---|---|---|---|---|"]
     for s in SOUNDS:
-        out.append(f"| `{s.path}.wav` | {s.category} | {s.seconds:g} s | {'có' if s.loop else 'không'} | {s.note} |")
+        origin = f"{PACK_NAME}: `{s.source}`" if s.source else "**placeholder**"
+        out.append(f"| `{s.path}.wav` | {s.category} | {seconds(s):g} s | {'có' if s.loop else 'không'} | {s.note} | {origin} |")
     return "\n".join(out)
+
+
+def seconds(sound):
+    """Length of the pack file when the sound comes from the pack, else the declared length."""
+    path = OUTPUT / f"{sound.path}.wav"
+    if sound.source and path.exists():
+        with wave.open(str(path), "rb") as audio:
+            return round(audio.getnframes() / audio.getframerate(), 2)
+    return sound.seconds
 
 
 def main():
@@ -176,12 +192,21 @@ def main():
     unknown = sorted({s.category for s in SOUNDS} - set(CATEGORIES))
     if duplicates or unknown:
         raise ValueError(f"Duplicate sounds {duplicates}; unknown categories {unknown}")
+    copied = 0
     for sound in SOUNDS:
-        write_wav(OUTPUT / f"{sound.path}.wav", render(sound))
-    spec = {"sounds": [{"path": s.path, "category": s.category, "seconds": s.seconds, "loop": s.loop} for s in SOUNDS]}
+        target = OUTPUT / f"{sound.path}.wav"
+        if sound.source and (PACK / sound.source).exists():
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(PACK / sound.source, target)
+            copied += 1
+        elif sound.source and target.exists():
+            print(f"  {sound.path}: pack not found, keeping the existing WAV")
+        else:
+            write_wav(target, render(sound))
+    spec = {"sounds": [{"path": s.path, "category": s.category, "seconds": seconds(s), "loop": s.loop} for s in SOUNDS]}
     SPEC_JSON.write_text(json.dumps(spec, indent=2) + "\n", encoding="utf-8")
     SPEC_DOC.write_text(brief() + "\n", encoding="utf-8")
-    print(f"{len(SOUNDS)} sounds; {SPEC_JSON.relative_to(ROOT)}, {SPEC_DOC.relative_to(ROOT)}")
+    print(f"{len(SOUNDS)} sounds ({copied} from the pack); {SPEC_JSON.relative_to(ROOT)}, {SPEC_DOC.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":
