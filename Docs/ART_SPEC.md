@@ -12,12 +12,7 @@ Một đơn vị thế giới = 128 px. Thư mục và pack theo chuẩn của p
 ## Còn là placeholder (cần art)
 
 - `backgrounds/splash-background`
-- `backgrounds/menu-background`
-- `backgrounds/loading-background`
 - `screens/splash/splash-logo`
-- `game/props/battlefield`
-- `game/props/camp`
-- `game/props/board-backdrop`
 
 Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.
 
@@ -41,8 +36,8 @@ Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.
 | Ảnh | Kích thước (px) | Hình | 9-slice | Pivot | Dùng cho | Nguồn |
 |---|---|---|---|---|---|---|
 | `splash-background.png` | 1920×1080 | rect | — | giữa | Nền splash | **placeholder** |
-| `menu-background.png` | 1920×1080 | rect | — | giữa | Nền Main Menu (đồng cỏ, trời) | **placeholder** |
-| `loading-background.png` | 1920×1080 | rect | — | giữa | Nền màn loading | **placeholder** |
+| `menu-background.png` | 1920×1080 | rect | — | giữa | Nền Main Menu (sảnh dungeon) | 0x72 Dungeon Tileset II (CC0): ghép tile (hall) ×4 |
+| `loading-background.png` | 1920×1080 | rect | — | giữa | Nền màn loading | 0x72 Dungeon Tileset II (CC0): ghép tile (wall) ×4 |
 
 ## `screens/splash`
 
@@ -76,7 +71,7 @@ Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.
 | `character-card-selected.png` | 160×220 | rounded | — | giữa | Thẻ nhân vật đang chọn | Mega Cozy UI Pack (dobo_ui, bản demo): `Cards/Card1_purple.png` ×4 |
 | `arrow-left.png` | 102×102 | rect | — | giữa | Nút quay về (trang nhân vật → menu) | Mega Cozy UI Pack (dobo_ui, bản demo): `Arrows/Arrow3_wood.png` ×3 |
 | `arrow-right.png` | 102×102 | rect | — | giữa | Nút sang trang nhân vật | Mega Cozy UI Pack (dobo_ui, bản demo): `Arrows/Arrow4_wood.png` ×3 |
-| `stage.png` | 528×120 | ellipse | — | giữa | Bệ đứng của nhân vật ở menu (bóng cỏ) | lớp màu phẳng (không cần art) |
+| `stage.png` | 528×120 | ellipse | — | giữa | Bóng dưới chân nhân vật ở menu | lớp màu phẳng (không cần art) |
 
 ## `screens/gameplay`
 
@@ -103,9 +98,9 @@ Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.
 
 | Ảnh | Kích thước (px) | Hình | 9-slice | Pivot | Dùng cho | Nguồn |
 |---|---|---|---|---|---|---|
-| `battlefield.png` | 1088×648 | rect | — | giữa | Nền chiến trường (nửa phải, phía trên): thấy 960×520 ở giữa, tràn 64 px mỗi cạnh để rung không lộ mép; mặt đất cách đáy 104 px | **placeholder** |
-| `camp.png` | 960×560 | rect | — | giữa | Nền trại của healer (nửa phải, phía dưới: item, healer) | **placeholder** |
-| `board-backdrop.png` | 960×1080 | rect | — | giữa | Nền sau bàn ghép (nửa trái) | **placeholder** |
+| `battlefield.png` | 1088×648 | rect | — | giữa | Nền chiến trường (nửa phải, phía trên): thấy 960×520 ở giữa, tràn 64 px mỗi cạnh để rung không lộ mép; mặt đất cách đáy 104 px | 0x72 Dungeon Tileset II (CC0): ghép tile (hall) ×4 |
+| `camp.png` | 960×560 | rect | — | giữa | Nền khu item (nửa phải, phía dưới) | 0x72 Dungeon Tileset II (CC0): ghép tile (floor) ×4 |
+| `board-backdrop.png` | 960×1080 | rect | — | giữa | Nền sau bàn ghép (nửa trái) | 0x72 Dungeon Tileset II (CC0): ghép tile (wall) ×4 |
 | `hp-bar-track.png` | 64×32 | bar | 12 | giữa | Rãnh thanh máu trên đầu nhân vật | lớp màu phẳng (không cần art) |
 | `hp-bar-fill.png` | 64×32 | bar | 12 | 0.0, 0.5 | Máu của hero | lớp màu phẳng (không cần art) |
 | `hp-bar-fill-enemy.png` | 64×32 | bar | 12 | 0.0, 0.5 | Máu của quái | lớp màu phẳng (không cần art) |
@@ -116,11 +111,26 @@ Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.
 
 | Ảnh | Kích thước (px) | Hình | 9-slice | Pivot | Dùng cho | Nguồn |
 |---|---|---|---|---|---|---|
-| `fx-hit.png` | 128×128 | ellipse | — | giữa | Hiệu ứng trúng đòn | Raven Fantasy Icons (Clockwork Raven): ô (47, 14) ×4 |
-| `fx-heal.png` | 128×128 | ellipse | — | giữa | Hiệu ứng hồi máu | Raven Fantasy Icons (Clockwork Raven): ô (48, 12) ×4 |
-| `fx-shield.png` | 128×128 | rect | — | giữa | Hiệu ứng nhận giáp | Raven Fantasy Icons (Clockwork Raven): ô (53, 7) ×4 |
-| `fx-magic.png` | 128×128 | ellipse | — | giữa | Hiệu ứng phép của healer nổ trên quái | Raven Fantasy Icons (Clockwork Raven): ô (48, 5) ×4 |
-| `fx-magic-orb.png` | 150×150 | ellipse | — | giữa | Viên phép bay (gem Magic → healer, healer → quái) | character-for-healer-time (LuizMelo, CC0): `Evil Wizard 3/Evil Wizard 3/Sprites/Projectile/Moving.png` vùng (0, 0, 50, 50) ×3 |
+| `fx-hit-0.png` | 128×128 | ellipse | — | giữa | Hiệu ứng trúng đòn (frame 1/4) | Free Effect Bullet Impact Explosion 32x32: `Red Effect Bullet Impact Explosion 32x32.png` vùng (512, 352, 544, 384) ×4 |
+| `fx-hit-1.png` | 128×128 | ellipse | — | giữa | Hiệu ứng trúng đòn (frame 2/4) | Free Effect Bullet Impact Explosion 32x32: `Red Effect Bullet Impact Explosion 32x32.png` vùng (544, 352, 576, 384) ×4 |
+| `fx-hit-2.png` | 128×128 | ellipse | — | giữa | Hiệu ứng trúng đòn (frame 3/4) | Free Effect Bullet Impact Explosion 32x32: `Red Effect Bullet Impact Explosion 32x32.png` vùng (576, 352, 608, 384) ×4 |
+| `fx-hit-3.png` | 128×128 | ellipse | — | giữa | Hiệu ứng trúng đòn (frame 4/4) | Free Effect Bullet Impact Explosion 32x32: `Red Effect Bullet Impact Explosion 32x32.png` vùng (608, 352, 640, 384) ×4 |
+| `fx-heal-0.png` | 128×128 | ellipse | — | giữa | Hiệu ứng hồi máu (frame 1/4) | Free Effect Bullet Impact Explosion 32x32: `Green Effect Bullet Impact Explosion 32x32.png` vùng (192, 224, 224, 256) ×4 |
+| `fx-heal-1.png` | 128×128 | ellipse | — | giữa | Hiệu ứng hồi máu (frame 2/4) | Free Effect Bullet Impact Explosion 32x32: `Green Effect Bullet Impact Explosion 32x32.png` vùng (224, 224, 256, 256) ×4 |
+| `fx-heal-2.png` | 128×128 | ellipse | — | giữa | Hiệu ứng hồi máu (frame 3/4) | Free Effect Bullet Impact Explosion 32x32: `Green Effect Bullet Impact Explosion 32x32.png` vùng (256, 224, 288, 256) ×4 |
+| `fx-heal-3.png` | 128×128 | ellipse | — | giữa | Hiệu ứng hồi máu (frame 4/4) | Free Effect Bullet Impact Explosion 32x32: `Green Effect Bullet Impact Explosion 32x32.png` vùng (288, 224, 320, 256) ×4 |
+| `fx-shield-0.png` | 128×128 | ellipse | — | giữa | Hiệu ứng nhận giáp (frame 1/4) | Free Effect Bullet Impact Explosion 32x32: `Blue Effect Bullet Impact Explosion 32x32.png` vùng (512, 224, 544, 256) ×4 |
+| `fx-shield-1.png` | 128×128 | ellipse | — | giữa | Hiệu ứng nhận giáp (frame 2/4) | Free Effect Bullet Impact Explosion 32x32: `Blue Effect Bullet Impact Explosion 32x32.png` vùng (544, 224, 576, 256) ×4 |
+| `fx-shield-2.png` | 128×128 | ellipse | — | giữa | Hiệu ứng nhận giáp (frame 3/4) | Free Effect Bullet Impact Explosion 32x32: `Blue Effect Bullet Impact Explosion 32x32.png` vùng (576, 224, 608, 256) ×4 |
+| `fx-shield-3.png` | 128×128 | ellipse | — | giữa | Hiệu ứng nhận giáp (frame 4/4) | Free Effect Bullet Impact Explosion 32x32: `Blue Effect Bullet Impact Explosion 32x32.png` vùng (608, 224, 640, 256) ×4 |
+| `fx-magic-0.png` | 128×128 | ellipse | — | giữa | Hiệu ứng phép nổ (nạp Magic, chiêu healer) (frame 1/4) | Free Effect Bullet Impact Explosion 32x32: `Purple Effect Bullet Impact Explosion 32x32.png` vùng (512, 384, 544, 416) ×4 |
+| `fx-magic-1.png` | 128×128 | ellipse | — | giữa | Hiệu ứng phép nổ (nạp Magic, chiêu healer) (frame 2/4) | Free Effect Bullet Impact Explosion 32x32: `Purple Effect Bullet Impact Explosion 32x32.png` vùng (544, 384, 576, 416) ×4 |
+| `fx-magic-2.png` | 128×128 | ellipse | — | giữa | Hiệu ứng phép nổ (nạp Magic, chiêu healer) (frame 3/4) | Free Effect Bullet Impact Explosion 32x32: `Purple Effect Bullet Impact Explosion 32x32.png` vùng (576, 384, 608, 416) ×4 |
+| `fx-magic-3.png` | 128×128 | ellipse | — | giữa | Hiệu ứng phép nổ (nạp Magic, chiêu healer) (frame 4/4) | Free Effect Bullet Impact Explosion 32x32: `Purple Effect Bullet Impact Explosion 32x32.png` vùng (608, 384, 640, 416) ×4 |
+| `fx-magic-orb-0.png` | 128×128 | ellipse | — | giữa | Viên phép bay từ healer tới quái, lặp trong lúc bay (frame 1/4) | Free Effect Bullet Impact Explosion 32x32: `Purple Effect Bullet Impact Explosion 32x32.png` vùng (352, 64, 384, 96) ×4 |
+| `fx-magic-orb-1.png` | 128×128 | ellipse | — | giữa | Viên phép bay từ healer tới quái, lặp trong lúc bay (frame 2/4) | Free Effect Bullet Impact Explosion 32x32: `Purple Effect Bullet Impact Explosion 32x32.png` vùng (384, 64, 416, 96) ×4 |
+| `fx-magic-orb-2.png` | 128×128 | ellipse | — | giữa | Viên phép bay từ healer tới quái, lặp trong lúc bay (frame 3/4) | Free Effect Bullet Impact Explosion 32x32: `Purple Effect Bullet Impact Explosion 32x32.png` vùng (416, 64, 448, 96) ×4 |
+| `fx-magic-orb-3.png` | 128×128 | ellipse | — | giữa | Viên phép bay từ healer tới quái, lặp trong lúc bay (frame 4/4) | Free Effect Bullet Impact Explosion 32x32: `Purple Effect Bullet Impact Explosion 32x32.png` vùng (448, 64, 480, 96) ×4 |
 
 ## `ui-glyphs`
 

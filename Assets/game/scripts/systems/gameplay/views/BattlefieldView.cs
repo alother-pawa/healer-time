@@ -21,6 +21,7 @@ namespace Game.Systems.Gameplay
     internal sealed class BattlefieldView : MonoBehaviour
     {
         private const float DeathFadeSeconds = 0.9f;
+        private const float EffectFrameSeconds = 0.08f;
 
         [SerializeField] private CharacterView _hero;
         [SerializeField] private CharacterView _healer;
@@ -30,11 +31,11 @@ namespace Game.Systems.Gameplay
         [SerializeField] private Transform _monsterEntry;
         [SerializeField] private TextMeshPro _textTemplate;
         [SerializeField] private SpriteRenderer _fxTemplate;
-        [SerializeField] private Sprite _hitFx;
-        [SerializeField] private Sprite _healFx;
-        [SerializeField] private Sprite _shieldFx;
-        [SerializeField] private Sprite _magicFx;
-        [SerializeField] private Sprite _orb;
+        [SerializeField] private Sprite[] _hitFx = new Sprite[0];
+        [SerializeField] private Sprite[] _healFx = new Sprite[0];
+        [SerializeField] private Sprite[] _shieldFx = new Sprite[0];
+        [SerializeField] private Sprite[] _magicFx = new Sprite[0];
+        [SerializeField] private Sprite[] _orb = new Sprite[0];
         [SerializeField] private Transform _shakeRoot;
         [SerializeField] private Color _damageColor = new Color(1f, 0.93f, 0.8f);
         [SerializeField] private Color _hurtColor = new Color(1f, 0.35f, 0.3f);
@@ -66,13 +67,13 @@ namespace Game.Systems.Gameplay
 
         internal Color MagicColor => _magicColor;
 
-        internal Sprite HitFx => _hitFx;
+        internal Sprite[] HitFx => _hitFx;
 
-        internal Sprite HealFx => _healFx;
+        internal Sprite[] HealFx => _healFx;
 
-        internal Sprite ShieldFx => _shieldFx;
+        internal Sprite[] ShieldFx => _shieldFx;
 
-        internal Sprite MagicFx => _magicFx;
+        internal Sprite[] MagicFx => _magicFx;
 
         internal Transform ShakeRoot => _shakeRoot;
 
@@ -194,26 +195,26 @@ namespace Game.Systems.Gameplay
                 .Gate(_animations);
         }
 
-        /// <summary>A burst on a character (nothing with animations off).</summary>
-        internal void Burst(Target target, Sprite sprite, float size = 1f)
+        /// <summary>An effect's frames played once on a character (nothing with animations off).</summary>
+        internal void Burst(Target target, Sprite[] frames, float size = 1f)
         {
-            if (!Animate || sprite == null)
+            if (!Animate || frames == null || frames.Length == 0)
             {
                 return;
             }
 
             SpriteRenderer fx = Take(_fx, _fxTemplate);
-            fx.sprite = sprite;
+            fx.sprite = frames[0];
             fx.color = Color.white;
             Transform t = fx.transform;
             t.position = Middle(target);
-            t.localScale = Vector3.one * (0.4f * size);
-            t.rotation = Quaternion.Euler(0f, 0f, Random.Range(-20f, 20f));
+            t.localScale = Vector3.one * (0.7f * size);
+            t.rotation = Quaternion.identity;
             DOTween.Kill(t);
             DOTween.Kill(fx);
             DOTween.Sequence().SetTarget(t)
-                .Append(t.DOScale(1.3f * size, 0.25f).SetEase(Ease.OutBack))
-                .Append(fx.DOFade(0f, 0.25f))
+                .Append(t.DOScale(size, 0.08f).SetEase(Ease.OutBack))
+                .Insert(0f, FrameTween(fx, frames, EffectFrameSeconds * frames.Length))
                 .OnComplete(() => fx.gameObject.SetActive(false))
                 .SetLink(fx.gameObject)
                 .Gate(_animations);
@@ -222,27 +223,37 @@ namespace Game.Systems.Gameplay
         /// <summary>An orb flying from <paramref name="from"/> to a character; completes when it lands (at once when off).</summary>
         internal Awaitable Orb(Vector3 from, Target to, float seconds)
         {
-            if (!Animate || _orb == null)
+            if (!Animate || _orb.Length == 0)
             {
                 return TweenGateExtensions.AsAwaitable(null);
             }
 
             SpriteRenderer orb = Take(_fx, _fxTemplate);
-            orb.sprite = _orb;
+            orb.sprite = _orb[0];
             orb.color = Color.white;
             Transform t = orb.transform;
             from.z = 0f;
             t.position = from;
-            t.localScale = Vector3.one * 0.7f;
-            Vector3 target = Middle(to);
-            Vector3 direction = target - from;
-            t.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 45f);
+            t.localScale = Vector3.one * 0.8f;
+            t.rotation = Quaternion.identity;
             DOTween.Kill(t);
-            Tween tween = t.DOJump(target, 1.2f, 1, seconds).SetEase(Ease.InQuad)
+            DOTween.Kill(orb);
+            // The orb's frames loop while it flies.
+            int loops = Mathf.Max(1, Mathf.RoundToInt(seconds / (EffectFrameSeconds * _orb.Length)));
+            Tween tween = DOTween.Sequence().SetTarget(t)
+                .Append(t.DOJump(Middle(to), 1.2f, 1, seconds).SetEase(Ease.InQuad))
+                .Insert(0f, FrameTween(orb, _orb, seconds / loops).SetLoops(loops))
                 .OnComplete(() => orb.gameObject.SetActive(false))
                 .SetLink(orb.gameObject)
                 .Gate(_animations);
             return tween.AsAwaitable();
+        }
+
+        // Shows the frames one after another over the duration.
+        private static Tween FrameTween(SpriteRenderer renderer, Sprite[] frames, float seconds)
+        {
+            return DOTween.To(() => 0f, value => renderer.sprite = frames[Mathf.Min(frames.Length - 1, (int)value)],
+                frames.Length, seconds).SetEase(Ease.Linear);
         }
 
         /// <summary>World position of a character's middle (for effects that start or end there).</summary>

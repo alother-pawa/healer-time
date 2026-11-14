@@ -767,7 +767,7 @@
       ]
     },
     {
-      "path": "game/effects/fx-hit",
+      "path": "game/effects/fx-hit-0",
       "width": 128,
       "height": 128,
       "border": [
@@ -782,7 +782,7 @@
       ]
     },
     {
-      "path": "game/effects/fx-heal",
+      "path": "game/effects/fx-hit-1",
       "width": 128,
       "height": 128,
       "border": [
@@ -797,7 +797,7 @@
       ]
     },
     {
-      "path": "game/effects/fx-shield",
+      "path": "game/effects/fx-hit-2",
       "width": 128,
       "height": 128,
       "border": [
@@ -812,7 +812,7 @@
       ]
     },
     {
-      "path": "game/effects/fx-magic",
+      "path": "game/effects/fx-hit-3",
       "width": 128,
       "height": 128,
       "border": [
@@ -827,9 +827,234 @@
       ]
     },
     {
-      "path": "game/effects/fx-magic-orb",
-      "width": 150,
-      "height": 150,
+      "path": "game/effects/fx-heal-0",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-heal-1",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-heal-2",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-heal-3",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-shield-0",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-shield-1",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-shield-2",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-shield-3",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-magic-0",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-magic-1",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-magic-2",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-magic-3",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-magic-orb-0",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-magic-orb-1",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-magic-orb-2",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/effects/fx-magic-orb-3",
+      "width": 128,
+      "height": 128,
       "border": [
         0,
         0,

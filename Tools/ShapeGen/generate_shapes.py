@@ -60,8 +60,12 @@ COZY = "DEMO_MegaCozyUIPack_doboui - copia/DEMO_MegaCozyUIPack_doboui - copia"
 RAVEN = "Free - Raven Fantasy Icons/Free - Raven Fantasy Icons/Full Spritesheet/32x32.png"
 FANTASY_UI = "FantasyUIfree/FantasyUIfree"
 CHARACTERS = "character-for-healer-time"
+IMPACT_FX = "Free Effect Bullet Impact Explosion 32x32 V1"
+DUNGEON = "0x72_DungeonTilesetII_v1.7/0x72_DungeonTilesetII_v1.7"
 PACK_NAMES = {COZY: "Mega Cozy UI Pack (dobo_ui, bản demo)", RAVEN: "Raven Fantasy Icons (Clockwork Raven)",
-              FANTASY_UI: "Fantasy UI free", CHARACTERS: "character-for-healer-time (LuizMelo, CC0)"}
+              FANTASY_UI: "Fantasy UI free", CHARACTERS: "character-for-healer-time (LuizMelo, CC0)",
+              IMPACT_FX: "Free Effect Bullet Impact Explosion 32x32",
+              DUNGEON: "0x72 Dungeon Tileset II (CC0)"}
 
 
 @dataclass(frozen=True)
@@ -77,6 +81,9 @@ class Art:
     strips: tuple = ()          # sheets: one animation strip file per tag (frames left to right), in tag order
     frame_width: int = 0        # sheets: width of a frame in the strips (0: square frames, as wide as the strip is high)
     crop: tuple = None          # sheets: (left, top, right, bottom) taken from every frame of the strips
+    tiles: str = ""             # a backdrop laid out from dungeon tiles: hall (wall over a floor), floor, wall
+    ground: int = 0             # hall: height of the floor band under the wall, in tile-sheet pixels
+    shade: float = 0.0          # darkening over the whole backdrop (0..1), so characters and UI stand out
 
 
 @dataclass
@@ -135,6 +142,18 @@ def raven(row, column, scale, hue=0):
 
 def fantasy(box, scale, file="freefantasy.png"):
     return Art(FANTASY_UI, file=file, box=box, scale=scale)
+
+
+def dungeon(tiles, ground=0, shade=0.0):
+    return Art(DUNGEON, file="0x72_DungeonTilesetII_v1.7.png", tiles=tiles, ground=ground, shade=shade, scale=4)
+
+
+def effect_frames(name, colour, row, column, fill, note):
+    """Four 32 px frames of one effect of the impact pack (one row, `column` the first), shown x4: game/effects/<name>-<n>."""
+    file = f"{colour} Effect Bullet Impact Explosion 32x32.png"
+    return [Sprite(f"game/effects/{name}-{i}", px(128), "ellipse", fill, f"{note} (frame {i + 1}/4)",
+                   art=Art(IMPACT_FX, file=file, box=((column + i) * 32, row * 32, (column + i + 1) * 32, (row + 1) * 32),
+                           scale=4)) for i in range(4)]
 
 
 def previous_sheet(path):
@@ -230,8 +249,9 @@ SPRITES = [
     Sprite("ui-common/coin-icon", px(64), "ellipse", FOCUS, "Icon đồng coin", art=raven(8, 2, 2)),
     # backgrounds: full screen, never packed.
     Sprite("backgrounds/splash-background", SCREEN, "rect", "#F3DDB3", "Nền splash"),
-    Sprite("backgrounds/menu-background", SCREEN, "rect", "#F3DDB3", "Nền Main Menu (đồng cỏ, trời)"),
-    Sprite("backgrounds/loading-background", SCREEN, "rect", "#F3DDB3", "Nền màn loading"),
+    Sprite("backgrounds/menu-background", SCREEN, "rect", "#F3DDB3", "Nền Main Menu (sảnh dungeon)",
+           art=dungeon("hall", ground=72, shade=0.25)),
+    Sprite("backgrounds/loading-background", SCREEN, "rect", "#F3DDB3", "Nền màn loading", art=dungeon("wall", shade=0.55)),
     # screens/splash
     Sprite("screens/splash/splash-logo", px(320), "rounded", MAGIC, "Logo studio"),
     # screens/loading
@@ -255,7 +275,7 @@ SPRITES = [
            art=cozy("Arrows/Arrow3_wood.png", 3)),
     Sprite("screens/main-menu/arrow-right", (102, 102), "rect", WOOD, "Nút sang trang nhân vật",
            art=cozy("Arrows/Arrow4_wood.png", 3)),
-    Sprite("screens/main-menu/stage", (528, 120), "ellipse", "#7FB548", "Bệ đứng của nhân vật ở menu (bóng cỏ)", opacity=0.8,
+    Sprite("screens/main-menu/stage", (528, 120), "ellipse", "#000000", "Bóng dưới chân nhân vật ở menu", opacity=0.45,
            plain=True),
     # screens/gameplay: board, items, bars, HUD.
     Sprite("screens/gameplay/gem-attack", GEM, "rect", HEALTH, "Gem Attack: đỏ, hình thoi", art=raven(10, 4, 3, hue=140)),
@@ -285,23 +305,22 @@ SPRITES = [
     Sprite("game/props/battlefield", (1088, 648), "rect", SKY,
            "Nền chiến trường (nửa phải, phía trên): thấy 960×520 ở giữa, tràn 64 px mỗi cạnh để rung không lộ mép; "
            "mặt đất cách đáy 104 px",
-           pivot=CENTER),
-    Sprite("game/props/camp", (960, 560), "rect", "#8C5A3C", "Nền trại của healer (nửa phải, phía dưới: item, healer)",
-           pivot=CENTER),
-    Sprite("game/props/board-backdrop", (960, 1080), "rect", "#5B3A2B", "Nền sau bàn ghép (nửa trái)", pivot=CENTER),
+           pivot=CENTER, art=dungeon("hall", ground=26)),
+    Sprite("game/props/camp", (960, 560), "rect", "#8C5A3C", "Nền khu item (nửa phải, phía dưới)",
+           pivot=CENTER, art=dungeon("floor", shade=0.35)),
+    Sprite("game/props/board-backdrop", (960, 1080), "rect", "#5B3A2B", "Nền sau bàn ghép (nửa trái)", pivot=CENTER,
+           art=dungeon("wall", shade=0.55)),
     Sprite("game/props/hp-bar-track", BAR, "bar", WOOD_DARK, "Rãnh thanh máu trên đầu nhân vật", border=12, plain=True),
     Sprite("game/props/hp-bar-fill", BAR, "bar", "#46A758", "Máu của hero", border=12, pivot=(0.0, 0.5), plain=True),
     Sprite("game/props/hp-bar-fill-enemy", BAR, "bar", HEALTH, "Máu của quái", border=12, pivot=(0.0, 0.5), plain=True),
     Sprite("game/props/magic-bar-fill", BAR, "bar", MAGIC, "Thanh Magic trên đầu healer", border=12, pivot=(0.0, 0.5), plain=True),
     Sprite("game/props/armor-bar-fill", BAR, "bar", ARMOR, "Giáp ảo của hero (chồng trên thanh máu)", border=12, pivot=(0.0, 0.5),
            plain=True),
-    Sprite("game/effects/fx-hit", px(128), "ellipse", "#FF9A3C", "Hiệu ứng trúng đòn", art=raven(47, 14, 4)),
-    Sprite("game/effects/fx-heal", px(128), "ellipse", "#46A758", "Hiệu ứng hồi máu", art=raven(48, 12, 4)),
-    Sprite("game/effects/fx-shield", px(128), "rect", ARMOR, "Hiệu ứng nhận giáp", art=raven(53, 7, 4)),
-    Sprite("game/effects/fx-magic", px(128), "ellipse", MAGIC, "Hiệu ứng phép của healer nổ trên quái", art=raven(48, 5, 4)),
-    Sprite("game/effects/fx-magic-orb", px(150), "ellipse", MAGIC, "Viên phép bay (gem Magic → healer, healer → quái)",
-           art=Art(CHARACTERS, file="Evil Wizard 3/Evil Wizard 3/Sprites/Projectile/Moving.png", box=(0, 0, 50, 50), scale=3)),
-] + [
+] + effect_frames("fx-hit", "Red", 11, 16, "#FF9A3C", "Hiệu ứng trúng đòn") \
+  + effect_frames("fx-heal", "Green", 7, 6, "#46A758", "Hiệu ứng hồi máu") \
+  + effect_frames("fx-shield", "Blue", 7, 16, ARMOR, "Hiệu ứng nhận giáp") \
+  + effect_frames("fx-magic", "Purple", 12, 16, MAGIC, "Hiệu ứng phép nổ (nạp Magic, chiêu healer)") \
+  + effect_frames("fx-magic-orb", "Purple", 2, 11, MAGIC, "Viên phép bay từ healer tới quái, lặp trong lúc bay") + [
     # ui-glyphs: button prompts. A glyph with a border is a frame the prompt writes the key or button name on.
     Sprite("ui-glyphs/key", GLYPH, "rounded", PANEL, "Phím bàn phím (chữ phím do prompt viết)", border=16),
 ] + [
@@ -448,6 +467,8 @@ def art_sprite(sprite, path):
     """The pack image (or its icon cell, or a box of it) scaled by its whole factor, centred on a canvas of the declared size."""
     art = sprite.art
     image = Image.open(path).convert("RGBA")
+    if art.tiles:
+        return dungeon_backdrop(sprite, image, art)
     if art.cell:
         row, column = art.cell
         image = image.crop((column * 32, row * 32, column * 32 + 32, row * 32 + 32))
@@ -483,6 +504,49 @@ def art_sheet(sheet, path):
             cell = strip.crop((column * wide + left, top, column * wide + right, bottom))
             image.paste(cell, (column * fw, row * fh))
     return image
+
+
+# Tiles of the 0x72 dungeon sheet: (left, top, width, height).
+WALL, WALL_TOP = (32, 16, 16, 16), (32, 0, 16, 16)
+BANNERS = [(16, 32, 16, 16), (32, 32, 16, 16), (16, 48, 16, 16), (32, 48, 16, 16)]
+COLUMN = (80, 80, 16, 48)
+FLOORS = [(16, 64, 16, 16)] * 30 + [(32, 64, 16, 16), (48, 64, 16, 16), (16, 80, 16, 16), (32, 80, 16, 16),
+                                    (48, 80, 16, 16), (16, 96, 16, 16), (32, 96, 16, 16)]
+
+
+def dungeon_backdrop(sprite, sheet, art):
+    """
+    A backdrop laid out from dungeon tiles at the sheet's size, then scaled by its whole factor (crisp pixels). hall: brick
+    wall over a floor band `ground` px high, banners every fourth tile and columns between them, the top shaded; floor:
+    floor tiles only; wall: bricks only. Tiles are placed from the bottom-left so the floor line is exact; varied floor tiles
+    come from a fixed seed (the same image every run). `shade` darkens it all.
+    """
+    import random
+    width, height = -(-sprite.size[0] // art.scale), -(-sprite.size[1] // art.scale)
+    canvas = Image.new("RGBA", (width, height), (0, 0, 0, 255))
+    tile = lambda box: sheet.crop((box[0], box[1], box[0] + box[2], box[1] + box[3]))
+    floor_top = height - art.ground if art.tiles == "hall" else (0 if art.tiles == "floor" else height)
+    pick = random.Random(sprite.path)
+    for y in range(floor_top, height, 16):
+        for x in range(0, width, 16):
+            canvas.paste(tile(pick.choice(FLOORS)), (x, y))
+    for row, y in enumerate(range(floor_top - 16, -16, -16)):
+        for column, x in enumerate(range(0, width, 16)):
+            canvas.paste(tile(WALL), (x, y))
+            if art.tiles == "hall" and row == 5 and column % 8 == 3:
+                canvas.paste(tile(BANNERS[(column // 8) % len(BANNERS)]), (x, y))
+    if art.tiles == "hall":
+        for x in range(7 * 16, width, 8 * 16):
+            canvas.alpha_composite(tile(COLUMN), (x, floor_top - COLUMN[3]))
+        # Darker towards the top: the eye stays on the floor where characters stand.
+        fade = Image.new("L", (1, height))
+        for y in range(height):
+            fade.putpixel((0, y), int(150 * max(0.0, 1.0 - y / max(1, floor_top))))
+        canvas = Image.composite(Image.new("RGBA", canvas.size, (0, 0, 0, 255)), canvas, fade.resize(canvas.size))
+    if art.shade:
+        canvas = Image.blend(canvas, Image.new("RGBA", canvas.size, (0, 0, 0, 255)), art.shade)
+    image = canvas.resize((width * art.scale, height * art.scale), Image.NEAREST)
+    return image.crop((0, image.height - sprite.size[1], sprite.size[0], image.height))
 
 
 def render(entry, target, draw_art, draw_placeholder):
@@ -532,6 +596,8 @@ def source_text(entry):
     if entry.art is None:
         return "**placeholder**"
     art = entry.art
+    if art.tiles:
+        return f"{PACK_NAMES[art.pack]}: ghép tile ({art.tiles}) ×{art.scale}"
     where = f"ô ({art.cell[0]}, {art.cell[1]})" if art.cell else f"`{art.file}`"
     if art.box:
         where += f" vùng {art.box}"
