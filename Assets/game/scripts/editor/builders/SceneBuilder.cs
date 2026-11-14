@@ -11,8 +11,8 @@ namespace Game.Editor.Builders
     /// <summary>
     /// Builds the scenes from empty scenes and saves them over any existing file (GUIDs are kept), then opens Boot.
     /// Scenes hold prefab instances plus the objects that only make sense in one scene (cameras, entries, the audio
-    /// listener); scene-only references between them are wired here. Flow: Boot loads UI (persistent), then Splash, which
-    /// goes to MainMenu; Play goes to Gameplay.
+    /// listener); scene-only references between them are wired here. Flow: Boot loads UI (persistent), then MainMenu (the
+    /// Splash scene is still built but not entered); Play goes to Gameplay.
     /// Every scene has the same root groups (Docs/STRUCTURE.md), kept even when empty so the place of a new object is
     /// obvious; objects that must stay at the scene root (DontDestroyOnLoad) are created at runtime, never here:
     /// <code>
@@ -81,8 +81,9 @@ namespace Game.Editor.Builders
             return new SceneGroups(systems, cameras, ui, audio);
         }
 
-        // Loads the persistent UI scene, then switches to the splash. Its camera keeps the Game view drawn until then; its
-        // audio listener covers the frames before the UI scene's listener exists (BootSceneEntry switches it off after).
+        // Loads the persistent UI scene, then switches to the main menu (no splash). Its camera keeps the Game view drawn
+        // until then; its audio listener covers the frames before the UI scene's listener exists (BootSceneEntry switches it
+        // off after).
         private static void BuildBoot()
         {
             Scene scene = NewScene();
@@ -92,7 +93,7 @@ namespace Game.Editor.Builders
             var listener = WorldFactory.Child("BootAudioListener", groups.Audio).AddComponent<AudioListener>();
             Component entry = WorldFactory.Child("BootEntry", groups.Systems).AddComponent(GameTypes.BootSceneEntry);
             Fields.Set(entry, ("_persistentUiScene", BuildUtility.Load<SceneKey>(BuildPaths.SceneKeyUI)),
-                ("_firstScene", BuildUtility.Load<SceneKey>(BuildPaths.SceneKeySplash)), ("_bootListener", listener));
+                ("_firstScene", BuildUtility.Load<SceneKey>(BuildPaths.SceneKeyMainMenu)), ("_bootListener", listener));
             Save(scene, BuildPaths.SceneBoot);
         }
 
