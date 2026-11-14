@@ -15,8 +15,10 @@ using UnityEngine.UI;
 namespace Game.Systems.UIShell
 {
     /// <summary>
-    /// Loading screen of the UI scene, installed as Core's <see cref="ISceneTransition"/> while enabled: fades in over the
-    /// old scene, shows load progress, fades out over the new one. Whenever it is not fully hidden it blocks every input
+    /// Loading screen of the UI scene, installed as Core's <see cref="ISceneTransition"/> while enabled. A switch blocks input at
+    /// once but stays invisible; only when it takes longer than <see cref="LoadingTransitionConfig.ShowAfterSeconds"/> does the
+    /// screen fade in over the old scene, show load progress and fade out over the new one (then it stays at least
+    /// <see cref="LoadingTransitionConfig.MinimumCoveredSeconds"/>, so it never flashes). A quick switch shows nothing. Whenever it is not fully hidden it blocks every input
     /// path: pointer (its group catches raycasts), keyboard/gamepad navigation, submit and cancel of the UI input module
     /// (the current EventSystem stops sending navigation events), Core contexts such as Menu and Gameplay (a global input
     /// lock) and the desktop Cancel stack (a top-priority handler consumes every press). Everything comes back when the
@@ -46,6 +48,9 @@ namespace Game.Systems.UIShell
         private bool _cancelBlocked;
         private Tween _fade;
         private float _coveredAt;
+        private float _switchStartedAt;
+        private bool _switching;
+        private bool _shown;
 
         // EventSystem whose navigation events are switched off while blocking, and its setting before that.
         private EventSystem _blockedEventSystem;
@@ -78,12 +83,17 @@ namespace Game.Systems.UIShell
             Unblock();
         }
 
-        public async Awaitable CoverAsync()
+        // Input is blocked from the start; the screen itself waits (see Update) until the switch has taken long enough.
+        public Awaitable CoverAsync()
         {
             SetBlocking(true);
             _progressFill.fillAmount = EmptyProgress;
-            await FadeTo(CoveredAlpha, _config.CoverSeconds).AsAwaitable();
-            _coveredAt = Time.unscaledTime;
+            _switching = true;
+            _shown = false;
+            _switchStartedAt = Time.unscaledTime;
+            var covered = new AwaitableCompletionSource();
+            covered.SetResult();
+            return covered.Awaitable;
         }
 
         public void ReportProgress(float progress)
@@ -93,6 +103,17 @@ namespace Game.Systems.UIShell
 
         public async Awaitable RevealAsync()
         {
+            _switching = false;
+            if (!_shown)
+            {
+                // A quick switch: nothing was shown.
+                _fade.KillIfActive();
+                _group.alpha = HiddenAlpha;
+                SetBlocking(false);
+                ShowDetails(true);
+                return;
+            }
+
             // Animations turned off during the wait end it at once.
             float showUntil = _coveredAt + _config.MinimumCoveredSeconds;
             while (AnimationsEnabled && Time.unscaledTime < showUntil)
@@ -108,6 +129,19 @@ namespace Game.Systems.UIShell
         }
 
         private bool AnimationsEnabled => _animationSettings == null || _animationSettings.Enabled;
+
+        // A slow switch: the screen fades in once the switch has run longer than the threshold.
+        private void Update()
+        {
+            if (!_switching || _shown || Time.unscaledTime - _switchStartedAt < _config.ShowAfterSeconds)
+            {
+                return;
+            }
+
+            _shown = true;
+            FadeTo(CoveredAlpha, _config.CoverSeconds);
+            _coveredAt = Time.unscaledTime + (AnimationsEnabled ? _config.CoverSeconds : 0f);
+        }
 
         private void OnSwitchStarting(SceneSwitchStartingEvent evt)
         {
