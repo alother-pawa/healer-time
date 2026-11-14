@@ -15,7 +15,8 @@ namespace Game.Systems.Gameplay
     /// are off (<see cref="Animate"/>). Two monster views take turns, so a dying monster can fall while the next walks in.
     /// REFERENCES: <c>_hero</c>, <c>_healer</c>, <c>_monsters</c> (two views); <c>_heroSpot</c>, <c>_monsterSpot</c>,
     /// <c>_monsterEntry</c> place them; <c>_textTemplate</c> and <c>_fxTemplate</c> are inactive templates cloned into
-    /// pools; the <c>*Fx</c> sprites are the bursts; <c>_orb</c> is the flying orb; <c>_cameraPivot</c> is shaken.
+    /// pools; the <c>*Fx</c> sprites are the bursts; <c>_orb</c> is the flying orb; <c>_shakeRoot</c> holds the fight (art, fighters,
+    /// effects) and is what screen shake moves, while the backdrops under the UI and the healer stay still.
     /// </summary>
     internal sealed class BattlefieldView : MonoBehaviour
     {
@@ -34,7 +35,7 @@ namespace Game.Systems.Gameplay
         [SerializeField] private Sprite _shieldFx;
         [SerializeField] private Sprite _magicFx;
         [SerializeField] private Sprite _orb;
-        [SerializeField] private Transform _cameraPivot;
+        [SerializeField] private Transform _shakeRoot;
         [SerializeField] private Color _damageColor = new Color(1f, 0.93f, 0.8f);
         [SerializeField] private Color _hurtColor = new Color(1f, 0.35f, 0.3f);
         [SerializeField] private Color _healColor = new Color(0.45f, 1f, 0.45f);
@@ -73,7 +74,7 @@ namespace Game.Systems.Gameplay
 
         internal Sprite MagicFx => _magicFx;
 
-        internal Transform CameraPivot => _cameraPivot;
+        internal Transform ShakeRoot => _shakeRoot;
 
         internal CharacterView Hero => _hero;
 

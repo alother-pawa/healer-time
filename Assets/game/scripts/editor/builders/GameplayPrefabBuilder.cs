@@ -328,8 +328,9 @@ namespace Game.Editor.Builders
         }
 
         /// <summary>
-        /// The world part of the gameplay scene: battlefield and camp art, the hero (right, facing left), two monster views,
-        /// the healer (right of the board), spots and the templates of numbers and bursts.
+        /// The world part of the gameplay scene: the backdrops under the UI (board, camp) and the healer stay still; the stage
+        /// (battlefield art, the hero facing left, two monster views, spots, numbers and bursts) is what screen shake moves.
+        /// The battlefield art bleeds under the still backdrops and past the screen edge, so a shake shows no edge.
         /// </summary>
         internal static void BuildBattlefield()
         {
@@ -337,25 +338,26 @@ namespace Game.Editor.Builders
             Component view = root.AddComponent(GameTypes.BattlefieldView);
 
             Transform environment = WorldFactory.Child("Environment", root.transform).transform;
-            Backdrop(environment, "BoardBackdrop", "game/props/board-backdrop", new Vector3(-3.75f, 0f, 0f), -20);
-            Backdrop(environment, "Battlefield", "game/props/battlefield", new Vector3(3.75f, (820f - 540f) / 128f, 0f), -19);
-            Backdrop(environment, "Camp", "game/props/camp", new Vector3(3.75f, (280f - 540f) / 128f, 0f), -20);
+            Backdrop(environment, "BoardBackdrop", "game/props/board-backdrop", new Vector3(-3.75f, 0f, 0f), -18);
+            Backdrop(environment, "Camp", "game/props/camp", new Vector3(3.75f, (280f - 540f) / 128f, 0f), -18);
+            Component healer = Character(root.transform, "Healer", HealerSpot, true, false, 2, bars: false);
 
-            Transform characters = WorldFactory.Child("Characters", root.transform).transform;
+            Transform stage = WorldFactory.Child("Stage", root.transform).transform;
+            Backdrop(stage, "Battlefield", "game/props/battlefield", new Vector3(3.75f, (820f - 540f) / 128f, 0f), -19);
+            Transform characters = WorldFactory.Child("Characters", stage).transform;
             Component hero = Character(characters, "Hero", HeroSpot, true, true, 2);
             var monsters = new Object[]
             {
                 Character(characters, "Monster1", MonsterEntry, false, false, 1),
                 Character(characters, "Monster2", MonsterEntry, false, false, 1),
             };
-            Component healer = Character(characters, "Healer", HealerSpot, true, false, 2, bars: false);
 
-            Transform spots = WorldFactory.Child("Spots", root.transform).transform;
+            Transform spots = WorldFactory.Child("Spots", stage).transform;
             Transform heroSpot = WorldFactory.Child("HeroSpot", spots, HeroSpot).transform;
             Transform monsterSpot = WorldFactory.Child("MonsterSpot", spots, MonsterSpot).transform;
             Transform monsterEntry = WorldFactory.Child("MonsterEntry", spots, MonsterEntry).transform;
 
-            Transform templates = WorldFactory.Child("Templates", root.transform).transform;
+            Transform templates = WorldFactory.Child("Templates", stage).transform;
             templates.gameObject.SetActive(false);
             GameObject textObject = WorldFactory.Child("FloatingText", templates);
             var text = textObject.AddComponent<TextMeshPro>();
@@ -373,7 +375,7 @@ namespace Game.Editor.Builders
                 ("_monsterSpot", monsterSpot), ("_monsterEntry", monsterEntry), ("_textTemplate", text), ("_fxTemplate", fx),
                 ("_hitFx", BuildUtility.Sprite("game/effects/fx-hit")), ("_healFx", BuildUtility.Sprite("game/effects/fx-heal")),
                 ("_shieldFx", BuildUtility.Sprite("game/effects/fx-shield")), ("_magicFx", BuildUtility.Sprite("game/effects/fx-magic")),
-                ("_orb", BuildUtility.Sprite("game/effects/fx-magic-orb")));
+                ("_orb", BuildUtility.Sprite("game/effects/fx-magic-orb")), ("_shakeRoot", stage));
             BuildUtility.SavePrefab(root, BuildPaths.Battlefield);
         }
 

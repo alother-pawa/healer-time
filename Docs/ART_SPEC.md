@@ -106,7 +106,7 @@ Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.
 
 | Ảnh | Kích thước (px) | Hình | 9-slice | Pivot | Dùng cho | Nguồn |
 |---|---|---|---|---|---|---|
-| `battlefield.png` | 960×520 | rect | — | giữa | Nền chiến trường (nửa phải, phía trên), mặt đất cách đáy 40 px | **placeholder** |
+| `battlefield.png` | 1088×648 | rect | — | giữa | Nền chiến trường (nửa phải, phía trên): thấy 960×520 ở giữa, tràn 64 px mỗi cạnh để rung không lộ mép; mặt đất cách đáy 104 px | **placeholder** |
 | `camp.png` | 960×560 | rect | — | giữa | Nền trại của healer (nửa phải, phía dưới: item, healer) | **placeholder** |
 | `board-backdrop.png` | 960×1080 | rect | — | giữa | Nền sau bàn ghép (nửa trái) | **placeholder** |
 | `hp-bar-track.png` | 64×32 | bar | 12 | giữa | Rãnh thanh máu trên đầu nhân vật | lớp màu phẳng (không cần art) |

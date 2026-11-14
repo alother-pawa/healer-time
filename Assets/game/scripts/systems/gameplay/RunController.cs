@@ -127,9 +127,9 @@ namespace Game.Systems.Gameplay
                 _handles.Add(_events.Subscribe<AnimationSettingsChangedEvent>(OnAnimationsChanged));
             }
 
-            if (_shake != null && _battlefield.CameraPivot != null)
+            if (_shake != null && _battlefield.ShakeRoot != null)
             {
-                _handles.Add(_shake.RegisterPivot(_battlefield.CameraPivot));
+                _handles.Add(_shake.RegisterPivot(_battlefield.ShakeRoot));
             }
         }
 

@@ -693,8 +693,8 @@
     },
     {
       "path": "game/props/battlefield",
-      "width": 960,
-      "height": 520,
+      "width": 1088,
+      "height": 648,
       "border": [
         0,
         0,

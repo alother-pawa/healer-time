@@ -281,7 +281,9 @@ SPRITES = [
     Sprite("screens/gameplay/enemy-bar-full", (448, 128), "bar", HEALTH, "Thanh máu quái trên HUD: đầy (cắt theo máu còn lại)",
            art=fantasy(DRAGON_BAR_FULL, 4, file="Dragonhpbar.png")),
     # game: world images. Backgrounds at their screen size; bars are sliced; characters are sheets (below).
-    Sprite("game/props/battlefield", (960, 520), "rect", SKY, "Nền chiến trường (nửa phải, phía trên), mặt đất cách đáy 40 px",
+    Sprite("game/props/battlefield", (1088, 648), "rect", SKY,
+           "Nền chiến trường (nửa phải, phía trên): thấy 960×520 ở giữa, tràn 64 px mỗi cạnh để rung không lộ mép; "
+           "mặt đất cách đáy 104 px",
            pivot=CENTER),
     Sprite("game/props/camp", (960, 560), "rect", "#8C5A3C", "Nền trại của healer (nửa phải, phía dưới: item, healer)",
            pivot=CENTER),
