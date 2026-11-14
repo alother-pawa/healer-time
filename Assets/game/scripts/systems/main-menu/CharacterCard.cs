@@ -33,7 +33,7 @@ namespace Game.Systems.MainMenu
             if (Character != character)
             {
                 Character = character;
-                _preview.Play(character.PreviewFrames, character.PreviewFrameSeconds, character.Tint);
+                _preview.Play(character.PreviewFrames, character.PreviewFrameSeconds, character.Tint, character.Scale);
                 _name.SetKey(character.NameKey);
             }
 

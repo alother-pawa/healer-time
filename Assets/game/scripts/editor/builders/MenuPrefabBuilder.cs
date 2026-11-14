@@ -98,8 +98,9 @@ namespace Game.Editor.Builders
 
             UiFactory.AddImage(UiFactory.Rect("Stage", home).Place(UiFactory.Center, new Vector2(0f, 40f), new Vector2(760f, 150f)),
                 BuildUtility.Sprite("screens/main-menu/stage")).raycastTarget = false;
-            Component heroPreview = Preview(home, "HeroPreview", new Vector2(-150f, 70f), new Vector2(504f, 396f), false);
-            Component healerPreview = Preview(home, "HealerPreview", new Vector2(190f, 80f), new Vector2(192f, 288f), false);
+            // Feet on the stage: the hero facing right, the healer facing the hero.
+            Component heroPreview = Preview(home, "HeroPreview", new Vector2(-190f, -10f), false, 1f);
+            Component healerPreview = Preview(home, "HealerPreview", new Vector2(210f, -10f), true, 1f);
 
             RectTransform playRect = UiFactory.Rect("PlayButton", home).Place(UiFactory.Center, new Vector2(0f, -210f), new Vector2(560f, 130f));
             Button play = UiFactory.AddButton(playRect, BuildUtility.Sprite("ui-common/button-primary"));
@@ -174,9 +175,9 @@ namespace Game.Editor.Builders
 
             RectTransform card = UiFactory.Rect("CardTemplate", parts.Templates).Place(UiFactory.Center, Vector2.zero, new Vector2(200f, 275f));
             Button cardButton = UiFactory.AddButton(card, BuildUtility.Sprite("screens/main-menu/character-card"));
-            Component cardPreview = Preview(card, "Preview", new Vector2(0f, 30f), new Vector2(190f, 150f), false);
+            Component cardPreview = Preview(card, "Preview", new Vector2(0f, -40f), false, 0.4f);
             TextMeshProUGUI cardName = UiFactory.AddText(UiFactory.Rect("NameLabel", card).BottomStretch(14f, 56f, 8f, 8f), string.Empty, 30f,
-                Palette.Text).Localize("hero.soldier.name");
+                Palette.Text).Localize("hero.martial-hero.name");
             cardName.raycastTarget = false;
             Component cardView = card.gameObject.AddComponent(GameTypes.CharacterCard);
             Fields.Set(cardView, ("_button", cardButton), ("_background", card.GetComponent<Image>()),
@@ -186,13 +187,13 @@ namespace Game.Editor.Builders
 
             RectTransform detail = UiFactory.Rect("Detail", page).Place(UiFactory.Center, new Vector2(430f, -40f), new Vector2(720f, 640f));
             UiFactory.AddImage(detail, BuildUtility.Sprite("ui-common/popup-background")).raycastTarget = false;
-            Component preview = Preview(detail, "Preview", new Vector2(0f, 150f), new Vector2(504f, 396f), true);
+            Component preview = Preview(detail, "Preview", new Vector2(0f, -10f), true, 0.8f);
             TextMeshProUGUI name = UiFactory.AddText(UiFactory.Rect("NameLabel", detail).Place(UiFactory.Center, new Vector2(0f, -70f),
-                new Vector2(640f, 70f)), string.Empty, 54f, Palette.Text).Localize("hero.soldier.name");
+                new Vector2(640f, 70f)), string.Empty, 54f, Palette.Text).Localize("hero.martial-hero.name");
             name.raycastTarget = false;
             name.fontStyle = FontStyles.Bold;
             TextMeshProUGUI description = UiFactory.AddText(UiFactory.Rect("DescriptionLabel", detail).Place(UiFactory.Center, new Vector2(0f, -150f),
-                new Vector2(640f, 90f)), string.Empty, 32f, Palette.Text).Localize("hero.soldier.description");
+                new Vector2(640f, 90f)), string.Empty, 32f, Palette.Text).Localize("hero.martial-hero.description");
             description.raycastTarget = false;
             description.textWrappingMode = TextWrappingModes.Normal;
             TextMeshProUGUI stats = UiFactory.AddText(UiFactory.Rect("StatsLabel", detail).Place(UiFactory.Center, new Vector2(0f, -240f),
@@ -217,13 +218,13 @@ namespace Game.Editor.Builders
             return button;
         }
 
-        // A character preview: an image playing idle frames (set at runtime), mirrored when it faces left.
-        private static Component Preview(RectTransform parent, string name, Vector2 position, Vector2 size, bool faceLeft)
+        // A character preview playing idle frames (set at runtime): the rect's position is where the feet stand, its size and
+        // pivot come from the sprite (in-game size times sizeScale); mirrored when it faces left.
+        private static Component Preview(RectTransform parent, string name, Vector2 feet, bool faceLeft, float sizeScale)
         {
-            RectTransform rect = UiFactory.Rect(name, parent).Place(UiFactory.Center, position, size);
+            RectTransform rect = UiFactory.Rect(name, parent).Place(UiFactory.Center, feet, new Vector2(100f, 100f));
             Image image = UiFactory.AddImage(rect, null);
             image.raycastTarget = false;
-            image.preserveAspect = true;
             image.enabled = false;
             if (faceLeft)
             {
@@ -231,7 +232,7 @@ namespace Game.Editor.Builders
             }
 
             var flipbook = rect.gameObject.AddComponent<SpriteFlipbook>();
-            Fields.Set(flipbook, ("_image", image));
+            Fields.Set(flipbook, ("_image", image), ("_sizeScale", sizeScale));
             return flipbook;
         }
     }

@@ -23,21 +23,23 @@ namespace Game.Systems.Gameplay
     /// go to the wallet now), then the board replays its steps and, while the board is dimmed, the matched gem kinds
     /// play their effects one after another (the showcase), each step showing the numbers right after it. Battle time stands
     /// still during the showcase. When the replay ends, is skipped, or animations are off, every view is drawn again from the
-    /// run, so the screen always ends on the same state. Hero down: the revive popup (coins, once per run), then the result
-    /// popup (Play again restarts in this scene; Main menu leaves).
+    /// run, so the screen always ends on the same state. Hero down: the result popup (Play again restarts in this scene; Main
+    /// menu leaves).
     /// REFERENCES: <c>_screen</c> hosts pause and leaving; <c>_config</c> holds balance, popups and sounds; the views;
     /// <c>_battlefield</c> is the world part of the scene; <c>_itemActions</c> are the item keys in slot order; the <c>*Key</c>
     /// fields are texts.
     /// </summary>
-    internal sealed class RunController : MonoBehaviour, IRevivePopupHost, IResultPopupHost
+    internal sealed class RunController : MonoBehaviour, IResultPopupHost
     {
         private const string BestScoreKey = "game.best-score";
         private const float StuckSeconds = 20f;
+        private const float ResultDelaySeconds = 1.4f;
 
         [SerializeField] private GameplayScreen _screen;
         [SerializeField] private GameplayConfig _config;
         [SerializeField] private BoardView _board;
         [SerializeField] private HudView _hud;
+        [SerializeField] private EnemyBarView _enemyBar;
         [SerializeField] private ItemBarView _items;
         [SerializeField] private UiBar _magicBar;
         [SerializeField] private ShowcaseBanner _banner;
@@ -77,41 +79,9 @@ namespace Game.Systems.Gameplay
         private float _busySince;
         private int _generation;
 
-        public int ReviveCost => _balance != null ? _balance.ReviveCost : 0;
-
-        public long Coins => _wallet != null && _balance != null && _balance.Coin != null ? _wallet.Get(_balance.Coin) : 0;
-
         public RunResult Result { get; private set; }
 
         private bool Animate => _animations == null || _animations.Enabled;
-
-        public bool Revive()
-        {
-            if (_run == null || !_run.Battle.CanRevive)
-            {
-                return false;
-            }
-
-            if (ReviveCost > 0 && (_wallet == null || _balance.Coin == null || !_wallet.TrySpend(_balance.Coin, ReviveCost)))
-            {
-                return false;
-            }
-
-            RunStep step = _run.Revive();
-            _screen.PauseBlocked = false;
-            Play(_sounds.Revive);
-            foreach (BattleEvent e in step.Events)
-            {
-                PresentLive(e);
-            }
-
-            return true;
-        }
-
-        public void GiveUp()
-        {
-            ShowResult();
-        }
 
         public void Replay()
         {
@@ -263,6 +233,7 @@ namespace Game.Systems.Gameplay
             _battlefield.ShowMonster(battle.MonsterIndex, battle.MonsterKind, battle.ApproachProgress);
             _battlefield.ShowStats(snapshot);
             _hud.Show(snapshot, battle.MonsterIsBoss);
+            ShowEnemy(snapshot);
             _magicBar.Set(snapshot.MagicCapacity > 0f ? snapshot.Magic / snapshot.MagicCapacity : 0f);
             RenderItems();
         }
@@ -534,7 +505,7 @@ namespace Game.Systems.Gameplay
         {
             switch (gem.Effect)
             {
-                case GemEffectKind.Attack:
+                case GemEffectKind.Attack when group.Any(e => e.Kind == BattleEventKind.HeroStrike):
                     _battlefield.Act(BattlefieldView.Target.Hero, CharacterView.AttackHeavy);
                     Play(_sounds.HeroStrike);
                     await DelayAsync(0.25f, generation);
@@ -561,6 +532,13 @@ namespace Game.Systems.Gameplay
                     await _battlefield.Orb(_battlefield.Middle(BattlefieldView.Target.Healer), BattlefieldView.Target.Monster, 0.4f);
                 }
 
+                if (e.Kind == BattleEventKind.StrikeHeld && e.Value == (int)BattleEventKind.HealerSkill)
+                {
+                    _battlefield.Act(BattlefieldView.Target.Healer, CharacterView.Cast);
+                    Play(_sounds.HealerSkill);
+                    await DelayAsync(0.25f, generation);
+                }
+
                 PresentShowcaseEvent(e);
                 ShowSnapshot(e.After);
                 await DelayAsync(e.Kind == BattleEventKind.MonsterDied ? 0.45f : 0.3f, generation);
@@ -571,13 +549,6 @@ namespace Game.Systems.Gameplay
         {
             switch (e.Kind)
             {
-                case BattleEventKind.HeroStrike:
-                    _battlefield.Burst(BattlefieldView.Target.Monster, _battlefield.HitFx, 1.3f);
-                    _battlefield.Act(BattlefieldView.Target.Monster, CharacterView.Hurt);
-                    _battlefield.Number(BattlefieldView.Target.Monster, Mathf.RoundToInt(e.Amount).ToString(), _battlefield.DamageColor, 1.5f);
-                    Play(_sounds.Hit);
-                    Shake(0.15f, 0.2f);
-                    break;
                 case BattleEventKind.Healed:
                     _battlefield.Burst(BattlefieldView.Target.Hero, _battlefield.HealFx);
                     _battlefield.Number(BattlefieldView.Target.Hero, "+" + Mathf.RoundToInt(e.Amount), _battlefield.HealColor, 1.3f);
@@ -592,6 +563,34 @@ namespace Game.Systems.Gameplay
                     _battlefield.Burst(BattlefieldView.Target.Healer, _battlefield.MagicFx, 0.7f);
                     _battlefield.Number(BattlefieldView.Target.Healer, "+" + Mathf.RoundToInt(e.Amount), _battlefield.MagicColor);
                     break;
+                default:
+                    PresentLive(e);
+                    break;
+            }
+        }
+
+        // Events of the running battle (and of items), shown at once; the state itself is drawn by SyncViews.
+        private void PresentLive(BattleEvent e)
+        {
+            switch (e.Kind)
+            {
+                case BattleEventKind.HeroWindup:
+                    _battlefield.Act(BattlefieldView.Target.Hero, CharacterView.Attack);
+                    Play(_sounds.HeroAttack);
+                    break;
+                case BattleEventKind.HeroAttack:
+                    _battlefield.Act(BattlefieldView.Target.Monster, CharacterView.Hurt);
+                    _battlefield.Burst(BattlefieldView.Target.Monster, _battlefield.HitFx, 0.7f);
+                    _battlefield.Number(BattlefieldView.Target.Monster, Mathf.RoundToInt(e.Amount).ToString(), _battlefield.DamageColor, 0.8f);
+                    Play(_sounds.Hit);
+                    break;
+                case BattleEventKind.HeroStrike:
+                    _battlefield.Burst(BattlefieldView.Target.Monster, _battlefield.HitFx, 1.3f);
+                    _battlefield.Act(BattlefieldView.Target.Monster, CharacterView.Hurt);
+                    _battlefield.Number(BattlefieldView.Target.Monster, Mathf.RoundToInt(e.Amount).ToString(), _battlefield.DamageColor, 1.5f);
+                    Play(_sounds.Hit);
+                    Shake(0.15f, 0.2f);
+                    break;
                 case BattleEventKind.HealerSkill:
                     _battlefield.Burst(BattlefieldView.Target.Monster, _battlefield.MagicFx, 1.6f);
                     _battlefield.Act(BattlefieldView.Target.Monster, CharacterView.Hurt);
@@ -603,25 +602,40 @@ namespace Game.Systems.Gameplay
 
                     Shake(0.3f, 0.35f);
                     break;
-                default:
-                    PresentLive(e);
-                    break;
-            }
-        }
+                case BattleEventKind.StrikeHeld:
+                    // The strike waits for the monster: it shows as power gathered on the one who cast it.
+                    bool skill = e.Value == (int)BattleEventKind.HealerSkill;
+                    BattlefieldView.Target caster = skill ? BattlefieldView.Target.Healer : BattlefieldView.Target.Hero;
+                    _battlefield.Burst(caster, skill ? _battlefield.MagicFx : _battlefield.HitFx, 1.1f);
+                    _battlefield.Number(caster, Mathf.RoundToInt(e.Amount).ToString(), skill ? _battlefield.MagicColor : _battlefield.DamageColor);
+                    if (e.Absorbed > 0f)
+                    {
+                        _battlefield.Number(BattlefieldView.Target.Hero, "+" + Mathf.RoundToInt(e.Absorbed), _battlefield.HealColor);
+                    }
 
-        // Events of the running battle (and of items and revives), shown at once; the state itself is drawn by SyncViews.
-        private void PresentLive(BattleEvent e)
-        {
-            switch (e.Kind)
-            {
-                case BattleEventKind.HeroAttack:
-                    _battlefield.Act(BattlefieldView.Target.Hero, CharacterView.Attack);
-                    _battlefield.Number(BattlefieldView.Target.Monster, Mathf.RoundToInt(e.Amount).ToString(), _battlefield.DamageColor, 0.8f);
-                    Play(_sounds.HeroAttack);
                     break;
-                case BattleEventKind.MonsterAttack:
+                case BattleEventKind.StrikeWindup:
+                    if ((e.Value & 1) != 0)
+                    {
+                        _battlefield.Act(BattlefieldView.Target.Hero, CharacterView.AttackHeavy);
+                        Play(_sounds.HeroStrike);
+                    }
+
+                    if ((e.Value & 2) != 0)
+                    {
+                        _battlefield.Act(BattlefieldView.Target.Healer, CharacterView.Cast);
+                        Play(_sounds.HealerSkill);
+                        _ = _battlefield.Orb(_battlefield.Middle(BattlefieldView.Target.Healer), BattlefieldView.Target.Monster,
+                            Mathf.Max(0.1f, _balance.Tuning.AttackWindup));
+                    }
+
+                    break;
+                case BattleEventKind.MonsterWindup:
                     _battlefield.Act(BattlefieldView.Target.Monster, CharacterView.Attack);
                     Play(_sounds.MonsterAttack);
+                    break;
+                case BattleEventKind.MonsterAttack:
+                    Play(_sounds.Hit);
                     if (e.Amount > 0f)
                     {
                         _battlefield.Act(BattlefieldView.Target.Hero, CharacterView.Hurt);
@@ -664,10 +678,6 @@ namespace Game.Systems.Gameplay
                     Play(_sounds.HeroDeath);
                     Shake(0.4f, 0.5f);
                     break;
-                case BattleEventKind.Revived:
-                    _battlefield.HeroUp();
-                    _battlefield.Burst(BattlefieldView.Target.Hero, _battlefield.HealFx, 1.5f);
-                    break;
             }
         }
 
@@ -688,6 +698,9 @@ namespace Game.Systems.Gameplay
                 case BattleEventKind.HealerSkill:
                     Play(_sounds.HealerSkill);
                     break;
+                case BattleEventKind.StrikeHeld when e.Value == (int)BattleEventKind.HealerSkill:
+                    Play(_sounds.HealerSkill);
+                    break;
                 case BattleEventKind.MonsterDied:
                     Play(_sounds.MonsterDeath);
                     break;
@@ -698,7 +711,18 @@ namespace Game.Systems.Gameplay
         {
             _battlefield.ShowStats(snapshot);
             _hud.Show(snapshot, _run.Battle.MonsterIsBoss);
+            ShowEnemy(snapshot);
             _magicBar.Set(snapshot.MagicCapacity > 0f ? snapshot.Magic / snapshot.MagicCapacity : 0f);
+        }
+
+        private void ShowEnemy(BattleSnapshot snapshot)
+        {
+            Battle battle = _run.Battle;
+            if (battle.MonsterKind >= 0 && battle.MonsterKind < _balance.Monsters.Length)
+            {
+                _enemyBar.Show(snapshot.MonsterHealth, snapshot.MonsterMaxHealth, _balance.Monsters[battle.MonsterKind].NameKey,
+                    battle.MonsterIsBoss);
+            }
         }
 
         private void OnStepPopped(CascadeStep step)
@@ -726,6 +750,7 @@ namespace Game.Systems.Gameplay
             }
         }
 
+        // The run is over at once (no ticking, no input, no pause menu); the result shows once the hero's fall has played.
         private void OnHeroDown()
         {
             if (_ended)
@@ -733,28 +758,8 @@ namespace Game.Systems.Gameplay
                 return;
             }
 
-            CancelTargeting();
-            _screen.PauseBlocked = true;
-            if (_run.Battle.CanRevive && _ui != null && ReviveCost >= 0)
-            {
-                _ui.ShowPopup(_config.RevivePopup.ViewId, this);
-                if (_ui.IsPopupOpen(_config.RevivePopup.ViewId))
-                {
-                    return;
-                }
-            }
-
-            ShowResult();
-        }
-
-        private void ShowResult()
-        {
-            if (_ended)
-            {
-                return;
-            }
-
             _ended = true;
+            CancelTargeting();
             _screen.PauseBlocked = true;
             BattleSnapshot snapshot = _run.Battle.Snapshot;
             int best = _store != null ? _store.Get(BestScoreKey, 0) : 0;
@@ -770,6 +775,17 @@ namespace Game.Systems.Gameplay
             }
 
             Result = new RunResult(snapshot.Score, snapshot.Kills, snapshot.Coins, best, newBest);
+            _ = ShowResultAsync(_generation);
+        }
+
+        private async Awaitable ShowResultAsync(int generation)
+        {
+            await DelayAsync(ResultDelaySeconds, generation);
+            if (generation != _generation || this == null)
+            {
+                return;
+            }
+
             if (_ui != null)
             {
                 _ui.ShowPopup(_config.ResultPopup.ViewId, this);
@@ -830,7 +846,8 @@ namespace Game.Systems.Gameplay
 
         private static bool IsGemAmount(BattleEvent e)
         {
-            return e.Kind == BattleEventKind.HeroStrike || e.Kind == BattleEventKind.Healed || e.Kind == BattleEventKind.ArmorGained
+            return e.Kind == BattleEventKind.HeroStrike || e.Kind == BattleEventKind.Healed
+                   || (e.Kind == BattleEventKind.StrikeHeld && e.Value == (int)BattleEventKind.HeroStrike) || e.Kind == BattleEventKind.ArmorGained
                    || e.Kind == BattleEventKind.MagicCharged;
         }
 

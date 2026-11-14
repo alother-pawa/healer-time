@@ -8,11 +8,12 @@ using UnityEngine.UI;
 namespace Game.Editor.Builders
 {
     /// <summary>
-    /// The gameplay scene's prefabs (landscape 1920×1080; the battlefield band is the top third, the lower part holds the
-    /// item column on the left, the board in the middle and the healer with the magic bar on the right):
+    /// The gameplay scene's prefabs (landscape 1920×1080). The left half holds the board, as large as the height allows, with
+    /// the score, monsters beaten and coins over it; the right half holds the monster's health bar and Pause on top, the
+    /// battlefield (world) below them, and at the bottom the item row and the healer with the magic bar:
     /// <c>GameplayCanvas</c> (HUD, board, item bar, magic bar, showcase banner; the screen host and the run controller),
     /// <c>Battlefield</c> (world: backgrounds, hero, two monster views, healer, spots, number and burst templates) and the
-    /// popups (pause menu, revive, result; variants of <c>Popup_Base</c>).
+    /// popups (pause menu, result; variants of <c>Popup_Base</c>).
     /// </summary>
     internal static class GameplayPrefabBuilder
     {
@@ -20,24 +21,25 @@ namespace Game.Editor.Builders
         private const float MenuButtonLabelSize = 40f;
         private const float MenuButtonSpacing = 104f;
         private const float PromptRowHeight = 56f;
-        private const float BoardY = 352f;
-        private const float BoardSide = 616f;
-        private const float FramePadding = 22f;
-        private const float SlotSize = 128f;
-        private const float SlotSpacing = 146f;
-        private const float ItemColumnX = 330f;
-        private const float HealerColumnX = 1590f;
+        private const float BoardSide = 864f;
+        private const float FramePadding = 44f;
+        private const float SlotSize = 144f;
+        private const float SlotSpacing = 162f;
+        private const float ItemRowY = 400f;
+        private const float HealerX = 1760f;
+        private static readonly Vector2 BoardCenter = new Vector2(480f, 498f);
+        private static readonly Vector2 ItemRowCenter = new Vector2(1300f, ItemRowY);
         private const string OutlineMaterial = "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Outline.mat";
         private static readonly Vector2 PausePanelSize = new Vector2(760f, 700f);
         private static readonly Vector2 MenuButtonSize = new Vector2(520f, 88f);
-        private static readonly Vector2 DialogPanelSize = new Vector2(900f, 620f);
 
-        // World layout in units (camera at the origin, 128 px per unit, 1080 px = 8.4375 units tall).
-        private const float GroundY = 1.85f;
-        private static readonly Vector3 HeroSpot = new Vector3(3.2f, GroundY, 0f);
-        private static readonly Vector3 MonsterSpot = new Vector3(1.5f, GroundY, 0f);
-        private static readonly Vector3 MonsterEntry = new Vector3(-8.8f, GroundY, 0f);
-        private static readonly Vector3 HealerSpot = new Vector3((HealerColumnX - 960f) / 128f, -1.5f, 0f);
+        // World layout in units (camera at the origin, 128 px per unit, 1080 px = 8.4375 units tall): reference pixel (x, y)
+        // from the bottom-left is ((x - 960) / 128, (y - 540) / 128).
+        private const float GroundY = (600f - 540f) / 128f;
+        private static readonly Vector3 HeroSpot = new Vector3((1730f - 960f) / 128f, GroundY, 0f);
+        private static readonly Vector3 MonsterSpot = new Vector3((1450f - 960f) / 128f, GroundY, 0f);
+        private static readonly Vector3 MonsterEntry = new Vector3(0f, GroundY, 0f);
+        private static readonly Vector3 HealerSpot = new Vector3((HealerX - 960f) / 128f, (130f - 540f) / 128f, 0f);
 
         /// <summary>Pause menu buttons, top to bottom: child name, sprite, label key.</summary>
         private static readonly (string name, string sprite, string key)[] PauseButtons =
@@ -57,7 +59,6 @@ namespace Game.Editor.Builders
         internal static void BuildPopups()
         {
             BuildPauseMenu();
-            BuildRevive();
             BuildResult();
         }
 
@@ -90,32 +91,6 @@ namespace Game.Editor.Builders
             Fields.Set(popup, ("_viewId", "popup.pause-menu"), ("_resumeButton", buttons[0]), ("_settingsButton", buttons[1]),
                 ("_quitToMenuButton", buttons[2]), ("_quitToDesktopButton", buttons[3]), ("_resumeAction", "Menu/Pause"));
             BuildUtility.SavePrefab(root, BuildPaths.PopupPauseMenu);
-        }
-
-        // Price message, coins owned, Revive (first selected) and Give up.
-        private static void BuildRevive()
-        {
-            PopupParts parts = PopupPrefabBuilder.Variant("Popup_Revive", "gameplay.revive.title", DialogPanelSize);
-            GameObject root = parts.Root;
-            Component popup = root.AddComponent(GameTypes.RevivePopup);
-
-            LocalizedLabel message = Text(parts.Body, "MessageLabel", new Vector2(0f, -40f), new Vector2(780f, 140f), 40f, Palette.Text,
-                "gameplay.revive.message");
-            RectTransform balance = UiFactory.Rect("Balance", parts.Body).Place(UiFactory.TopCenter, new Vector2(0f, -190f), new Vector2(520f, 70f));
-            UiFactory.AddImage(UiFactory.Rect("CoinIcon", balance).Place(UiFactory.MiddleLeft, new Vector2(70f, 0f), new Vector2(56f, 56f)),
-                BuildUtility.Sprite("ui-common/coin-icon")).raycastTarget = false;
-            LocalizedLabel balanceLabel = Text(balance, "BalanceLabel", Vector2.zero, new Vector2(400f, 70f), 36f, Palette.TextMuted,
-                "gameplay.revive.balance");
-
-            Button revive = PopupPrefabBuilder.DialogButton(parts.Footer, "ReviveButton", -180f, "ui-common/button-primary",
-                "gameplay.revive.confirm", out _);
-            Button giveUp = PopupPrefabBuilder.DialogButton(parts.Footer, "GiveUpButton", 180f, "ui-common/button-secondary",
-                "gameplay.revive.give-up", out _);
-            UiFactory.LinkHorizontal(revive, giveUp);
-            PopupPrefabBuilder.SetFirstSelected(root, revive);
-            Fields.Set(popup, ("_viewId", "popup.revive"), ("_message", message), ("_balance", balanceLabel),
-                ("_reviveButton", revive), ("_giveUpButton", giveUp));
-            BuildUtility.SavePrefab(root, BuildPaths.PopupRevive);
         }
 
         // Score (big), best, monsters, coins, new-best badge; Play again (first selected) and Main menu.
@@ -169,39 +144,61 @@ namespace Game.Editor.Builders
                 ("_cancelKey", "common.cancel"));
 
             Component hud = BuildHud(parts.Header);
+            Component enemy = BuildEnemyBar(parts.Header);
             Component board = BuildBoard(parts);
             Component items = BuildItemBar(parts.Body);
             Component magic = BuildMagicBar(parts.Body);
             Component banner = BuildBanner(parts.Body);
 
-            Fields.Set(run, ("_screen", screen), ("_config", config), ("_board", board), ("_hud", hud), ("_items", items),
+            Fields.Set(run, ("_screen", screen), ("_config", config), ("_board", board), ("_hud", hud), ("_enemyBar", enemy), ("_items", items),
                 ("_magicBar", magic), ("_banner", banner), ("_comboKey", "gameplay.showcase.combo"),
                 ("_boughtKey", "gameplay.item.bought"), ("_noCoinsKey", "gameplay.item.no-coins"),
                 ("_cannotUseKey", "gameplay.item.cannot-use"), ("_pickTargetKey", "gameplay.item.pick-target"));
             BuildUtility.SavePrefab(canvas.gameObject, BuildPaths.GameplayCanvas);
         }
 
-        // Score, monsters beaten and coins on wood panels (top left), the monster on the field (top centre), Pause (top right).
+        // Score, monsters beaten and coins on wood signs over the board (top left), which monster this is (under the monster's
+        // bar, top right), Pause (top right corner).
         private static Component BuildHud(RectTransform header)
         {
             RectTransform root = UiFactory.Rect("Hud", header).Stretch();
             Component hud = root.gameObject.AddComponent(GameTypes.HudView);
-            LocalizedLabel score = Pill(root, "ScorePanel", new Vector2(24f, -20f), 280f, "gameplay.hud.score", null);
-            LocalizedLabel kills = Pill(root, "KillsPanel", new Vector2(316f, -20f), 220f, "gameplay.hud.kills", null);
-            LocalizedLabel coins = Pill(root, "CoinsPanel", new Vector2(548f, -20f), 200f, "gameplay.hud.coins", "ui-common/coin-icon");
+            LocalizedLabel score = Pill(root, "ScorePanel", new Vector2(24f, -12f), 300f, "gameplay.hud.score", null);
+            LocalizedLabel kills = Pill(root, "KillsPanel", new Vector2(338f, -12f), 250f, "gameplay.hud.kills", null);
+            LocalizedLabel coins = Pill(root, "CoinsPanel", new Vector2(602f, -12f), 230f, "gameplay.hud.coins", "ui-common/coin-icon");
 
-            RectTransform monsterRect = UiFactory.Rect("MonsterPanel", root).Place(UiFactory.TopCenter, new Vector2(0f, -20f), new Vector2(360f, 72f));
-            UiFactory.AddImage(monsterRect, BuildUtility.Sprite("ui-common/toast-background")).raycastTarget = false;
-            LocalizedLabel monster = Label(monsterRect, "MonsterLabel", 34f, Palette.Text, "gameplay.hud.monster");
+            RectTransform monsterRect = UiFactory.Rect("MonsterLabel", root).Place(UiFactory.TopLeft, new Vector2(1216f, -150f),
+                new Vector2(448f, 48f));
+            TextMeshProUGUI monsterText = UiFactory.AddText(monsterRect, string.Empty, 34f, Palette.White).Localize("gameplay.hud.monster");
+            monsterText.raycastTarget = false;
+            Outlined(monsterText);
 
-            RectTransform pauseRect = UiFactory.Rect("PauseButton", root).Place(UiFactory.TopRight, new Vector2(-24f, -16f), new Vector2(88f, 88f));
-            Button pause = UiFactory.AddButton(pauseRect, BuildUtility.Sprite("ui-common/button-secondary"));
-            UiFactory.AddImage(UiFactory.Rect("Icon", pauseRect).Place(UiFactory.Center, Vector2.zero, new Vector2(40f, 45f)),
-                BuildUtility.Sprite("screens/gameplay/icon-pause")).raycastTarget = false;
+            RectTransform pauseRect = UiFactory.Rect("PauseButton", root).Place(UiFactory.TopRight, new Vector2(-20f, -20f), new Vector2(96f, 96f));
+            Button pause = UiFactory.AddButton(pauseRect, BuildUtility.Sprite("screens/gameplay/button-pause"));
 
-            Fields.Set(hud, ("_scoreLabel", score), ("_killsLabel", kills), ("_coinsLabel", coins), ("_monsterLabel", monster),
-                ("_pauseButton", pause));
+            Fields.Set(hud, ("_scoreLabel", score), ("_killsLabel", kills), ("_coinsLabel", coins),
+                ("_monsterLabel", monsterText.GetComponent<LocalizedLabel>()), ("_pauseButton", pause));
             return hud;
+        }
+
+        // The monster's dragon bar over the battlefield: the empty bar, the full bar cut at the health left, the name on it.
+        private static Component BuildEnemyBar(RectTransform header)
+        {
+            RectTransform root = UiFactory.Rect("EnemyBar", header).Place(UiFactory.TopLeft, new Vector2(1216f, -16f), new Vector2(448f, 128f));
+            UiFactory.AddImage(root, BuildUtility.Sprite("screens/gameplay/enemy-bar-empty")).raycastTarget = false;
+            Image full = UiFactory.AddImage(UiFactory.Rect("Full", root).Stretch(), BuildUtility.Sprite("screens/gameplay/enemy-bar-full"));
+            full.raycastTarget = false;
+            full.type = Image.Type.Filled;
+            full.fillMethod = Image.FillMethod.Horizontal;
+            full.fillOrigin = (int)Image.OriginHorizontal.Left;
+            TextMeshProUGUI name = UiFactory.AddText(UiFactory.Rect("NameLabel", root).Stretch(100f, 0f, 60f, 0f), string.Empty, 36f,
+                Palette.White).Localize("monster.goblin.name");
+            name.raycastTarget = false;
+            Outlined(name);
+            Component bar = root.gameObject.AddComponent(GameTypes.EnemyBarView);
+            Fields.Set(bar, ("_full", full), ("_name", name.GetComponent<LocalizedLabel>()), ("_fillStart", 25f / 112f),
+                ("_fillEnd", 96f / 112f), ("_bossKey", "gameplay.enemy.boss"));
+            return bar;
         }
 
         // Frame with the gem area (clipped) and the selection frame; the mask and the targeting frame are siblings above it,
@@ -210,7 +207,7 @@ namespace Game.Editor.Builders
         {
             float frameSide = BoardSide + 2f * FramePadding;
             RectTransform frame = UiFactory.Rect("Board", parts.Body)
-                .Place(UiFactory.BottomCenter, new Vector2(0f, BoardY), new Vector2(frameSide, frameSide), UiFactory.Center);
+                .Place(UiFactory.BottomLeft, BoardCenter, new Vector2(frameSide, frameSide), UiFactory.Center);
             // A frame: only its border is drawn, the gems show through the middle.
             UiFactory.AddImage(frame, BuildUtility.Sprite("screens/gameplay/board-frame")).fillCenter = false;
             Component board = frame.gameObject.AddComponent(GameTypes.BoardView);
@@ -222,22 +219,22 @@ namespace Game.Editor.Builders
             UiFactory.AddImage(selection, BuildUtility.Sprite("screens/gameplay/board-cell-selected")).raycastTarget = false;
 
             Image cell = UiFactory.AddImage(UiFactory.Rect("CellTemplate", parts.Templates).Place(UiFactory.Center, Vector2.zero,
-                new Vector2(76f, 76f)), BuildUtility.Sprite("screens/gameplay/board-cell"));
+                new Vector2(108f, 108f)), BuildUtility.Sprite("screens/gameplay/board-cell"));
             cell.raycastTarget = false;
             Image gem = UiFactory.AddImage(UiFactory.Rect("GemTemplate", parts.Templates).Place(UiFactory.Center, Vector2.zero,
-                new Vector2(64f, 64f)), BuildUtility.Sprite("screens/gameplay/gem-attack"));
+                new Vector2(96f, 96f)), BuildUtility.Sprite("screens/gameplay/gem-attack"));
             gem.raycastTarget = false;
             gem.preserveAspect = true;
 
             RectTransform maskRect = UiFactory.Rect("BoardMask", parts.Body)
-                .Place(UiFactory.BottomCenter, new Vector2(0f, BoardY), new Vector2(BoardSide, BoardSide), UiFactory.Center);
+                .Place(UiFactory.BottomLeft, BoardCenter, new Vector2(BoardSide, BoardSide), UiFactory.Center);
             UiFactory.AddImage(maskRect, BuildUtility.Sprite("screens/gameplay/board-mask"));
             var mask = maskRect.gameObject.AddComponent<CanvasGroup>();
             mask.alpha = 0f;
             mask.blocksRaycasts = false;
 
             RectTransform hint = UiFactory.Rect("TargetHint", parts.Body)
-                .Place(UiFactory.BottomCenter, new Vector2(0f, BoardY), new Vector2(frameSide + 16f, frameSide + 16f), UiFactory.Center);
+                .Place(UiFactory.BottomLeft, BoardCenter, new Vector2(BoardSide + 24f, BoardSide + 24f), UiFactory.Center);
             UiFactory.AddImage(hint, BuildUtility.Sprite("ui-common/focus-frame")).raycastTarget = false;
             hint.gameObject.SetActive(false);
 
@@ -246,35 +243,35 @@ namespace Game.Editor.Builders
             return board;
         }
 
-        // One slot per item key, top to bottom, left of the board.
+        // One slot per item key, left to right, at the bottom of the right half (the healer stands to their right).
         private static Component BuildItemBar(RectTransform body)
         {
             const int slots = 4;
             RectTransform column = UiFactory.Rect("ItemBar", body)
-                .Place(UiFactory.BottomLeft, new Vector2(ItemColumnX, BoardY), new Vector2(SlotSize + 40f, SlotSpacing * slots), UiFactory.Center);
+                .Place(UiFactory.BottomLeft, ItemRowCenter, new Vector2(SlotSpacing * slots + 30f, SlotSize + 56f), UiFactory.Center);
             UiFactory.AddImage(column, BuildUtility.Sprite("ui-common/panel-wood")).raycastTarget = false;
             Component bar = column.gameObject.AddComponent(GameTypes.ItemBarView);
             var views = new Object[slots];
             for (int i = 0; i < slots; i++)
             {
-                float y = SlotSpacing * (slots - 1) * 0.5f - i * SlotSpacing;
-                RectTransform slot = UiFactory.Rect($"ItemSlot{i + 1}", column).Place(UiFactory.Center, new Vector2(0f, y), new Vector2(SlotSize, SlotSize));
+                float x = i * SlotSpacing - SlotSpacing * (slots - 1) * 0.5f;
+                RectTransform slot = UiFactory.Rect($"ItemSlot{i + 1}", column).Place(UiFactory.Center, new Vector2(x, 0f), new Vector2(SlotSize, SlotSize));
                 Button button = UiFactory.AddButton(slot, BuildUtility.Sprite("screens/gameplay/item-slot"));
-                Image icon = UiFactory.AddImage(UiFactory.Rect("Icon", slot).Place(UiFactory.Center, Vector2.zero, new Vector2(80f, 80f)),
+                Image icon = UiFactory.AddImage(UiFactory.Rect("Icon", slot).Place(UiFactory.Center, Vector2.zero, new Vector2(96f, 96f)),
                     BuildUtility.Sprite("screens/gameplay/item-potion"));
                 icon.raycastTarget = false;
                 icon.preserveAspect = true;
                 TextMeshProUGUI count = UiFactory.AddText(UiFactory.Rect("CountLabel", slot).Place(UiFactory.BottomRight, new Vector2(-10f, 6f),
-                    new Vector2(70f, 44f)), "0", 34f, Palette.Text, TextAlignmentOptions.BottomRight);
+                    new Vector2(80f, 50f)), "0", 42f, Palette.Text, TextAlignmentOptions.BottomRight);
                 count.raycastTarget = false;
                 count.fontStyle = FontStyles.Bold;
-                RectTransform plus = UiFactory.Rect("PlusIcon", slot).Place(UiFactory.BottomRight, new Vector2(-8f, 8f), new Vector2(44f, 44f));
+                RectTransform plus = UiFactory.Rect("PlusIcon", slot).Place(UiFactory.BottomRight, new Vector2(-6f, 6f), new Vector2(56f, 56f));
                 UiFactory.AddImage(plus, BuildUtility.Sprite("screens/gameplay/icon-plus")).raycastTarget = false;
                 RectTransform active = UiFactory.Rect("ActiveFrame", slot).Stretch(-8f, -8f, -8f, -8f);
                 UiFactory.AddImage(active, BuildUtility.Sprite("ui-common/focus-frame")).raycastTarget = false;
                 active.gameObject.SetActive(false);
                 TextMeshProUGUI key = UiFactory.AddText(UiFactory.Rect("KeyLabel", slot).Place(UiFactory.TopLeft, new Vector2(10f, -6f),
-                    new Vector2(44f, 36f)), (i + 1).ToString(), 26f, Palette.TextMuted, TextAlignmentOptions.TopLeft);
+                    new Vector2(48f, 40f)), (i + 1).ToString(), 32f, Palette.TextMuted, TextAlignmentOptions.TopLeft);
                 key.raycastTarget = false;
 
                 Component view = slot.gameObject.AddComponent(GameTypes.ItemSlotView);
@@ -287,13 +284,16 @@ namespace Game.Editor.Builders
             return bar;
         }
 
-        // Under the healer (right of the board): caption and bar.
+        // Under the healer (bottom right): caption and bar.
         private static Component BuildMagicBar(RectTransform body)
         {
             RectTransform root = UiFactory.Rect("MagicBar", body)
-                .Place(UiFactory.BottomLeft, new Vector2(HealerColumnX, 160f), new Vector2(360f, 96f), UiFactory.Center);
-            Label(root, "MagicLabel", 30f, Palette.TextLight, "gameplay.hud.magic").GetComponent<RectTransform>().TopStretch(0f, 40f);
-            RectTransform track = UiFactory.Rect("Track", root).BottomStretch(0f, 40f);
+                .Place(UiFactory.BottomLeft, new Vector2(HealerX, 62f), new Vector2(300f, 100f), UiFactory.Center);
+            TextMeshProUGUI caption = UiFactory.AddText(UiFactory.Rect("MagicLabel", root).TopStretch(0f, 44f), string.Empty, 34f,
+                Palette.White).Localize("gameplay.hud.magic");
+            caption.raycastTarget = false;
+            Outlined(caption);
+            RectTransform track = UiFactory.Rect("Track", root).BottomStretch(0f, 44f);
             UiFactory.AddImage(track, BuildUtility.Sprite("screens/gameplay/bar-track")).raycastTarget = false;
             RectTransform fill = UiFactory.Rect("Fill", track).Stretch(4f, 4f, 4f, 4f);
             UiFactory.AddImage(fill, BuildUtility.Sprite("screens/gameplay/bar-fill-magic")).raycastTarget = false;
@@ -307,20 +307,20 @@ namespace Game.Editor.Builders
         private static Component BuildBanner(RectTransform body)
         {
             RectTransform root = UiFactory.Rect("ShowcaseBanner", body)
-                .Place(UiFactory.BottomCenter, new Vector2(0f, BoardY + 40f), new Vector2(760f, 300f), UiFactory.Center);
+                .Place(UiFactory.BottomLeft, BoardCenter + new Vector2(0f, 40f), new Vector2(860f, 360f), UiFactory.Center);
             var group = root.gameObject.AddComponent<CanvasGroup>();
             group.alpha = 0f;
             group.blocksRaycasts = false;
             group.interactable = false;
-            Image icon = UiFactory.AddImage(UiFactory.Rect("GemIcon", root).Place(UiFactory.TopCenter, Vector2.zero, new Vector2(120f, 120f)),
+            Image icon = UiFactory.AddImage(UiFactory.Rect("GemIcon", root).Place(UiFactory.TopCenter, Vector2.zero, new Vector2(144f, 144f)),
                 BuildUtility.Sprite("screens/gameplay/gem-attack"));
             icon.raycastTarget = false;
             icon.preserveAspect = true;
-            LocalizedLabel caption = Label(root, "CaptionLabel", 76f, Palette.White, "gameplay.showcase.attack");
-            caption.GetComponent<RectTransform>().Place(UiFactory.Center, new Vector2(0f, -30f), new Vector2(760f, 100f));
+            LocalizedLabel caption = Label(root, "CaptionLabel", 96f, Palette.White, "gameplay.showcase.attack");
+            caption.GetComponent<RectTransform>().Place(UiFactory.Center, new Vector2(0f, -30f), new Vector2(860f, 120f));
             Outlined(caption.GetComponent<TextMeshProUGUI>());
-            LocalizedLabel combo = Label(root, "ComboLabel", 48f, new Color(1f, 0.85f, 0.3f), "gameplay.showcase.combo");
-            combo.GetComponent<RectTransform>().Place(UiFactory.BottomCenter, new Vector2(0f, 0f), new Vector2(760f, 64f));
+            LocalizedLabel combo = Label(root, "ComboLabel", 60f, new Color(1f, 0.85f, 0.3f), "gameplay.showcase.combo");
+            combo.GetComponent<RectTransform>().Place(UiFactory.BottomCenter, new Vector2(0f, 0f), new Vector2(860f, 80f));
             Outlined(combo.GetComponent<TextMeshProUGUI>());
             Component banner = root.gameObject.AddComponent(GameTypes.ShowcaseBanner);
             Fields.Set(banner, ("_group", group), ("_icon", icon), ("_label", caption), ("_combo", combo));
@@ -337,8 +337,9 @@ namespace Game.Editor.Builders
             Component view = root.AddComponent(GameTypes.BattlefieldView);
 
             Transform environment = WorldFactory.Child("Environment", root.transform).transform;
-            Backdrop(environment, "Battlefield", "game/props/battlefield", new Vector3(0f, (856f - 540f) / 128f, 0f), -19);
-            Backdrop(environment, "Camp", "game/props/camp", new Vector3(0f, (352f - 540f) / 128f, 0f), -20);
+            Backdrop(environment, "BoardBackdrop", "game/props/board-backdrop", new Vector3(-3.75f, 0f, 0f), -20);
+            Backdrop(environment, "Battlefield", "game/props/battlefield", new Vector3(3.75f, (820f - 540f) / 128f, 0f), -19);
+            Backdrop(environment, "Camp", "game/props/camp", new Vector3(3.75f, (280f - 540f) / 128f, 0f), -20);
 
             Transform characters = WorldFactory.Child("Characters", root.transform).transform;
             Component hero = Character(characters, "Hero", HeroSpot, true, true, 2);
@@ -347,7 +348,7 @@ namespace Game.Editor.Builders
                 Character(characters, "Monster1", MonsterEntry, false, false, 1),
                 Character(characters, "Monster2", MonsterEntry, false, false, 1),
             };
-            Component healer = Character(characters, "Healer", HealerSpot, false, false, 2, bars: false);
+            Component healer = Character(characters, "Healer", HealerSpot, true, false, 2, bars: false);
 
             Transform spots = WorldFactory.Child("Spots", root.transform).transform;
             Transform heroSpot = WorldFactory.Child("HeroSpot", spots, HeroSpot).transform;
@@ -360,10 +361,10 @@ namespace Game.Editor.Builders
             var text = textObject.AddComponent<TextMeshPro>();
             text.font = TMP_Settings.defaultFontAsset;
             text.fontSharedMaterial = AssetDatabase.LoadAssetAtPath<Material>(OutlineMaterial) ?? text.fontSharedMaterial;
-            text.fontSize = 6f;
+            text.fontSize = 8f;
             text.fontStyle = FontStyles.Bold;
             text.alignment = TextAlignmentOptions.Center;
-            text.rectTransform.sizeDelta = new Vector2(4f, 1.2f);
+            text.rectTransform.sizeDelta = new Vector2(5f, 1.6f);
             text.GetComponent<MeshRenderer>().sortingOrder = 30;
             var fx = WorldFactory.Child("Fx", templates).AddComponent<SpriteRenderer>();
             fx.sortingOrder = 20;
@@ -396,8 +397,8 @@ namespace Game.Editor.Builders
         // Track and fill drawn sliced, the fill growing from the left; an overlay bar has no track (drawn over the health bar).
         private static Component Bar(Transform parent, string name, string fillSprite, float y, bool overlay = false)
         {
-            const float width = 1.2f;
-            const float height = 0.2f;
+            const float width = 1.6f;
+            const float height = 0.24f;
             GameObject root = WorldFactory.Child(name, parent, new Vector3(0f, y, 0f));
             if (!overlay)
             {
@@ -433,16 +434,16 @@ namespace Game.Editor.Builders
         // A wood panel anchored top-left with an optional icon and a formatted label.
         private static LocalizedLabel Pill(RectTransform parent, string name, Vector2 position, float width, string key, string icon)
         {
-            RectTransform rect = UiFactory.Rect(name, parent).Place(UiFactory.TopLeft, position, new Vector2(width, 72f));
+            RectTransform rect = UiFactory.Rect(name, parent).Place(UiFactory.TopLeft, position, new Vector2(width, 84f));
             UiFactory.AddImage(rect, BuildUtility.Sprite("ui-common/panel-wood")).raycastTarget = false;
             if (icon != null)
             {
-                UiFactory.AddImage(UiFactory.Rect("Icon", rect).Place(UiFactory.MiddleLeft, new Vector2(14f, 0f), new Vector2(48f, 48f)),
+                UiFactory.AddImage(UiFactory.Rect("Icon", rect).Place(UiFactory.MiddleLeft, new Vector2(18f, 0f), new Vector2(56f, 56f)),
                     BuildUtility.Sprite(icon)).raycastTarget = false;
             }
 
-            LocalizedLabel label = Label(rect, "Label", 32f, Palette.TextLight, key);
-            label.GetComponent<RectTransform>().Stretch(icon != null ? 64f : 16f, 0f, 16f, 0f);
+            LocalizedLabel label = Label(rect, "Label", 40f, Palette.TextLight, key);
+            label.GetComponent<RectTransform>().Stretch(icon != null ? 80f : 20f, 0f, 20f, 0f);
             return label;
         }
 

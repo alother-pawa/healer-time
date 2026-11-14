@@ -66,7 +66,6 @@ namespace Game.Editor.Builders
         internal const string MainMenuCanvas = PrefabsMainMenu + "/MainMenuCanvas.prefab";
         internal const string GameplayCanvas = PrefabsGameplay + "/GameplayCanvas.prefab";
         internal const string Battlefield = PrefabsGameplay + "/Battlefield.prefab";
-        internal const string PopupRevive = PrefabsPopups + "/Popup_Revive.prefab";
         internal const string PopupResult = PrefabsPopups + "/Popup_Result.prefab";
 
         // Assets referenced across builders.

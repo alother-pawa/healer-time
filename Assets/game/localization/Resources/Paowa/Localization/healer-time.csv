@@ -171,12 +171,7 @@ item.potion.name,Health potion,回復薬
 item.bomb.name,Bomb,爆弾
 item.shuffle.name,Shuffle,シャッフル
 item.armor.name,Armor,アーマー
-# Revive and result popups
-gameplay.revive.title,The hero fell!,勇者が倒れた！
-gameplay.revive.message,Revive for {0} coins?,{0}コインで復活しますか？
-gameplay.revive.balance,You have {0},所持 {0}
-gameplay.revive.confirm,Revive,復活
-gameplay.revive.give-up,Give up,あきらめる
+# Result popup
 gameplay.result.title,Run over,ラン終了
 gameplay.result.score,Score {0},スコア {0}
 gameplay.result.best,Best {0},ベスト {0}
@@ -190,21 +185,28 @@ gem.attack.name,Attack,アタック
 gem.heal.name,Heal,回復
 gem.defense.name,Defense,防御
 gem.magic.name,Magic,マジック
-monster.orc.name,Orc,オーク
-monster.orc-brute.name,Orc Brute,オークブルート
-monster.orc-shaman.name,Orc Shaman,オークシャーマン
-monster.orc-warlord.name,Orc Warlord,オークウォーロード
-hero.soldier.name,Soldier,ソルジャー
-hero.soldier.description,"Sturdy and steady: plenty of health, even blows.",頑丈で安定：体力が多く、攻撃も安定。
-hero.veteran.name,Veteran,ベテラン
-hero.veteran.description,"Hits harder and faster, but has less health.",攻撃は強く速いが、体力は少なめ。
-healer.cleric.name,Cleric,クレリック
-healer.cleric.description,A full bar casts a strong holy strike.,ゲージ満タンで強力な聖なる一撃。
-healer.druid.name,Druid,ドルイド
-healer.druid.description,Fills faster; the strike also heals the hero more.,ゲージが早くたまり、一撃で勇者を多めに回復。
 # Character page ({0} {1} {2} in the stats = the character numbers)
 characters.title,Characters,キャラクター
 characters.tab.hero,Hero,勇者
 characters.tab.healer,Healer,ヒーラー
 characters.stats.hero,Health {0} · Attack {1} · Strike ×{2},体力 {0} · 攻撃 {1} · 一撃 ×{2}
 characters.stats.healer,Magic {0} · Skill {1} · Heal {2},マジック {0} · スキル {1} · 回復 {2}
+gameplay.enemy.boss,Boss: {0},ボス: {0}
+monster.goblin.name,Goblin,ゴブリン
+monster.mushroom.name,Mushroom,マッシュルーム
+monster.skeleton.name,Skeleton,スケルトン
+monster.flying-eye.name,Flying Eye,フライングアイ
+monster.fire-worm.name,Fire Worm,ファイアワーム
+monster.fallen-king.name,Fallen King,堕ちた王
+hero.martial-hero.name,Martial Hero,武術家
+hero.martial-hero.description,"Balanced and quick: steady blows, good health.",バランス型：安定した攻撃と体力。
+hero.fantasy-warrior.name,Fantasy Warrior,ファンタジー戦士
+hero.fantasy-warrior.description,"Tough swordsman: more health, slightly weaker strikes.",頑丈な剣士：体力が多く、一撃はやや弱い。
+hero.hero-knight.name,Hero Knight,ヒーローナイト
+hero.hero-knight.description,"Heavy armor: the most health, slow attacks.",重装：体力が最も多く、攻撃は遅い。
+hero.huntress.name,Huntress,ハントレス
+hero.huntress.description,"Fast and fierce: strong Attack gems, little health.",素早く猛烈：アタックジェムが強力、体力は少ない。
+healer.evil-wizard-2.name,Shadow Mage,シャドウメイジ
+healer.evil-wizard-2.description,A full bar casts a crushing dark blast.,ゲージ満タンで強烈な闇の爆発。
+healer.evil-wizard-3.name,Blood Witch,ブラッドウィッチ
+healer.evil-wizard-3.description,Fills faster; the spell also heals the hero more.,ゲージが早くたまり、勇者を多めに回復。

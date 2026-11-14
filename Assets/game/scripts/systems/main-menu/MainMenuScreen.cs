@@ -167,8 +167,8 @@ namespace Game.Systems.MainMenu
 
             HeroDefinition hero = _roster.SelectedHero;
             HealerDefinition healer = _roster.SelectedHealer;
-            _heroPreview.Play(hero.PreviewFrames, hero.PreviewFrameSeconds, hero.Tint);
-            _healerPreview.Play(healer.PreviewFrames, healer.PreviewFrameSeconds, healer.Tint);
+            _heroPreview.Play(hero.PreviewFrames, hero.PreviewFrameSeconds, hero.Tint, hero.Scale);
+            _healerPreview.Play(healer.PreviewFrames, healer.PreviewFrameSeconds, healer.Tint, healer.Scale);
         }
 
         private void RenderCoins()

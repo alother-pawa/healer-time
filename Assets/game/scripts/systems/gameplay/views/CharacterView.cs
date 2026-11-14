@@ -5,19 +5,20 @@ namespace Game.Systems.Gameplay
     /// <summary>
     /// A character on the battlefield: its sheet's animator (states named after the sheet's tags), its tint and size, and its
     /// bars. Action animations (attack, hurt, cast) go back to idle when they end; death stays on its last frame. The
-    /// character faces right unless <c>_faceLeft</c> (the hero stands on the right).
+    /// character faces right unless <c>_faceLeft</c> (the hero stands on the right). Bars sit just above the frame.
     /// REFERENCES: <c>_body</c> draws the sheet; <c>_animator</c> plays it; <c>_health</c> and <c>_armor</c> are its bars (the
     /// armor bar is optional).
     /// </summary>
     internal sealed class CharacterView : MonoBehaviour
     {
         internal const string Idle = "idle";
-        internal const string Walk = "walk";
+        internal const string Walk = "run";
         internal const string Attack = "attack";
         internal const string AttackHeavy = "attack-heavy";
         internal const string Hurt = "hurt";
         internal const string Death = "death";
         internal const string Cast = "cast";
+        private const float BarGap = 0.1f;
 
         [SerializeField] private SpriteRenderer _body;
         [SerializeField] private Animator _animator;
@@ -26,9 +27,9 @@ namespace Game.Systems.Gameplay
         [SerializeField] private bool _faceLeft;
 
         private string _state = Idle;
+        private int _stateHash = Animator.StringToHash(Idle);
         private string _loop = Idle;
-        private float _healthY = float.NaN;
-        private float _armorY = float.NaN;
+        private bool _barsPlaced;
 
         /// <summary>Size of the body relative to its sheet (bars keep their size and sit over the head).</summary>
         internal float Scale => _body.transform.localScale.y;
@@ -40,8 +41,7 @@ namespace Game.Systems.Gameplay
             _body.color = tint;
             _body.flipX = _faceLeft;
             _body.transform.localScale = new Vector3(scale, scale, 1f);
-            PlaceBar(_health, ref _healthY, scale);
-            PlaceBar(_armor, ref _armorY, scale);
+            _barsPlaced = false;
             _loop = Idle;
             Play(Idle);
         }
@@ -81,6 +81,7 @@ namespace Game.Systems.Gameplay
             }
 
             _state = state;
+            _stateHash = hash;
             _animator.Play(hash, 0, 0f);
         }
 
@@ -91,6 +92,7 @@ namespace Game.Systems.Gameplay
                 && _animator.HasState(0, Animator.StringToHash(Death)))
             {
                 _state = Death;
+                _stateHash = Animator.StringToHash(Death);
                 _animator.Play(Death, 0, 1f);
             }
         }
@@ -121,20 +123,27 @@ namespace Game.Systems.Gameplay
             }
         }
 
-        private static void PlaceBar(WorldBar bar, ref float baseY, float scale)
+        // Bars sit just above the character's frame (its sprite's top), once the animator has shown a first frame.
+        private void LateUpdate()
         {
-            if (bar == null)
+            if (_barsPlaced || _body.sprite == null)
             {
                 return;
             }
 
-            Transform t = bar.transform;
-            if (float.IsNaN(baseY))
-            {
-                baseY = t.localPosition.y;
-            }
+            _barsPlaced = true;
+            float top = _body.sprite.bounds.max.y * Scale + BarGap;
+            PlaceBar(_health, top);
+            PlaceBar(_armor, top);
+        }
 
-            t.localPosition = new Vector3(t.localPosition.x, baseY * scale, t.localPosition.z);
+        private static void PlaceBar(WorldBar bar, float y)
+        {
+            if (bar != null)
+            {
+                Transform t = bar.transform;
+                t.localPosition = new Vector3(t.localPosition.x, y, t.localPosition.z);
+            }
         }
 
         private void Update()
@@ -144,8 +153,9 @@ namespace Game.Systems.Gameplay
                 return;
             }
 
+            // Only the action's own state counts: right after Play the animator still reports the previous (looping) state.
             AnimatorStateInfo info = _animator.GetCurrentAnimatorStateInfo(0);
-            if (info.normalizedTime >= 1f && !_animator.IsInTransition(0))
+            if (info.shortNameHash == _stateHash && info.normalizedTime >= 1f && !_animator.IsInTransition(0))
             {
                 Play(_loop);
             }

@@ -35,10 +35,12 @@ namespace Game.Editor.Builders
         private static readonly (string id, string tint, float scale, float health, float damage, float interval, int coins, int score,
             bool boss, int unlockAt, float weight)[] Monsters =
         {
-            ("orc", "#FFFFFF", 1f, 30f, 6f, 2f, 3, 100, false, 0, 3f),
-            ("orc-brute", "#FF9C8A", 1.15f, 48f, 9f, 2.4f, 5, 150, false, 3, 2f),
-            ("orc-shaman", "#9FC5FF", 0.95f, 26f, 5f, 1.2f, 4, 130, false, 6, 2f),
-            ("orc-warlord", "#8F7BB8", 1.5f, 140f, 14f, 2.2f, 25, 600, true, 0, 1f),
+            ("goblin", "#FFFFFF", 1f, 30f, 6f, 1.8f, 3, 100, false, 0, 3f),
+            ("mushroom", "#FFFFFF", 1f, 40f, 7f, 2.2f, 4, 120, false, 2, 2f),
+            ("skeleton", "#FFFFFF", 1f, 55f, 9f, 2.4f, 5, 150, false, 4, 2f),
+            ("flying-eye", "#FFFFFF", 1f, 25f, 5f, 1.2f, 4, 130, false, 6, 2f),
+            ("fire-worm", "#FFFFFF", 1f, 45f, 10f, 2f, 6, 170, false, 8, 2f),
+            ("fallen-king", "#FFFFFF", 1f, 140f, 14f, 2.2f, 25, 600, true, 0, 1f),
         };
 
         /// <summary>Items in slot order: id, icon, effect, amount, radius, restock price in coins.</summary>
@@ -53,15 +55,17 @@ namespace Game.Editor.Builders
         /// <summary>Heroes: id, sheet, tint, health, attack damage, attack interval, strike multiplier.</summary>
         private static readonly (string id, string sheet, string tint, float health, float damage, float interval, float strike)[] Heroes =
         {
-            ("soldier", "soldier", "#FFFFFF", 120f, 8f, 1.2f, 1f),
-            ("veteran", "soldier", "#FFD27A", 95f, 11f, 1f, 1.25f),
+            ("martial-hero", "martial-hero", "#FFFFFF", 120f, 8f, 1.1f, 1f),
+            ("fantasy-warrior", "fantasy-warrior", "#FFFFFF", 140f, 7f, 1.2f, 0.9f),
+            ("hero-knight", "hero-knight", "#FFFFFF", 160f, 6f, 1.3f, 1f),
+            ("huntress", "huntress", "#FFFFFF", 100f, 9f, 0.9f, 1.3f),
         };
 
         /// <summary>Healers: id, sheet, tint, magic capacity, skill damage, skill heal.</summary>
         private static readonly (string id, string sheet, string tint, float capacity, float damage, float heal)[] Healers =
         {
-            ("cleric", "healer", "#FFFFFF", 100f, 45f, 10f),
-            ("druid", "healer", "#A8E6A1", 80f, 35f, 20f),
+            ("evil-wizard-2", "evil-wizard-2", "#FFFFFF", 100f, 50f, 10f),
+            ("evil-wizard-3", "evil-wizard-3", "#FFFFFF", 80f, 35f, 20f),
         };
 
         internal static void Build()
@@ -161,7 +165,7 @@ namespace Game.Editor.Builders
             string path = $"{Gameplay}/monsters/Monster_{monster.id}.asset";
             bool created = Missing(path);
             ScriptableObject asset = BuildUtility.Asset(GameTypes.MonsterDefinition, path);
-            Fields.Set(asset, ("_id", monster.id), ("_nameKey", $"monster.{monster.id}.name"), ("_controller", Controller("orc")),
+            Fields.Set(asset, ("_id", monster.id), ("_nameKey", $"monster.{monster.id}.name"), ("_controller", Controller(monster.id)),
                 ("_isBoss", monster.boss));
             if (created)
             {

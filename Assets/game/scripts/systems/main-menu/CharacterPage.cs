@@ -99,7 +99,7 @@ namespace Game.Systems.MainMenu
             }
 
             CharacterDefinition chosen = Chosen;
-            _preview.Play(chosen.PreviewFrames, chosen.PreviewFrameSeconds, chosen.Tint);
+            _preview.Play(chosen.PreviewFrames, chosen.PreviewFrameSeconds, chosen.Tint, chosen.Scale);
             _name.SetKey(chosen.NameKey);
             _description.SetKey(chosen.DescriptionKey);
             if (chosen is HeroDefinition hero)

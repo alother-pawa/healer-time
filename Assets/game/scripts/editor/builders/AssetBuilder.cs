@@ -65,7 +65,6 @@ namespace Game.Editor.Builders
                 ("_displayConfirmPopup", BuildUtility.PrefabComponent(BuildPaths.PopupDisplayConfirm, GameTypes.DisplayConfirmPopup)));
             Fields.Set(BuildUtility.Asset(GameTypes.GameplayConfig, BuildPaths.GameplayConfig),
                 ("_pausePopup", BuildUtility.PrefabComponent(BuildPaths.PopupPauseMenu, GameTypes.PauseMenuPopup)),
-                ("_revivePopup", BuildUtility.PrefabComponent(BuildPaths.PopupRevive, GameTypes.RevivePopup)),
                 ("_resultPopup", BuildUtility.PrefabComponent(BuildPaths.PopupResult, GameTypes.ResultPopup)));
             AssetDatabase.SaveAssets();
         }
@@ -81,7 +80,7 @@ namespace Game.Editor.Builders
             ("_sounds._shield", Clip("sfx/shield")), ("_sounds._magicCharge", Clip("sfx/magic-charge")),
             ("_sounds._healerSkill", Clip("sfx/healer-skill")), ("_sounds._monsterDeath", Clip("sfx/monster-death")),
             ("_sounds._bossAppear", Clip("sfx/boss-appear")), ("_sounds._heroDeath", Clip("sfx/hero-death")),
-            ("_sounds._revive", Clip("sfx/revive")), ("_sounds._coin", Clip("ui/coin")), ("_sounds._click", Clip("ui/button-click")),
+            ("_sounds._coin", Clip("ui/coin")), ("_sounds._click", Clip("ui/button-click")),
         };
 
         /// <summary>A sound of <c>Assets/game/audio</c> by its path without extension (Tools/AudioGen).</summary>
