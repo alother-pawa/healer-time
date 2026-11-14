@@ -482,21 +482,6 @@
       ]
     },
     {
-      "path": "screens/gameplay/board-cell-selected",
-      "width": 70,
-      "height": 70,
-      "border": [
-        14,
-        14,
-        14,
-        14
-      ],
-      "pivot": [
-        0.5,
-        0.5
-      ]
-    },
-    {
       "path": "screens/gameplay/board-frame",
       "width": 284,
       "height": 268,

@@ -82,7 +82,6 @@ Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.
 | `gem-defense.png` | 96×96 | rect | — | giữa | Gem Defense: xanh dương, hình khiên vuông | Raven Fantasy Icons (Clockwork Raven): ô (10, 0) ×3 |
 | `gem-magic.png` | 96×96 | rect | — | giữa | Gem Magic: tím, hình tam giác (tinh thể nhọn) | Raven Fantasy Icons (Clockwork Raven): ô (10, 12) ×3 |
 | `board-cell.png` | 66×66 | rounded | 12 | giữa | Ô nền của bàn ghép | Mega Cozy UI Pack (dobo_ui, bản demo): `Inventory/ItemSlots/ItemSlotsDefault/SlotDefaultl1_cream.png` ×2 |
-| `board-cell-selected.png` | 70×70 | outline | 14 | giữa | Ô đang chọn trên bàn ghép | Mega Cozy UI Pack (dobo_ui, bản demo): `Inventory/ItemSlots/ItemSlotsSelected/SlotHover1_cream.png` ×2 |
 | `board-frame.png` | 284×268 | outline | 44 | giữa | Khung gỗ quanh bàn ghép (chỉ vẽ viền) | Fantasy UI free: `freefantasy.png` vùng (165, 72, 236, 139) ×4 |
 | `item-slot.png` | 132×132 | rounded | 24 | giữa | Ô item | Mega Cozy UI Pack (dobo_ui, bản demo): `Inventory/ItemSlots/ItemSlotsDefault/SlotDefaultl1_cream.png` ×4 |
 | `item-potion.png` | 96×96 | rect | — | giữa | Item bình máu | Raven Fantasy Icons (Clockwork Raven): ô (17, 8) ×3 |

@@ -206,7 +206,10 @@ namespace Game.Editor.Builders
             area.gameObject.AddComponent<RectMask2D>();
 
             RectTransform selection = UiFactory.Rect("Selection", area).Place(UiFactory.Center, Vector2.zero, new Vector2(80f, 80f));
-            UiFactory.AddImage(selection, BuildUtility.Sprite("screens/gameplay/board-cell-selected")).raycastTarget = false;
+            // Only the frame is drawn: the chosen gem shows through the middle.
+            Image selected = UiFactory.AddImage(selection, BuildUtility.Sprite("ui-common/focus-frame"));
+            selected.raycastTarget = false;
+            selected.fillCenter = false;
 
             Image cell = UiFactory.AddImage(UiFactory.Rect("CellTemplate", parts.Templates).Place(UiFactory.Center, Vector2.zero,
                 new Vector2(108f, 108f)), BuildUtility.Sprite("screens/gameplay/board-cell"));
