@@ -154,8 +154,7 @@ namespace Game.Editor.Builders
             BuildUtility.SavePrefab(canvas.gameObject, BuildPaths.GameplayCanvas);
         }
 
-        // Score, monsters beaten and coins on wood signs over the board (top left), which monster this is (under the monster's
-        // bar, top right), Pause (top right corner).
+        // Score, monsters beaten and coins on wood signs over the board (top left), Pause (top right corner).
         private static Component BuildHud(RectTransform header)
         {
             RectTransform root = UiFactory.Rect("Hud", header).Stretch();
@@ -164,17 +163,11 @@ namespace Game.Editor.Builders
             LocalizedLabel kills = Pill(root, "KillsPanel", new Vector2(338f, -12f), 250f, "gameplay.hud.kills", null);
             LocalizedLabel coins = Pill(root, "CoinsPanel", new Vector2(602f, -12f), 230f, "gameplay.hud.coins", "ui-common/coin-icon");
 
-            RectTransform monsterRect = UiFactory.Rect("MonsterLabel", root).Place(UiFactory.TopLeft, new Vector2(1216f, -150f),
-                new Vector2(448f, 48f));
-            TextMeshProUGUI monsterText = UiFactory.AddText(monsterRect, string.Empty, 34f, Palette.White).Localize("gameplay.hud.monster");
-            monsterText.raycastTarget = false;
-            Outlined(monsterText);
-
             RectTransform pauseRect = UiFactory.Rect("PauseButton", root).Place(UiFactory.TopRight, new Vector2(-20f, -20f), new Vector2(96f, 96f));
             Button pause = UiFactory.AddButton(pauseRect, BuildUtility.Sprite("screens/gameplay/button-pause"));
 
             Fields.Set(hud, ("_scoreLabel", score), ("_killsLabel", kills), ("_coinsLabel", coins),
-                ("_monsterLabel", monsterText.GetComponent<LocalizedLabel>()), ("_pauseButton", pause));
+                ("_pauseButton", pause));
             return hud;
         }
 

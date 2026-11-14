@@ -230,7 +230,7 @@ namespace Game.Systems.Gameplay
             BattleSnapshot snapshot = battle.Snapshot;
             _battlefield.ShowMonster(battle.MonsterIndex, battle.MonsterKind, battle.ApproachProgress);
             _battlefield.ShowStats(snapshot);
-            _hud.Show(snapshot, battle.MonsterIsBoss);
+            _hud.Show(snapshot);
             ShowEnemy(snapshot);
             RenderItems();
         }
