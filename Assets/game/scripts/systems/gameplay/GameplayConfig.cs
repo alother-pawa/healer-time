@@ -5,7 +5,7 @@ namespace Game.Systems.Gameplay
 {
     /// <summary>
     /// Gameplay references, loaded from <c>Resources/game/config/GameplayConfig</c> by the module and referenced by the
-    /// gameplay scene: popups, the menu scene, the balance config and the sounds. The builder writes them on every run.
+    /// gameplay scene: popups (pause, result), the menu scene, the balance config and the sounds. The builder writes them on every run.
     /// </summary>
     [CreateAssetMenu(menuName = "Game/Config/Gameplay", fileName = "GameplayConfig")]
     internal sealed class GameplayConfig : ScriptableObject
@@ -13,7 +13,6 @@ namespace Game.Systems.Gameplay
         internal const string ResourcePath = "game/config/GameplayConfig";
 
         [SerializeField] private PauseMenuPopup _pausePopup;
-        [SerializeField] private RevivePopup _revivePopup;
         [SerializeField] private ResultPopup _resultPopup;
         [SerializeField] private SceneKey _menuScene;
         [SerializeField] private BalanceConfig _balance;
@@ -21,8 +20,6 @@ namespace Game.Systems.Gameplay
 
         /// <summary>Prefab of the pause menu popup.</summary>
         internal PauseMenuPopup PausePopup => _pausePopup;
-
-        internal RevivePopup RevivePopup => _revivePopup;
 
         internal ResultPopup ResultPopup => _resultPopup;
 

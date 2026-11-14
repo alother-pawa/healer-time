@@ -24,7 +24,6 @@ namespace Game.Systems.Gameplay
         [SerializeField] private AudioClip _monsterDeath;
         [SerializeField] private AudioClip _bossAppear;
         [SerializeField] private AudioClip _heroDeath;
-        [SerializeField] private AudioClip _revive;
         [SerializeField] private AudioClip _coin;
         [SerializeField] private AudioClip _click;
 
@@ -61,8 +60,6 @@ namespace Game.Systems.Gameplay
         internal AudioClip BossAppear => _bossAppear;
 
         internal AudioClip HeroDeath => _heroDeath;
-
-        internal AudioClip Revive => _revive;
 
         internal AudioClip Coin => _coin;
 

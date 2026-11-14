@@ -79,7 +79,6 @@ SOUNDS = [
     Sound("sfx/monster-death", 0.4, False, "Quái gục", 120.0),
     Sound("sfx/boss-appear", 0.9, False, "Boss xuất hiện", 98.0),
     Sound("sfx/hero-death", 0.9, False, "Hero gục, hết lượt", 110.0),
-    Sound("sfx/revive", 0.8, False, "Hồi sinh", 440.0),
 ]
 
 

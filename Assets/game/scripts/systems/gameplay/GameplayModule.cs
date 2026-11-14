@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Game.Systems.Gameplay
 {
     /// <summary>
-    /// Registers the gameplay popups of <see cref="GameplayConfig"/> (pause menu, revive, result) with the UI manager, so the
+    /// Registers the gameplay popups of <see cref="GameplayConfig"/> (pause menu, result) with the UI manager, so the
     /// gameplay scene can show them over the persistent UI scene. Everything else of gameplay lives in the scene.
     /// </summary>
     internal sealed class GameplayModule : ICoreModule
@@ -27,7 +27,7 @@ namespace Game.Systems.Gameplay
         public void Initialize()
         {
             var config = Resources.Load<GameplayConfig>(GameplayConfig.ResourcePath);
-            if (config == null || config.PausePopup == null || config.RevivePopup == null || config.ResultPopup == null
+            if (config == null || config.PausePopup == null || config.ResultPopup == null
                 || config.MenuScene == null || config.Balance == null)
             {
                 throw new InvalidOperationException(
@@ -37,7 +37,6 @@ namespace Game.Systems.Gameplay
 
             var ui = CoreServiceLocator.Get<IUIManager>();
             ui.RegisterView(config.PausePopup.ViewId, config.PausePopup.gameObject);
-            ui.RegisterView(config.RevivePopup.ViewId, config.RevivePopup.gameObject);
             ui.RegisterView(config.ResultPopup.ViewId, config.ResultPopup.gameObject);
         }
 

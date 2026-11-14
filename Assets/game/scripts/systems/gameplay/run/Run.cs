@@ -49,13 +49,6 @@ namespace Game.Systems.Gameplay
             return IsOver ? Nothing() : new RunStep(Engine.ShuffleNow(), new List<BattleEvent>());
         }
 
-        internal RunStep Revive()
-        {
-            var events = new List<BattleEvent>();
-            Battle.Revive(events);
-            return new RunStep(null, events);
-        }
-
         private RunStep Apply(BoardResolution resolution)
         {
             var events = new List<BattleEvent>();

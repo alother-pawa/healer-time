@@ -8,8 +8,9 @@ namespace Game.Systems.Gameplay
     /// monster at a time walks in from the left (<see cref="BattleTuning.ApproachSeconds"/>, no attacks either way meanwhile),
     /// fights, dies and is replaced by a stronger one; every Nth monster is a boss. Matched gems change the battle through
     /// <see cref="ApplyBoard"/>; items through <see cref="Heal"/> and <see cref="AddArmor"/>. Armor wears off over time and
-    /// absorbs hits before health. A full magic bar casts the healer's skill. The run ends when the hero's health reaches
-    /// zero (<see cref="IsOver"/>); <see cref="Revive"/> brings the hero back once per run. Every change is reported as
+    /// absorbs hits before health. A full magic bar casts the healer's skill. Strikes and skills cast while the next monster is
+    /// still walking in are held and land, in order, once it arrived. The run ends when the hero's health reaches
+    /// zero (<see cref="IsOver"/>). Every change is reported as
     /// <see cref="BattleEvent"/>s carrying the values after it.
     /// </summary>
     internal sealed class Battle
@@ -22,6 +23,10 @@ namespace Game.Systems.Gameplay
         private readonly Random _random;
         private float _heroAttackTimer;
         private float _monsterAttackTimer;
+        private bool _heroSwinging;
+        private bool _monsterSwinging;
+        private readonly List<HeldStrike> _held = new List<HeldStrike>();
+        private float _releaseLeft;
 
         internal Battle(HeroStats hero, HealerStats healer, IReadOnlyList<MonsterTemplate> monsters, IReadOnlyList<GemRule> gems,
             BattleTuning tuning, int seed)
@@ -78,6 +83,9 @@ namespace Game.Systems.Gameplay
 
         internal bool IsFighting => ApproachLeft <= 0f && !IsOver;
 
+        /// <summary>Strikes and skills waiting for the monster to arrive.</summary>
+        internal int HeldStrikes => _held.Count;
+
         internal int Score { get; private set; }
 
         internal int Kills { get; private set; }
@@ -85,11 +93,9 @@ namespace Game.Systems.Gameplay
         /// <summary>Coins earned this run.</summary>
         internal int Coins { get; private set; }
 
-        internal int RevivesUsed { get; private set; }
 
         internal bool IsOver { get; private set; }
 
-        internal bool CanRevive => IsOver && RevivesUsed < _tuning.MaxRevives;
 
         internal BattleSnapshot Snapshot => new BattleSnapshot(HeroHealth, HeroMaxHealth, Armor, Magic, MagicCapacity, MonsterHealth,
             MonsterMaxHealth, MonsterIndex, Score, Kills, Coins);
@@ -115,13 +121,42 @@ namespace Game.Systems.Gameplay
             if (ApproachLeft > 0f)
             {
                 ApproachLeft = Math.Max(0f, ApproachLeft - seconds);
+                if (ApproachLeft <= 0f && _held.Count > 0)
+                {
+                    StartRelease(events);
+                }
+
                 return;
             }
 
+            // Held strikes land first; the fight waits for them.
+            if (_held.Count > 0)
+            {
+                _releaseLeft -= seconds;
+                if (_releaseLeft > 0f)
+                {
+                    return;
+                }
+
+                ReleaseHeld(events);
+                if (!IsFighting)
+                {
+                    return;
+                }
+            }
+
+            // Each side swings (windup event, the attack animation starts) and hits a moment later (the damage and its numbers).
             _heroAttackTimer += seconds;
+            if (!_heroSwinging && _heroAttackTimer >= _hero.AttackInterval - Windup(_hero.AttackInterval))
+            {
+                _heroSwinging = true;
+                events.Add(Event(BattleEventKind.HeroWindup, 0f, 0f, 0, -1));
+            }
+
             if (_heroAttackTimer >= _hero.AttackInterval)
             {
                 _heroAttackTimer -= _hero.AttackInterval;
+                _heroSwinging = false;
                 DamageMonster(_hero.AttackDamage, BattleEventKind.HeroAttack, -1, 0f, events);
                 if (ApproachLeft > 0f)
                 {
@@ -130,9 +165,16 @@ namespace Game.Systems.Gameplay
             }
 
             _monsterAttackTimer += seconds;
+            if (!_monsterSwinging && _monsterAttackTimer >= MonsterAttackInterval - Windup(MonsterAttackInterval))
+            {
+                _monsterSwinging = true;
+                events.Add(Event(BattleEventKind.MonsterWindup, 0f, 0f, 0, -1));
+            }
+
             if (_monsterAttackTimer >= MonsterAttackInterval)
             {
                 _monsterAttackTimer -= MonsterAttackInterval;
+                _monsterSwinging = false;
                 HitHero(MonsterDamage, events);
             }
         }
@@ -159,7 +201,7 @@ namespace Game.Systems.Gameplay
         /// <summary>The hero's strong strike (Attack gems): <paramref name="amount"/> times the hero's strike multiplier.</summary>
         internal void Strike(float amount, int gem, List<BattleEvent> events)
         {
-            DamageMonster(amount * _hero.StrikeMultiplier, BattleEventKind.HeroStrike, gem, 0f, events);
+            StrikeMonster(amount * _hero.StrikeMultiplier, BattleEventKind.HeroStrike, gem, 0f, events);
         }
 
         /// <summary>Restores health up to the maximum; returns the health gained.</summary>
@@ -209,24 +251,57 @@ namespace Game.Systems.Gameplay
             float healed = Math.Min(_healer.SkillHeal, HeroMaxHealth - HeroHealth);
             HeroHealth += healed;
             float damage = _healer.SkillDamage * (1f + _tuning.SkillGrowth * Math.Max(0, MonsterIndex));
-            DamageMonster(damage, BattleEventKind.HealerSkill, gem, healed, events);
+            StrikeMonster(damage, BattleEventKind.HealerSkill, gem, healed, events);
         }
 
-        /// <summary>Brings the hero back after the run ended (once per run): part of the health and some armor.</summary>
-        internal bool Revive(List<BattleEvent> events)
+        // A strike lands at once on a monster in reach; otherwise (or behind strikes already waiting) it is held.
+        private void StrikeMonster(float damage, BattleEventKind kind, int gem, float healed, List<BattleEvent> events)
         {
-            if (!CanRevive)
+            if (MonsterIndex < 0 || damage <= 0f)
             {
-                return false;
+                return;
             }
 
-            RevivesUsed++;
-            IsOver = false;
-            HeroHealth = HeroMaxHealth * _tuning.ReviveHealth;
-            Armor = Math.Min(ArmorCap, _tuning.ReviveArmor);
-            _monsterAttackTimer = 0f;
-            events.Add(Event(BattleEventKind.Revived, HeroHealth, 0f, 0, -1));
-            return true;
+            if (IsFighting && _held.Count == 0)
+            {
+                DamageMonster(damage, kind, gem, healed, events);
+                return;
+            }
+
+            _held.Add(new HeldStrike(kind, damage, gem));
+            events.Add(Event(BattleEventKind.StrikeHeld, damage, healed, (int)kind, gem));
+        }
+
+        private void StartRelease(List<BattleEvent> events)
+        {
+            float damage = 0f;
+            int kinds = 0;
+            foreach (HeldStrike held in _held)
+            {
+                damage += held.Damage;
+                kinds |= held.Kind == BattleEventKind.HealerSkill ? 2 : 1;
+            }
+
+            _releaseLeft = _tuning.AttackWindup;
+            events.Add(Event(BattleEventKind.StrikeWindup, damage, 0f, kinds, -1));
+        }
+
+        // Lands the held strikes in order; when one kills the monster the rest wait for the next one.
+        private void ReleaseHeld(List<BattleEvent> events)
+        {
+            HeldStrike[] held = _held.ToArray();
+            _held.Clear();
+            foreach (HeldStrike strike in held)
+            {
+                if (IsFighting && _held.Count == 0)
+                {
+                    DamageMonster(strike.Damage, strike.Kind, strike.Gem, 0f, events);
+                }
+                else
+                {
+                    _held.Add(strike);
+                }
+            }
         }
 
         private void HitHero(float damage, List<BattleEvent> events)
@@ -284,6 +359,8 @@ namespace Game.Systems.Gameplay
             ApproachLeft = _tuning.ApproachSeconds;
             _heroAttackTimer = 0f;
             _monsterAttackTimer = 0f;
+            _heroSwinging = false;
+            _monsterSwinging = false;
             events.Add(Event(BattleEventKind.MonsterSpawned, MonsterIsBoss ? 1f : 0f, 0f, MonsterKind, -1));
         }
 
@@ -326,6 +403,25 @@ namespace Game.Systems.Gameplay
             }
 
             return fallback;
+        }
+
+        private float Windup(float interval)
+        {
+            return Math.Min(_tuning.AttackWindup, interval * 0.6f);
+        }
+
+        private readonly struct HeldStrike
+        {
+            internal readonly BattleEventKind Kind;
+            internal readonly float Damage;
+            internal readonly int Gem;
+
+            internal HeldStrike(BattleEventKind kind, float damage, int gem)
+            {
+                Kind = kind;
+                Damage = damage;
+                Gem = gem;
+            }
         }
 
         private BattleEvent Event(BattleEventKind kind, float amount, float absorbed, int value, int gem)

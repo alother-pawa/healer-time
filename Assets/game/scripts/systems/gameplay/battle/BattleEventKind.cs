@@ -30,10 +30,26 @@ namespace Game.Systems.Gameplay
         /// <summary>The monster died (Amount: coins earned; Value: score earned; Boss flag).</summary>
         MonsterDied = 8,
 
-        /// <summary>The hero's health reached zero: the run is over unless the hero revives.</summary>
+        /// <summary>The hero's health reached zero: the run is over.</summary>
         HeroDied = 9,
 
-        /// <summary>The hero came back with part of their health.</summary>
-        Revived = 10,
+        /// <summary>The hero starts swinging; its <see cref="HeroAttack"/> lands <see cref="BattleTuning.AttackWindup"/> later.</summary>
+        HeroWindup = 11,
+
+        /// <summary>The monster starts swinging; its <see cref="MonsterAttack"/> lands <see cref="BattleTuning.AttackWindup"/> later.</summary>
+        MonsterWindup = 12,
+
+        /// <summary>
+        /// A <see cref="HeroStrike"/> or <see cref="HealerSkill"/> was cast while no monster stood in reach (the next one still
+        /// walking in): it waits and lands once that monster arrived (Amount: damage held; Absorbed: health the skill gave the
+        /// hero at once; Value: the held kind).
+        /// </summary>
+        StrikeHeld = 13,
+
+        /// <summary>
+        /// The monster arrived and the held strikes start; they land <see cref="BattleTuning.AttackWindup"/> later (Amount: damage
+        /// held; Value: 1 if a hero strike is held, plus 2 if a healer skill is).
+        /// </summary>
+        StrikeWindup = 14,
     }
 }

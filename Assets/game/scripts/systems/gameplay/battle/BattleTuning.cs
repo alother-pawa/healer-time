@@ -18,6 +18,8 @@ namespace Game.Systems.Gameplay
         [Min(0f)] [SerializeField] private float _comboBonus = 0.25f;
         [Tooltip("Extra power of every gem above three in one group (0.2 = +20% per gem).")]
         [Min(0f)] [SerializeField] private float _largeMatchBonus = 0.2f;
+        [Tooltip("Seconds between the start of a swing and its hit (the attack animation's impact), capped at 60% of the attack interval.")]
+        [Min(0f)] [SerializeField] private float _attackWindup = 0.3f;
         [Tooltip("Seconds a new monster walks in before it fights.")]
         [Min(0f)] [SerializeField] private float _approachSeconds = 1.4f;
         [Tooltip("Health growth per monster index (0.12 = +12% per monster).")]
@@ -34,9 +36,6 @@ namespace Game.Systems.Gameplay
         [Min(0)] [SerializeField] private int _scorePerGem = 10;
         [Tooltip("Healer skill damage growth per monster index, so the skill keeps up with tougher monsters.")]
         [Min(0f)] [SerializeField] private float _skillGrowth = 0.08f;
-        [Range(0.05f, 1f)] [SerializeField] private float _reviveHealth = 0.5f;
-        [Min(0f)] [SerializeField] private float _reviveArmor = 30f;
-        [Min(0)] [SerializeField] private int _maxRevives = 1;
 
         internal float ArmorDecayPerSecond => _armorDecayPerSecond;
 
@@ -47,6 +46,8 @@ namespace Game.Systems.Gameplay
         internal float LargeMatchBonus => _largeMatchBonus;
 
         internal float ApproachSeconds => _approachSeconds;
+
+        internal float AttackWindup => _attackWindup;
 
         internal float HealthGrowth => _healthGrowth;
 
@@ -66,10 +67,5 @@ namespace Game.Systems.Gameplay
 
         internal float SkillGrowth => _skillGrowth;
 
-        internal float ReviveHealth => _reviveHealth;
-
-        internal float ReviveArmor => _reviveArmor;
-
-        internal int MaxRevives => _maxRevives;
     }
 }

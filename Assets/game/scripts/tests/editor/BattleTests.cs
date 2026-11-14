@@ -51,6 +51,22 @@ namespace Game.Tests.Editor
         }
 
         [Test]
+        public void EverySwingStartsBeforeItsHitLands()
+        {
+            Battle battle = NewBattle();
+            battle.Tick(Approach, _events);
+            _events.Clear();
+            battle.Tick(0.75f, _events);
+            Assert.That(_events.Select(e => e.Kind), Is.EqualTo(new[] { BattleEventKind.HeroWindup }), "the hero swings 0.3 s before its hit");
+            Assert.That(battle.MonsterHealth, Is.EqualTo(30f), "nothing is hit during the swing");
+            battle.Tick(0.25f, _events);
+            Assert.That(_events.Last().Kind, Is.EqualTo(BattleEventKind.HeroAttack));
+            Assert.That(battle.MonsterHealth, Is.EqualTo(20f));
+            battle.Tick(0.8f, _events);
+            Assert.That(_events.Last().Kind, Is.EqualTo(BattleEventKind.MonsterWindup), "the monster swings before its hit at 2 s");
+        }
+
+        [Test]
         public void ArmorAbsorbsHitsBeforeHealthAndWearsOff()
         {
             Battle battle = NewBattle();
@@ -78,6 +94,7 @@ namespace Game.Tests.Editor
         public void KillingTheMonsterPaysAndSendsAStrongerOne()
         {
             Battle battle = NewBattle();
+            battle.Tick(Approach, _events);
             battle.Strike(30f, 0, _events);
             Assert.That(battle.Kills, Is.EqualTo(1));
             Assert.That(battle.Coins, Is.EqualTo(5));
@@ -98,11 +115,13 @@ namespace Game.Tests.Editor
             for (int i = 0; i < 4; i++)
             {
                 Assert.That(battle.MonsterIsBoss, Is.False, $"monster {i}");
+                battle.Tick(Approach, _events);
                 battle.Strike(10000f, 0, _events);
             }
 
             Assert.That(battle.MonsterIndex, Is.EqualTo(4));
             Assert.That(battle.MonsterIsBoss, Is.True);
+            battle.Tick(Approach, _events);
             battle.Strike(10000f, 0, _events);
             Assert.That(battle.MonsterIsBoss, Is.False);
         }
@@ -111,6 +130,7 @@ namespace Game.Tests.Editor
         public void AFullMagicBarCastsTheSkillAndEmpties()
         {
             Battle battle = NewBattle();
+            battle.Tick(Approach, _events);
             battle.ChargeMagic(60f, 3, _events);
             Assert.That(battle.Magic, Is.EqualTo(60f));
             battle.ChargeMagic(60f, 3, _events);
@@ -121,7 +141,48 @@ namespace Game.Tests.Editor
         }
 
         [Test]
-        public void TheHeroDiesThenRevivesOnce()
+        public void StrikesCastBeforeTheMonsterArrivedWaitForIt()
+        {
+            Battle battle = NewBattle();
+            battle.Strike(10f, 0, _events);
+            battle.ChargeMagic(100f, 3, _events);
+            Assert.That(battle.MonsterHealth, Is.EqualTo(30f), "nothing lands on a monster still walking in");
+            Assert.That(battle.HeldStrikes, Is.EqualTo(2));
+            Assert.That(_events.Count(e => e.Kind == BattleEventKind.StrikeHeld), Is.EqualTo(2));
+
+            _events.Clear();
+            battle.Tick(Approach, _events);
+            Assert.That(_events.Single().Kind, Is.EqualTo(BattleEventKind.StrikeWindup));
+            Assert.That(_events.Single().Value, Is.EqualTo(3), "a hero strike and a healer skill are held");
+            Assert.That(battle.MonsterHealth, Is.EqualTo(30f), "the held strikes are still swinging");
+
+            battle.Tick(0.3f, _events);
+            Assert.That(_events.Select(e => e.Kind), Is.EqualTo(new[]
+            {
+                BattleEventKind.StrikeWindup, BattleEventKind.HeroStrike, BattleEventKind.HealerSkill, BattleEventKind.MonsterDied,
+                BattleEventKind.MonsterSpawned,
+            }), "the strike hits 10, the skill finishes the grunt");
+            Assert.That(battle.HeldStrikes, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void StrikesLeftAfterAKillWaitForTheNextMonster()
+        {
+            Battle battle = NewBattle();
+            battle.Strike(30f, 0, _events);
+            battle.Strike(5f, 0, _events);
+            battle.Tick(Approach, _events);
+            battle.Tick(0.3f, _events);
+            Assert.That(battle.Kills, Is.EqualTo(1));
+            Assert.That(battle.HeldStrikes, Is.EqualTo(1), "the second strike waits for the next monster");
+            float health = battle.MonsterHealth;
+            battle.Tick(Approach, _events);
+            battle.Tick(0.3f, _events);
+            Assert.That(battle.MonsterHealth, Is.EqualTo(health - 5f).Within(0.001f));
+        }
+
+        [Test]
+        public void TheRunEndsWhenTheHeroFalls()
         {
             Battle battle = NewBattle();
             // Monsters grow stronger every kill, so the hero falls eventually.
@@ -132,17 +193,6 @@ namespace Game.Tests.Editor
 
             Assert.That(_events.Last().Kind, Is.EqualTo(BattleEventKind.HeroDied));
             Assert.That(battle.HeroHealth, Is.EqualTo(0f));
-            Assert.That(battle.CanRevive, Is.True);
-            Assert.That(battle.Revive(_events), Is.True);
-            Assert.That(battle.HeroHealth, Is.EqualTo(50f));
-            Assert.That(battle.IsOver, Is.False);
-            while (!battle.IsOver)
-            {
-                battle.Tick(2f, _events);
-            }
-
-            Assert.That(battle.CanRevive, Is.False);
-            Assert.That(battle.Revive(_events), Is.False);
         }
 
         [Test]

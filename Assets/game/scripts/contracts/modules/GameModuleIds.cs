@@ -29,7 +29,7 @@ namespace Game.Contracts.Modules
         /// <summary>Heroes, healers and the player's choice of each (<c>IRoster</c>).</summary>
         public const string Roster = "game-roster";
 
-        /// <summary>Gameplay scene support: the pause menu, revive and result popups.</summary>
+        /// <summary>Gameplay scene support: the pause menu and result popups.</summary>
         public const string Gameplay = "game-gameplay";
     }
 }

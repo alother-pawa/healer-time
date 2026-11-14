@@ -5,7 +5,7 @@ namespace Game.Systems.Gameplay
 {
     /// <summary>
     /// What a run is made of: board size, gem kinds (board kind index = position in the list), monster kinds, item slots
-    /// (in order), the coin currency, the revive price and the battle tuning. The builder writes the lists and references on
+    /// (in order), the coin currency and the battle tuning. The builder writes the lists and references on
     /// every run; the numbers keep what was tuned in the Inspector.
     /// </summary>
     [CreateAssetMenu(menuName = "Game/Gameplay/Balance", fileName = "BalanceConfig")]
@@ -17,8 +17,6 @@ namespace Game.Systems.Gameplay
         [SerializeField] private MonsterDefinition[] _monsters = new MonsterDefinition[0];
         [SerializeField] private ItemDefinition[] _items = new ItemDefinition[0];
         [SerializeField] private CurrencyDefinition _coin;
-        [Tooltip("Coins a revive costs (once per run).")]
-        [Min(0)] [SerializeField] private int _reviveCost = 60;
         [SerializeField] private BattleTuning _tuning = new BattleTuning();
 
         internal int Rows => _rows;
@@ -32,8 +30,6 @@ namespace Game.Systems.Gameplay
         internal ItemDefinition[] Items => _items;
 
         internal CurrencyDefinition Coin => _coin;
-
-        internal int ReviveCost => _reviveCost;
 
         internal BattleTuning Tuning => _tuning ?? (_tuning = new BattleTuning());
     }

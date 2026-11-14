@@ -27,7 +27,7 @@ namespace Game.Systems.Gameplay
 
         internal bool Boss { get; }
 
-        /// <summary>The gem kind whose match caused the event, or -1 (time, items, revive).</summary>
+        /// <summary>The gem kind whose match caused the event, or -1 (time, items).</summary>
         internal int Gem { get; }
 
         internal BattleSnapshot After { get; }
