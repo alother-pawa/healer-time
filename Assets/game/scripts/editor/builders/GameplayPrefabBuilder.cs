@@ -282,10 +282,11 @@ namespace Game.Editor.Builders
             icon.preserveAspect = true;
             LocalizedLabel caption = Label(root, "CaptionLabel", 96f, Palette.White, "gameplay.showcase.attack");
             caption.GetComponent<RectTransform>().Place(UiFactory.Center, new Vector2(0f, -30f), new Vector2(860f, 120f));
-            Outlined(caption.GetComponent<TextMeshProUGUI>());
+            Material thick = ThickOutline();
+            Outlined(caption.GetComponent<TextMeshProUGUI>(), thick);
             LocalizedLabel combo = Label(root, "ComboLabel", 60f, new Color(1f, 0.85f, 0.3f), "gameplay.showcase.combo");
             combo.GetComponent<RectTransform>().Place(UiFactory.BottomCenter, new Vector2(0f, 0f), new Vector2(860f, 80f));
-            Outlined(combo.GetComponent<TextMeshProUGUI>());
+            Outlined(combo.GetComponent<TextMeshProUGUI>(), thick);
             Component banner = root.gameObject.AddComponent(GameTypes.ShowcaseBanner);
             Fields.Set(banner, ("_group", group), ("_icon", icon), ("_label", caption), ("_combo", combo));
             return banner;
@@ -432,15 +433,42 @@ namespace Game.Editor.Builders
             return text.GetComponent<LocalizedLabel>();
         }
 
-        private static void Outlined(TextMeshProUGUI text)
+        private static void Outlined(TextMeshProUGUI text, Material material = null)
         {
-            var outline = AssetDatabase.LoadAssetAtPath<Material>(OutlineMaterial);
+            Material outline = material != null ? material : AssetDatabase.LoadAssetAtPath<Material>(OutlineMaterial);
             if (outline != null)
             {
                 text.fontSharedMaterial = outline;
             }
 
             text.fontStyle = FontStyles.Bold;
+        }
+
+        // The outline material with a thicker outline, for the big texts shown over the board while gems pop.
+        private static Material ThickOutline()
+        {
+            var source = AssetDatabase.LoadAssetAtPath<Material>(OutlineMaterial);
+            if (source == null)
+            {
+                return null;
+            }
+
+            var material = AssetDatabase.LoadAssetAtPath<Material>(BuildPaths.ShowcaseOutline);
+            if (material == null)
+            {
+                BuildUtility.EnsureFolder(BuildPaths.DataUI);
+                material = new Material(source);
+                AssetDatabase.CreateAsset(material, BuildPaths.ShowcaseOutline);
+            }
+            else
+            {
+                material.CopyPropertiesFromMaterial(source);
+            }
+
+            material.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.42f);
+            material.SetFloat(ShaderUtilities.ID_FaceDilate, 0.35f);
+            EditorUtility.SetDirty(material);
+            return material;
         }
     }
 }

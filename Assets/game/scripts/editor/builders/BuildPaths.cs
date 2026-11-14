@@ -27,6 +27,7 @@ namespace Game.Editor.Builders
         internal const string Animations = Data + "/animations";
         internal const string DataSceneKeys = Data + "/scene-keys";
         internal const string DataUI = Data + "/ui";
+        internal const string ShowcaseOutline = DataUI + "/showcase-outline.mat";
         internal const string DataInput = Data + "/input";
         internal const string DataSplash = Data + "/splash";
         internal const string DataSettings = Data + "/settings";
