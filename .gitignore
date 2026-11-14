@@ -34,3 +34,6 @@ __pycache__/
 /Assets/game.meta
 /Assets/game/**/*.meta
 /Assets/game/data/input/*.asset
+
+# Docs (generated specs, technical notes) stay on this machine, never committed.
+/Docs/
