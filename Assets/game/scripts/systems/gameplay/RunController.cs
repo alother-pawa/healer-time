@@ -583,6 +583,7 @@ namespace Game.Systems.Gameplay
                     _battlefield.Burst(BattlefieldView.Target.Monster, _battlefield.HitFx, 0.7f);
                     _battlefield.Number(BattlefieldView.Target.Monster, Mathf.RoundToInt(e.Amount).ToString(), _battlefield.DamageColor, 0.8f);
                     Play(_sounds.Hit);
+                    Shake(0.08f, 0.12f);
                     break;
                 case BattleEventKind.HeroStrike:
                     _battlefield.Burst(BattlefieldView.Target.Monster, _battlefield.HitFx, 1.3f);
@@ -636,11 +637,11 @@ namespace Game.Systems.Gameplay
                     break;
                 case BattleEventKind.MonsterAttack:
                     Play(_sounds.Hit);
+                    Shake(e.Amount > 0f ? 0.12f : 0.08f, e.Amount > 0f ? 0.15f : 0.12f);
                     if (e.Amount > 0f)
                     {
                         _battlefield.Act(BattlefieldView.Target.Hero, CharacterView.Hurt);
                         _battlefield.Number(BattlefieldView.Target.Hero, "-" + Mathf.RoundToInt(e.Amount), _battlefield.HurtColor);
-                        Shake(0.12f, 0.15f);
                     }
 
                     if (e.Absorbed > 0f)
