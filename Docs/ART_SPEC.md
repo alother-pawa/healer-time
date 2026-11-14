@@ -4,7 +4,7 @@ Sinh bởi `python Tools/ShapeGen/generate_shapes.py`; sửa bảng trong script
 Ảnh thật thay ảnh hiện có **cùng tên, cùng kích thước**; Build All áp viền 9-slice, pivot và cắt sheet theo spec.
 Một đơn vị thế giới = 128 px. Thư mục và pack theo chuẩn của pc-base (`Docs/STRUCTURE.md` của pc-base).
 
-- **Nguồn:** ảnh lấy từ pack trong `workspace/sprite-asset` (phóng nguyên lần, giữ nét pixel) hoặc **placeholder** (hình cơ bản ghi tên, cần art thật).
+- **Nguồn:** ảnh lấy từ pack trong `workspace/sprite-asset` (phóng nguyên lần, giữ nét pixel) hoặc **placeholder** (hình khối màu trơn, không chữ, cần art thật).
 - **9-slice N:** N px ở mỗi cạnh giữ nguyên khi kéo giãn (góc), phần giữa kéo giãn; `a/b/c/d` = trái/dưới/phải/trên.
 - **Pivot:** điểm đặt của ảnh trong thế giới (nhân vật: giữa chân).
 - **Sheet:** mỗi hàng một tag (trên xuống dưới theo bảng), frame từ trái sang phải, mỗi ô đúng một frame, không chừa khe.

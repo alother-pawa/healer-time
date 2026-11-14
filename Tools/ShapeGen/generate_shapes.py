@@ -6,8 +6,8 @@ Each image is declared once (SPRITES, SHEETS) and comes from one of two places:
 - art: an image (or a crop of one) from the third-party packs in workspace/sprite-asset, scaled up by a whole factor with
   nearest-neighbour sampling (pixel art stays crisp), optionally recoloured or with its centre cleared;
 - placeholder: a plain shape (rectangle, rounded rectangle, ellipse, outline, bar) at the exact size the final art must
-  have, in a colour per role, with only its name written in the middle (inside the 9-slice centre for sliced images; for
-  animation sheets the frame's sprite name <sheet>_<tag>_<n> in each cell).
+  have, in a colour per role, with no text in it (Docs/ART_SPEC.md names every image; animation sheets get one shape per
+  frame cell).
 When the packs are not on this machine, an image whose art is missing keeps the PNG already in the repository (or gets a
 placeholder when there is none), so the script never throws away art. Output is byte-identical on every run.
 
@@ -28,7 +28,7 @@ import json
 import pathlib
 from dataclasses import dataclass, field
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 PACKS = ROOT.parents[1] / "sprite-asset"
@@ -90,7 +90,7 @@ class Sprite:
     pivot: tuple = CENTER
     opacity: float = 1.0
     art: Art = None
-    plain: bool = False   # a flat colour shape that needs no art (dimmers, simple bars): drawn without its name
+    plain: bool = False   # a flat colour shape that needs no art (dimmers, simple bars): not listed as missing art
 
 
 @dataclass
@@ -399,64 +399,8 @@ def shape(width, height, kind, colour, opacity):
     return image.resize((width, height), Image.LANCZOS)
 
 
-def font(size):
-    return ImageFont.load_default(size=size)
-
-
-def text_colour(colour, kind):
-    """Dark text on light fills, light text elsewhere (an outline leaves the ground transparent: light)."""
-    r, g, b, _ = rgba(colour)
-    light = kind != "outline" and (0.299 * r + 0.587 * g + 0.114 * b) > 150
-    return (20, 18, 31, 255) if light else (255, 255, 255, 255)
-
-
-def write_lines(image, box, lines, colour):
-    """Writes the lines centred in box, at the largest size that fits (up to a sixth of the short side, at least 14 px,
-    at most 64 px; down to 6 px); long names wrap at dashes."""
-    pen = ImageDraw.Draw(image)
-    left, top, right, bottom = box
-    width, height = right - left, bottom - top
-    for size in range(min(64, max(14, min(width, height) // 6)), 5, -1):
-        typeface = font(size)
-        wrapped = []
-        for line in lines:
-            if pen.textlength(line, font=typeface) <= width - 2 or "-" not in line:
-                wrapped.append(line)
-                continue
-            words, current = line.split("-"), ""
-            for word in words:
-                candidate = f"{current}-{word}" if current else word
-                if current and pen.textlength(candidate, font=typeface) > width - 2:
-                    wrapped.append(current + "-")
-                    current = word
-                else:
-                    current = candidate
-            wrapped.append(current)
-        line_height = size + 2
-        if all(pen.textlength(line, font=typeface) <= width - 2 for line in wrapped) and line_height * len(wrapped) <= height:
-            break
-    y = top + (height - line_height * len(wrapped)) / 2
-    shadow = (0, 0, 0, 160) if colour[0] > 128 else (255, 255, 255, 120)
-    for line in wrapped:
-        x = left + (width - pen.textlength(line, font=typeface)) / 2
-        pen.text((x + 1, y + 1), line, font=typeface, fill=shadow)
-        pen.text((x, y), line, font=typeface, fill=colour)
-        y += line_height
-
-
 def borders(border):
     return list(border) if isinstance(border, tuple) else [border] * 4
-
-
-def name_box(width, height, border):
-    """Where the name goes: the centre of the 9-slice (inside the border, 2 px in), or the whole image without one."""
-    left, bottom, right, top = borders(border)
-    box = (left + 2, top + 2, width - right - 2, height - bottom - 2)
-    if box[2] - box[0] < 4 or box[3] - box[1] < 4:
-        box = (left, top, width - right, height - bottom)
-    if box[2] - box[0] < 4 or box[3] - box[1] < 4:
-        box = (0, 0, width, height)
-    return box
 
 
 def name_of(path):
@@ -465,22 +409,16 @@ def name_of(path):
 
 def placeholder_sprite(sprite):
     width, height = sprite.size
-    image = shape(width, height, sprite.shape, sprite.colour, sprite.opacity)
-    if sprite.plain:
-        return image
-    write_lines(image, name_box(width, height, sprite.border), [name_of(sprite.path)], text_colour(sprite.colour, sprite.shape))
-    return image
+    return shape(width, height, sprite.shape, sprite.colour, sprite.opacity)
 
 
 def placeholder_sheet(sheet):
     fw, fh = sheet.frame
     columns = max(tag.frames for tag in sheet.tags)
     image = Image.new("RGBA", (fw * columns, fh * len(sheet.tags)), rgba(sheet.colour, 0.0))
-    ink = text_colour(sheet.colour, sheet.shape)
+    cell = shape(fw, fh, sheet.shape, sheet.colour, 1.0)
     for row, tag in enumerate(sheet.tags):
         for column in range(tag.frames):
-            cell = shape(fw, fh, sheet.shape, sheet.colour, 1.0)
-            write_lines(cell, name_box(fw, fh, 0), [f"{name_of(sheet.path)}_{tag.name}_{column}"], ink)
             image.paste(cell, (column * fw, row * fh))
     return image
 
@@ -611,7 +549,7 @@ def brief():
         f"Một đơn vị thế giới = {PIXELS_PER_UNIT} px. Thư mục và pack theo chuẩn của pc-base (`Docs/STRUCTURE.md` của pc-base).",
         "",
         "- **Nguồn:** ảnh lấy từ pack trong `workspace/sprite-asset` (phóng nguyên lần, giữ nét pixel) hoặc **placeholder** "
-        "(hình cơ bản ghi tên, cần art thật).",
+        "(hình khối màu trơn, không chữ, cần art thật).",
         "- **9-slice N:** N px ở mỗi cạnh giữ nguyên khi kéo giãn (góc), phần giữa kéo giãn; `a/b/c/d` = trái/dưới/phải/trên.",
         "- **Pivot:** điểm đặt của ảnh trong thế giới (nhân vật: giữa chân).",
         "- **Sheet:** mỗi hàng một tag (trên xuống dưới theo bảng), frame từ trái sang phải, mỗi ô đúng một frame, không chừa khe.",
