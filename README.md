@@ -12,9 +12,20 @@ Dựng trên khung của `pc/pc-base` (cùng chuẩn: builder là nguồn của 
 
 Scene, prefab, atlas và dữ liệu trong `Assets/game/data` (trừ `data/input`) do builder sinh, không commit. Số cân bằng nằm trong field mặc định của code (`BattleTuning`, các bảng ở `GameDataBuilder`); chỉnh trong Inspector được giữ qua mỗi lần build.
 
+## Build
+
+Cần **Game › Build All** trước. Bản build nằm trong `Builds/` (không commit).
+
+| Bản | Cách build | Kết quả |
+|---|---|---|
+| Windows (Steam sau này) | **Game › Build › Windows (Release)**, hoặc batchmode `-buildTarget Win64 -executeMethod Game.Editor.Builders.BuildPipelineMenu.BuildFromCommandLine -release` | `Builds/Windows/Release/`: cả thư mục (exe + `_Data`) |
+| Web (itch.io) | **Game › Build › Web (Release)**, hoặc cùng lệnh với `-buildTarget WebGL` | `Builds/Web/Release/` có `index.html` |
+
+Đăng itch.io: nén **nội dung** thư mục `Builds/Web/Release` (để `index.html` ở gốc zip), tải lên, chọn "This file will be played in the browser", khung 1280×720, bật nút Fullscreen. File nén gzip có giải nén dự phòng nên không cần cấu hình server; save lưu trong trình duyệt (IndexedDB). Bản web không có nút Quit.
+
 ## Luồng
 
-Boot → Splash → Main Menu (trang chủ ↔ trang Chọn nhân vật, trượt trái/phải) → Gameplay (Pause, Kết quả: Chơi lại tại chỗ hoặc về menu). Màn loading chỉ hiện khi chuyển scene lâu hơn 0,5 giây.
+Boot → Main Menu (trang chủ ↔ trang Chọn nhân vật, trượt trái/phải) → Gameplay (Pause, Kết quả: Chơi lại tại chỗ hoặc về menu). Màn loading chỉ hiện khi chuyển scene lâu hơn 0,5 giây.
 
 ## Cách chơi (PC)
 
