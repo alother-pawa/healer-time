@@ -178,7 +178,8 @@ namespace Game.Editor.Builders
             return hud;
         }
 
-        // The monster's dragon bar over the battlefield: the empty bar, the full bar cut at the health left, the name on it.
+        // The boss's dragon bar over the battlefield (hidden for other monsters): the empty bar, the full bar cut at the health
+        // left, the boss's name on it.
         private static Component BuildEnemyBar(RectTransform header)
         {
             RectTransform root = UiFactory.Rect("EnemyBar", header).Place(UiFactory.TopLeft, new Vector2(1216f, -16f), new Vector2(448f, 128f));
@@ -194,7 +195,7 @@ namespace Game.Editor.Builders
             Outlined(name);
             Component bar = root.gameObject.AddComponent(GameTypes.EnemyBarView);
             Fields.Set(bar, ("_full", full), ("_name", name.GetComponent<LocalizedLabel>()), ("_fillStart", 25f / 112f),
-                ("_fillEnd", 96f / 112f), ("_bossKey", "gameplay.enemy.boss"));
+                ("_fillEnd", 96f / 112f));
             return bar;
         }
 

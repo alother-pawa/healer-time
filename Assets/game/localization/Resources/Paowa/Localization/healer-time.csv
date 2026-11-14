@@ -190,7 +190,6 @@ characters.tab.hero,Hero,勇者
 characters.tab.healer,Healer,ヒーラー
 characters.stats.hero,Health {0} · Attack {1} · Strike ×{2},体力 {0} · 攻撃 {1} · 一撃 ×{2}
 characters.stats.healer,Magic {0} · Skill {1} · Heal {2},マジック {0} · スキル {1} · 回復 {2}
-gameplay.enemy.boss,Boss: {0},ボス: {0}
 monster.goblin.name,Goblin,ゴブリン
 monster.mushroom.name,Mushroom,マッシュルーム
 monster.skeleton.name,Skeleton,スケルトン

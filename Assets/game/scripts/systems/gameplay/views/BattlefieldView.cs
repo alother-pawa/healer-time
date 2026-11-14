@@ -100,7 +100,8 @@ namespace Game.Systems.Gameplay
 
         /// <summary>
         /// The monster on the field: a new index sends the previous view to fall (or hides it with animations off) and dresses
-        /// the other view in the new kind's look; its place follows the approach (0 at the entry, 1 at the fight spot).
+        /// the other view in the new kind's look (a boss has no bar over its head: its bar is on the HUD); its place follows
+        /// the approach (0 at the entry, 1 at the fight spot).
         /// </summary>
         internal void ShowMonster(int index, int kind, float approach)
         {
@@ -121,8 +122,8 @@ namespace Game.Systems.Gameplay
                 CharacterView next = _monsters[_current];
                 DOTween.Kill(next.transform);
                 next.SetVisible(true);
-                next.ShowBarsVisible(true);
                 MonsterDefinition look = _looks[kind];
+                next.ShowBarsVisible(!look.IsBoss);
                 next.Setup(look.Controller, look.Tint, look.Scale, look.Height);
                 _shownIndex = index;
             }
