@@ -170,20 +170,32 @@ namespace Game.Editor.Builders
         }
 
         /// <summary>
-        /// Adds a TextMeshPro UI text using the project's default TMP font, with a <see cref="ScalableText"/> so it follows
+        /// Adds a TextMeshPro UI text in the game's font (<see cref="GameFont"/>), with a <see cref="ScalableText"/> so it follows
         /// the text size setting.
         /// </summary>
         internal static TextMeshProUGUI AddText(RectTransform rect, string text, float size, Color color,
             TextAlignmentOptions alignment = TextAlignmentOptions.Center)
         {
             var label = rect.gameObject.AddComponent<TextMeshProUGUI>();
-            label.font = TMP_Settings.defaultFontAsset;
+            label.font = GameFont.Asset;
             label.text = text;
             label.fontSize = size;
             label.color = color;
             label.alignment = alignment;
             rect.gameObject.AddComponent<ScalableText>();
             return label;
+        }
+
+        /// <summary>Bold, with the game font's dark outline (or <paramref name="material"/>): text drawn straight on art.</summary>
+        internal static void Outlined(TextMeshProUGUI text, Material material = null)
+        {
+            Material outline = material != null ? material : GameFont.Outline;
+            if (outline != null)
+            {
+                text.fontSharedMaterial = outline;
+            }
+
+            text.fontStyle = FontStyles.Bold;
         }
 
         /// <summary>A stretched, non-raycast text child (button labels, captions filling their parent).</summary>

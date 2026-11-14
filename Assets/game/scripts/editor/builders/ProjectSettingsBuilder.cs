@@ -11,7 +11,7 @@ namespace Game.Editor.Builders
     /// Project-level setup: sprite import from the art spec (<see cref="ArtImport"/>), one Sprite Atlas per sprite pack
     /// (<see cref="AtlasBuilder"/>), animation clips of the sprite sheets (<see cref="AnimationBuilder"/>), sound import from
     /// the sound spec (<see cref="AudioImport"/>),
-    /// the Japanese fallback font, Player Settings of a desktop
+    /// the Japanese fallback font, the game's pixel font (<see cref="GameFont"/>), Player Settings of a desktop
     /// game (identity, borderless fullscreen, resizable window, single instance, no Unity splash screen; for the web build
     /// gzip with decompression fallback and a 16:9 canvas) and the Build
     /// Settings scene list. Active Input Handling and the render pipeline are not scriptable; this step only reports
@@ -36,6 +36,7 @@ namespace Game.Editor.Builders
             AnimationBuilder.Build(art);
             AudioImport.Import();
             WireJapaneseFont();
+            GameFont.Build();
             ApplyPlayerSettings();
             ReportInputHandling();
             AssetDatabase.SaveAssets();

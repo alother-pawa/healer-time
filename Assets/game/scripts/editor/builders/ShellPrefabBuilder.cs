@@ -118,7 +118,7 @@ namespace Game.Editor.Builders
             // Title, bar and caption; hidden for a plain transition (e.g. into the splash).
             RectTransform details = UiFactory.Rect("Details", screen).Stretch();
             UiFactory.AddText(UiFactory.Rect("Title", details).Place(UiFactory.Center, new Vector2(0f, 120f), new Vector2(1200f, 140f)),
-                string.Empty, 88f, Palette.Text).Localize("game.title");
+                string.Empty, 88f, Palette.TextLight).Localize("game.title");
             // Track and mask are thin rounded sprites drawn Sliced; the square fill is Filled horizontally and clipped to the
             // mask's rounded ends, so the bar keeps round ends at any progress.
             RectTransform bar = UiFactory.Rect("ProgressBar", details).Place(UiFactory.Center, new Vector2(0f, -120f), new Vector2(800f, 28f));
@@ -134,7 +134,7 @@ namespace Game.Editor.Builders
             fill.fillOrigin = (int)Image.OriginHorizontal.Left;
             fill.fillAmount = 0f;
             UiFactory.AddText(UiFactory.Rect("Caption", details).Place(UiFactory.Center, new Vector2(0f, -180f), new Vector2(800f, 60f)),
-                string.Empty, 36f, Palette.TextMuted).Localize("loading.label");
+                string.Empty, 36f, Palette.TextLight).Localize("loading.label");
 
             Fields.Set(transition, ("_group", group), ("_details", details.gameObject), ("_progressFill", fill),
                 ("_config", BuildUtility.Load<ScriptableObject>(BuildPaths.LoadingTransition)));

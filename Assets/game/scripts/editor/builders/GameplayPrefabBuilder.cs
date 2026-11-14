@@ -27,7 +27,6 @@ namespace Game.Editor.Builders
         private const float SlotSpacing = 208f;
         private static readonly Vector2 BoardCenter = new Vector2(480f, 498f);
         private static readonly Vector2 ItemRowCenter = new Vector2(1440f, 280f);
-        private const string OutlineMaterial = "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Outline.mat";
         private static readonly Vector2 PausePanelSize = new Vector2(760f, 700f);
         private static readonly Vector2 MenuButtonSize = new Vector2(520f, 88f);
 
@@ -185,7 +184,7 @@ namespace Game.Editor.Builders
             TextMeshProUGUI name = UiFactory.AddText(UiFactory.Rect("NameLabel", root).Stretch(100f, 0f, 60f, 0f), string.Empty, 36f,
                 Palette.White).Localize("monster.goblin.name");
             name.raycastTarget = false;
-            Outlined(name);
+            UiFactory.Outlined(name);
             Component bar = root.gameObject.AddComponent(GameTypes.EnemyBarView);
             Fields.Set(bar, ("_full", full), ("_name", name.GetComponent<LocalizedLabel>()), ("_fillStart", 25f / 112f),
                 ("_fillEnd", 96f / 112f));
@@ -283,10 +282,10 @@ namespace Game.Editor.Builders
             LocalizedLabel caption = Label(root, "CaptionLabel", 96f, Palette.White, "gameplay.showcase.attack");
             caption.GetComponent<RectTransform>().Place(UiFactory.Center, new Vector2(0f, -30f), new Vector2(860f, 120f));
             Material thick = ThickOutline();
-            Outlined(caption.GetComponent<TextMeshProUGUI>(), thick);
+            UiFactory.Outlined(caption.GetComponent<TextMeshProUGUI>(), thick);
             LocalizedLabel combo = Label(root, "ComboLabel", 60f, new Color(1f, 0.85f, 0.3f), "gameplay.showcase.combo");
             combo.GetComponent<RectTransform>().Place(UiFactory.BottomCenter, new Vector2(0f, 0f), new Vector2(860f, 80f));
-            Outlined(combo.GetComponent<TextMeshProUGUI>(), thick);
+            UiFactory.Outlined(combo.GetComponent<TextMeshProUGUI>(), thick);
             Component banner = root.gameObject.AddComponent(GameTypes.ShowcaseBanner);
             Fields.Set(banner, ("_group", group), ("_icon", icon), ("_label", caption), ("_combo", combo));
             return banner;
@@ -327,8 +326,8 @@ namespace Game.Editor.Builders
             templates.gameObject.SetActive(false);
             GameObject textObject = WorldFactory.Child("FloatingText", templates);
             var text = textObject.AddComponent<TextMeshPro>();
-            text.font = TMP_Settings.defaultFontAsset;
-            text.fontSharedMaterial = AssetDatabase.LoadAssetAtPath<Material>(OutlineMaterial) ?? text.fontSharedMaterial;
+            text.font = GameFont.Asset;
+            text.fontSharedMaterial = GameFont.Outline ?? text.fontSharedMaterial;
             text.fontSize = 8f;
             text.fontStyle = FontStyles.Bold;
             text.alignment = TextAlignmentOptions.Center;
@@ -339,9 +338,9 @@ namespace Game.Editor.Builders
 
             Fields.Set(view, ("_hero", hero), ("_healer", healer), ("_monsters", monsters), ("_heroSpot", heroSpot),
                 ("_monsterSpot", monsterSpot), ("_monsterEntry", monsterEntry), ("_textTemplate", text), ("_fxTemplate", fx),
-                ("_hitFx", BuildUtility.Sprite("game/effects/fx-hit")), ("_healFx", BuildUtility.Sprite("game/effects/fx-heal")),
-                ("_shieldFx", BuildUtility.Sprite("game/effects/fx-shield")), ("_magicFx", BuildUtility.Sprite("game/effects/fx-magic")),
-                ("_orb", BuildUtility.Sprite("game/effects/fx-magic-orb")), ("_shakeRoot", stage));
+                ("_hitFx", Frames("game/effects/fx-hit")), ("_healFx", Frames("game/effects/fx-heal")),
+                ("_shieldFx", Frames("game/effects/fx-shield")), ("_magicFx", Frames("game/effects/fx-magic")),
+                ("_orb", Frames("game/effects/fx-magic-orb")), ("_shakeRoot", stage));
             BuildUtility.SavePrefab(root, BuildPaths.Battlefield);
         }
 
@@ -393,6 +392,18 @@ namespace Game.Editor.Builders
             return bar;
         }
 
+        // The four frames of an effect (<path>-0 .. <path>-3).
+        private static Object[] Frames(string path)
+        {
+            var frames = new Object[4];
+            for (int i = 0; i < frames.Length; i++)
+            {
+                frames[i] = BuildUtility.Sprite($"{path}-{i}");
+            }
+
+            return frames;
+        }
+
         private static void Backdrop(Transform parent, string name, string sprite, Vector3 position, int order)
         {
             var renderer = WorldFactory.Child(name, parent, position).AddComponent<SpriteRenderer>();
@@ -433,21 +444,10 @@ namespace Game.Editor.Builders
             return text.GetComponent<LocalizedLabel>();
         }
 
-        private static void Outlined(TextMeshProUGUI text, Material material = null)
-        {
-            Material outline = material != null ? material : AssetDatabase.LoadAssetAtPath<Material>(OutlineMaterial);
-            if (outline != null)
-            {
-                text.fontSharedMaterial = outline;
-            }
-
-            text.fontStyle = FontStyles.Bold;
-        }
-
         // The outline material with a thicker outline, for the big texts shown over the board while gems pop.
         private static Material ThickOutline()
         {
-            var source = AssetDatabase.LoadAssetAtPath<Material>(OutlineMaterial);
+            Material source = GameFont.Outline;
             if (source == null)
             {
                 return null;

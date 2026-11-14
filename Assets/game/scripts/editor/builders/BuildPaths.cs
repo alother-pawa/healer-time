@@ -123,6 +123,14 @@ namespace Game.Editor.Builders
         /// </summary>
         internal const string JapaneseFont = Fonts + "/NotoSansJP-SDF.asset";
 
+        /// <summary>Source of the game's text font (Fibberish, CC BY 3.0).</summary>
+        internal const string GameFontSource = Fonts + "/Fibberish.ttf";
+
+        /// <summary>The game's text font asset and its outline material, made by <see cref="GameFont"/>.</summary>
+        internal const string GameFont = Data + "/fonts/Fibberish-SDF.asset";
+
+        internal const string GameFontOutline = Data + "/fonts/Fibberish-SDF Outline.mat";
+
         /// <summary>Source font of <see cref="JapaneseFont"/> (Noto Sans JP, OFL), copied in by hand.</summary>
         internal const string JapaneseFontSource = Fonts + "/NotoSansJP-Regular.ttf";
 

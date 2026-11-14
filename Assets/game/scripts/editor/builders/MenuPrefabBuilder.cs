@@ -85,8 +85,10 @@ namespace Game.Editor.Builders
 
             RectTransform pages = UiFactory.Rect("Pages", parts.Body).Stretch();
             RectTransform home = UiFactory.Rect("HomePage", pages).Stretch();
-            UiFactory.AddText(UiFactory.Rect("TitleLabel", home).Place(UiFactory.TopCenter, new Vector2(0f, -90f), new Vector2(1400f, 150f)),
-                string.Empty, TitleSize, Palette.Text).Localize("game.title").raycastTarget = false;
+            TextMeshProUGUI title = UiFactory.AddText(UiFactory.Rect("TitleLabel", home).Place(UiFactory.TopCenter, new Vector2(0f, -90f),
+                new Vector2(1400f, 150f)), string.Empty, TitleSize, Palette.TextLight).Localize("game.title");
+            title.raycastTarget = false;
+            UiFactory.Outlined(title);
 
             RectTransform wallet = UiFactory.Rect("Wallet", home).Place(UiFactory.TopLeft, new Vector2(40f, -36f), new Vector2(260f, 80f));
             UiFactory.AddImage(wallet, BuildUtility.Sprite("ui-common/panel-wood")).raycastTarget = false;
@@ -128,7 +130,7 @@ namespace Game.Editor.Builders
 
             // The version stamp is written at runtime (Core's BuildInfo); it is not translated.
             TextMeshProUGUI version = UiFactory.AddText(UiFactory.Rect("VersionLabel", parts.Footer)
-                .Place(UiFactory.BottomLeft, new Vector2(48f, 100f), new Vector2(900f, 40f)), string.Empty, VersionSize, Palette.TextMuted,
+                .Place(UiFactory.BottomLeft, new Vector2(48f, 100f), new Vector2(900f, 40f)), string.Empty, VersionSize, Palette.TextLight,
                 TextAlignmentOptions.MidlineLeft);
             version.raycastTarget = false;
 
@@ -161,8 +163,10 @@ namespace Game.Editor.Builders
 
             RectTransform backRect = UiFactory.Rect("BackButton", page).Place(UiFactory.TopLeft, new Vector2(40f, -36f), new Vector2(102f, 102f));
             back = UiFactory.AddButton(backRect, BuildUtility.Sprite("screens/main-menu/arrow-left"));
-            UiFactory.AddText(UiFactory.Rect("TitleLabel", page).Place(UiFactory.TopCenter, new Vector2(0f, -50f), new Vector2(1200f, 110f)),
-                string.Empty, 80f, Palette.Text).Localize("characters.title").raycastTarget = false;
+            TextMeshProUGUI title = UiFactory.AddText(UiFactory.Rect("TitleLabel", page).Place(UiFactory.TopCenter, new Vector2(0f, -50f),
+                new Vector2(1200f, 110f)), string.Empty, 80f, Palette.TextLight).Localize("characters.title");
+            title.raycastTarget = false;
+            UiFactory.Outlined(title);
 
             Button heroTab = Tab(page, "HeroTab", new Vector2(-560f, 230f), "characters.tab.hero", out GameObject heroMark);
             Button healerTab = Tab(page, "HealerTab", new Vector2(-220f, 230f), "characters.tab.healer", out GameObject healerMark);
