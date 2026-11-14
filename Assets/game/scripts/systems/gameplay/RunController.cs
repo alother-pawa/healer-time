@@ -19,11 +19,11 @@ namespace Game.Systems.Gameplay
 {
     /// <summary>
     /// Runs one game: owns the <see cref="Run"/> (board + battle, the only game state), feeds it time, the player's swaps and
-    /// items, and draws the views from it. Order of every action: the run resolves it at once (state first; coins earned
-    /// go to the wallet now), then the board replays its steps and, while the board is dimmed, the matched gem kinds
-    /// play their effects one after another (the showcase), each step showing the numbers right after it. Battle time stands
-    /// still during the showcase. When the replay ends, is skipped, or animations are off, every view is drawn again from the
-    /// run, so the screen always ends on the same state. Hero down: the result popup (Play again restarts in this scene; Main
+    /// items, and draws the views from it. The battle never stops for the board. A board action resolves the board at once
+    /// (state first); the board then replays its steps and each step's gems reach the battle the moment it pops, with their
+    /// effects shown right then (coins earned go to the wallet at once). When the replay ends, is skipped, fails or animations
+    /// are off, the steps not applied yet are applied together, and every view is drawn from the run each frame, so the screen
+    /// always shows the run's state. Hero down: the result popup (Play again restarts in this scene; Main
     /// menu leaves).
     /// REFERENCES: <c>_screen</c> hosts pause and leaving; <c>_config</c> holds balance, popups and sounds; the views;
     /// <c>_battlefield</c> is the world part of the scene; <c>_itemActions</c> are the item keys in slot order; the <c>*Key</c>
@@ -41,7 +41,6 @@ namespace Game.Systems.Gameplay
         [SerializeField] private HudView _hud;
         [SerializeField] private EnemyBarView _enemyBar;
         [SerializeField] private ItemBarView _items;
-        [SerializeField] private UiBar _magicBar;
         [SerializeField] private ShowcaseBanner _banner;
         [SerializeField] private BattlefieldView _battlefield;
         [SerializeField] private string[] _itemActions = { "Gameplay/Item1", "Gameplay/Item2", "Gameplay/Item3", "Gameplay/Item4" };
@@ -53,6 +52,7 @@ namespace Game.Systems.Gameplay
         [SerializeField] private string _pickTargetKey = "gameplay.item.pick-target";
 
         private readonly List<BattleEvent> _tickEvents = new List<BattleEvent>();
+        private readonly List<BattleEvent> _stepEvents = new List<BattleEvent>();
         private readonly List<IDisposable> _handles = new List<IDisposable>();
         private BalanceConfig _balance;
         private GameplaySounds _sounds;
@@ -71,7 +71,6 @@ namespace Game.Systems.Gameplay
         private IEventBus _events;
         private Run _run;
         private bool _busy;
-        private bool _showcasing;
         private bool _abort;
         private bool _ended;
         private bool _buying;
@@ -161,12 +160,10 @@ namespace Game.Systems.Gameplay
             _board.StopAnimations();
             _battlefield.ClearTransients();
             _busy = false;
-            _showcasing = false;
             _abort = false;
             _ended = false;
             _targetingItem = -1;
             _board.SetTargeting(false);
-            _board.SetMasked(false, false);
             _banner.Hide();
             _screen.PauseBlocked = false;
 
@@ -201,9 +198,13 @@ namespace Game.Systems.Gameplay
                 _battlefield.ClearTransients();
             }
 
-            if (!_busy && !paused && !_run.IsOver && !_ended)
+            if (!paused && !_run.IsOver && !_ended)
             {
-                ReadItemKeys();
+                if (!_busy)
+                {
+                    ReadItemKeys();
+                }
+
                 _tickEvents.Clear();
                 _run.Tick(Time.deltaTime, _tickEvents);
                 Credit(_tickEvents);
@@ -219,10 +220,7 @@ namespace Game.Systems.Gameplay
             }
 
             _board.AcceptInput = !_busy && !paused && !_run.IsOver && !_ended;
-            if (!_showcasing)
-            {
-                SyncViews();
-            }
+            SyncViews();
         }
 
         // Every view from the run's state.
@@ -234,7 +232,6 @@ namespace Game.Systems.Gameplay
             _battlefield.ShowStats(snapshot);
             _hud.Show(snapshot, battle.MonsterIsBoss);
             ShowEnemy(snapshot);
-            _magicBar.Set(snapshot.MagicCapacity > 0f ? snapshot.Magic / snapshot.MagicCapacity : 0f);
             RenderItems();
         }
 
@@ -390,7 +387,8 @@ namespace Game.Systems.Gameplay
             }
         }
 
-        // The board replay, then the showcase of the battle events; views are drawn from the run at the end whatever happened.
+        // The board replay; each popped step reaches the battle at once (OnStepPopped). Whatever the replay did not apply
+        // (it ended, was stopped, failed or animations are off) is applied at the end.
         private async Awaitable PlayStepAsync(RunStep step, Cell a, Cell b)
         {
             int generation = _generation;
@@ -406,7 +404,7 @@ namespace Game.Systems.Gameplay
                     return;
                 }
 
-                Credit(step.Events);
+                ShowEvents(step.Events);
                 if (step.Board != null && step.Board.Swapped)
                 {
                     Play(_sounds.GemSwap);
@@ -420,11 +418,6 @@ namespace Game.Systems.Gameplay
                         Play(_sounds.Shuffle);
                     }
                 }
-
-                if (generation == _generation)
-                {
-                    await ShowcaseAsync(step.Events, step.Board != null ? step.Board.Steps.Count : 0, generation);
-                }
             }
             catch (Exception exception)
             {
@@ -434,138 +427,54 @@ namespace Game.Systems.Gameplay
             {
                 if (generation == _generation && this != null)
                 {
-                    _showcasing = false;
+                    _stepEvents.Clear();
+                    _run.ApplyPending(_stepEvents);
+                    ShowEvents(_stepEvents);
                     _busy = false;
-                    _board.SetMasked(false);
                     _banner.FadeOut();
                     _board.Render(_run.Board);
                     SyncViews();
-                    if (_run.IsOver && !_ended)
-                    {
-                        OnHeroDown();
-                    }
                 }
             }
         }
 
-        // The matched gem kinds one after another over the dimmed board. Events are grouped by the gem that caused them
-        // (a monster's death and the next monster's entry stay with the hit that killed it).
-        private async Awaitable ShowcaseAsync(List<BattleEvent> events, int combo, int generation)
+        // A cascade step popped: its gems reach the battle now, their effects play now, and a banner names the main gem.
+        private void OnStepPopped(CascadeStep step)
         {
-            var groups = new List<(int gem, List<BattleEvent> events)>();
+            if (_sfx != null && _sounds.GemMatch != null)
+            {
+                _sfx.PlaySfx(_sounds.GemMatch, AudioCategory.SFX, Mathf.Min(1f, 0.7f + 0.1f * step.Index));
+            }
+
+            if (_run == null || !_run.HasPendingSteps)
+            {
+                return;
+            }
+
+            _stepEvents.Clear();
+            _run.ApplySteps(step.Index, _stepEvents);
+            ShowEvents(_stepEvents);
+            GemGroup main = step.Cleared.OrderByDescending(group => group.Count).FirstOrDefault();
+            if (main != null && Animate && main.Kind < _balance.Gems.Length)
+            {
+                GemDefinition gem = _balance.Gems[main.Kind];
+                float total = _stepEvents.Where(e => e.Gem == main.Kind && IsGemAmount(e)).Sum(e => e.Amount);
+                _banner.Show(gem.Sprite, gem.ShowcaseKey, Mathf.RoundToInt(total), step.Index + 1, _comboKey, gem.Color);
+            }
+        }
+
+        // Battle events caused by the player (board steps, items): coins go to the wallet, effects show, the run may end.
+        private void ShowEvents(List<BattleEvent> events)
+        {
+            Credit(events);
             foreach (BattleEvent e in events)
             {
-                if (e.Gem >= 0 && (groups.Count == 0 || groups[groups.Count - 1].gem != e.Gem))
-                {
-                    groups.Add((e.Gem, new List<BattleEvent>()));
-                }
-
-                if (groups.Count > 0)
-                {
-                    groups[groups.Count - 1].events.Add(e);
-                }
+                PresentLive(e);
             }
 
-            if (groups.Count == 0)
+            if (_run.IsOver && !_ended)
             {
-                return;
-            }
-
-            if (!Animate)
-            {
-                foreach ((int _, List<BattleEvent> group) in groups)
-                {
-                    foreach (BattleEvent e in group)
-                    {
-                        Sound(e);
-                    }
-                }
-
-                return;
-            }
-
-            _showcasing = true;
-            _board.SetMasked(true);
-            foreach ((int gem, List<BattleEvent> group) in groups)
-            {
-                if (!Continue(generation))
-                {
-                    return;
-                }
-
-                GemDefinition definition = _balance.Gems[gem];
-                float total = group.Where(IsGemAmount).Sum(e => e.Amount);
-                _banner.Show(definition.Sprite, definition.ShowcaseKey, Mathf.RoundToInt(total), combo, _comboKey, definition.Color);
-                await PresentGroupAsync(definition, group, generation);
-                await DelayAsync(0.3f, generation);
-            }
-        }
-
-        private async Awaitable PresentGroupAsync(GemDefinition gem, List<BattleEvent> group, int generation)
-        {
-            switch (gem.Effect)
-            {
-                case GemEffectKind.Attack when group.Any(e => e.Kind == BattleEventKind.HeroStrike):
-                    _battlefield.Act(BattlefieldView.Target.Hero, CharacterView.AttackHeavy);
-                    Play(_sounds.HeroStrike);
-                    await DelayAsync(0.25f, generation);
-                    break;
-                case GemEffectKind.Magic:
-                    Vector3 start = ScreenToWorld(_board.ScreenPoint(new Cell(_balance.Rows / 2, _balance.Columns / 2)));
-                    Play(_sounds.MagicCharge);
-                    await _battlefield.Orb(start, BattlefieldView.Target.Healer, 0.45f);
-                    break;
-            }
-
-            foreach (BattleEvent e in group)
-            {
-                if (!Continue(generation))
-                {
-                    return;
-                }
-
-                if (e.Kind == BattleEventKind.HealerSkill)
-                {
-                    _battlefield.Act(BattlefieldView.Target.Healer, CharacterView.Cast);
-                    Play(_sounds.HealerSkill);
-                    await DelayAsync(0.25f, generation);
-                    await _battlefield.Orb(_battlefield.Middle(BattlefieldView.Target.Healer), BattlefieldView.Target.Monster, 0.4f);
-                }
-
-                if (e.Kind == BattleEventKind.StrikeHeld && e.Value == (int)BattleEventKind.HealerSkill)
-                {
-                    _battlefield.Act(BattlefieldView.Target.Healer, CharacterView.Cast);
-                    Play(_sounds.HealerSkill);
-                    await DelayAsync(0.25f, generation);
-                }
-
-                PresentShowcaseEvent(e);
-                ShowSnapshot(e.After);
-                await DelayAsync(e.Kind == BattleEventKind.MonsterDied ? 0.45f : 0.3f, generation);
-            }
-        }
-
-        private void PresentShowcaseEvent(BattleEvent e)
-        {
-            switch (e.Kind)
-            {
-                case BattleEventKind.Healed:
-                    _battlefield.Burst(BattlefieldView.Target.Hero, _battlefield.HealFx);
-                    _battlefield.Number(BattlefieldView.Target.Hero, "+" + Mathf.RoundToInt(e.Amount), _battlefield.HealColor, 1.3f);
-                    Play(_sounds.Heal);
-                    break;
-                case BattleEventKind.ArmorGained:
-                    _battlefield.Burst(BattlefieldView.Target.Hero, _battlefield.ShieldFx);
-                    _battlefield.Number(BattlefieldView.Target.Hero, "+" + Mathf.RoundToInt(e.Amount), _battlefield.ArmorColor, 1.3f);
-                    Play(_sounds.Shield);
-                    break;
-                case BattleEventKind.MagicCharged:
-                    _battlefield.Burst(BattlefieldView.Target.Healer, _battlefield.MagicFx, 0.7f);
-                    _battlefield.Number(BattlefieldView.Target.Healer, "+" + Mathf.RoundToInt(e.Amount), _battlefield.MagicColor);
-                    break;
-                default:
-                    PresentLive(e);
-                    break;
+                OnHeroDown();
             }
         }
 
@@ -596,11 +505,6 @@ namespace Game.Systems.Gameplay
                     _battlefield.Burst(BattlefieldView.Target.Monster, _battlefield.MagicFx, 1.6f);
                     _battlefield.Act(BattlefieldView.Target.Monster, CharacterView.Hurt);
                     _battlefield.Number(BattlefieldView.Target.Monster, Mathf.RoundToInt(e.Amount).ToString(), _battlefield.MagicColor, 1.8f);
-                    if (e.Absorbed > 0f)
-                    {
-                        _battlefield.Number(BattlefieldView.Target.Hero, "+" + Mathf.RoundToInt(e.Absorbed), _battlefield.HealColor);
-                    }
-
                     Shake(0.3f, 0.35f);
                     break;
                 case BattleEventKind.StrikeHeld:
@@ -630,6 +534,16 @@ namespace Game.Systems.Gameplay
                             Mathf.Max(0.1f, _balance.Tuning.AttackWindup));
                     }
 
+                    if (e.Absorbed > 0f)
+                    {
+                        _battlefield.Number(BattlefieldView.Target.Hero, "+" + Mathf.RoundToInt(e.Absorbed), _battlefield.HealColor);
+                    }
+
+                    break;
+                case BattleEventKind.MagicCharged:
+                    _battlefield.Burst(BattlefieldView.Target.Healer, _battlefield.MagicFx, 0.7f);
+                    _battlefield.Number(BattlefieldView.Target.Healer, "+" + Mathf.RoundToInt(e.Amount), _battlefield.MagicColor);
+                    Play(_sounds.MagicCharge);
                     break;
                 case BattleEventKind.MonsterWindup:
                     _battlefield.Act(BattlefieldView.Target.Monster, CharacterView.Attack);
@@ -682,40 +596,6 @@ namespace Game.Systems.Gameplay
             }
         }
 
-        // Sounds of showcase events when the showcase itself is skipped (animations off).
-        private void Sound(BattleEvent e)
-        {
-            switch (e.Kind)
-            {
-                case BattleEventKind.HeroStrike:
-                    Play(_sounds.HeroStrike);
-                    break;
-                case BattleEventKind.Healed:
-                    Play(_sounds.Heal);
-                    break;
-                case BattleEventKind.ArmorGained:
-                    Play(_sounds.Shield);
-                    break;
-                case BattleEventKind.HealerSkill:
-                    Play(_sounds.HealerSkill);
-                    break;
-                case BattleEventKind.StrikeHeld when e.Value == (int)BattleEventKind.HealerSkill:
-                    Play(_sounds.HealerSkill);
-                    break;
-                case BattleEventKind.MonsterDied:
-                    Play(_sounds.MonsterDeath);
-                    break;
-            }
-        }
-
-        private void ShowSnapshot(BattleSnapshot snapshot)
-        {
-            _battlefield.ShowStats(snapshot);
-            _hud.Show(snapshot, _run.Battle.MonsterIsBoss);
-            ShowEnemy(snapshot);
-            _magicBar.Set(snapshot.MagicCapacity > 0f ? snapshot.Magic / snapshot.MagicCapacity : 0f);
-        }
-
         private void ShowEnemy(BattleSnapshot snapshot)
         {
             Battle battle = _run.Battle;
@@ -723,14 +603,6 @@ namespace Game.Systems.Gameplay
             {
                 _enemyBar.Show(snapshot.MonsterHealth, snapshot.MonsterMaxHealth, _balance.Monsters[battle.MonsterKind].NameKey,
                     battle.MonsterIsBoss);
-            }
-        }
-
-        private void OnStepPopped(CascadeStep step)
-        {
-            if (_sfx != null && _sounds.GemMatch != null)
-            {
-                _sfx.PlaySfx(_sounds.GemMatch, AudioCategory.SFX, Mathf.Min(1f, 0.7f + 0.1f * step.Index));
             }
         }
 
@@ -826,11 +698,10 @@ namespace Game.Systems.Gameplay
                 _board.StopAnimations();
                 _battlefield.ClearTransients();
                 _banner.Hide();
-                _board.SetMasked(_showcasing, false);
             }
         }
 
-        // Waits game time (so a pause holds the showcase); ends at once with animations off, a stuck guard or a new run.
+        // Waits game time (so a pause holds it); ends at once with animations off, a stuck guard or a new run.
         private async Awaitable DelayAsync(float seconds, int generation)
         {
             float end = Time.time + seconds;
@@ -848,7 +719,8 @@ namespace Game.Systems.Gameplay
         private static bool IsGemAmount(BattleEvent e)
         {
             return e.Kind == BattleEventKind.HeroStrike || e.Kind == BattleEventKind.Healed
-                   || (e.Kind == BattleEventKind.StrikeHeld && e.Value == (int)BattleEventKind.HeroStrike) || e.Kind == BattleEventKind.ArmorGained
+                   || (e.Kind == BattleEventKind.StrikeHeld && e.Value == (int)BattleEventKind.HeroStrike)
+                   || (e.Kind == BattleEventKind.StrikeWindup && e.Value == 1) || e.Kind == BattleEventKind.ArmorGained
                    || e.Kind == BattleEventKind.MagicCharged;
         }
 

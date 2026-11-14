@@ -6,10 +6,11 @@ namespace Game.Systems.Gameplay
     /// <summary>
     /// The automatic fight of one run (pure logic; time comes from <see cref="Tick"/>). The hero attacks on a timer; one
     /// monster at a time walks in from the left (<see cref="BattleTuning.ApproachSeconds"/>, no attacks either way meanwhile),
-    /// fights, dies and is replaced by a stronger one; every Nth monster is a boss. Matched gems change the battle through
-    /// <see cref="ApplyBoard"/>; items through <see cref="Heal"/> and <see cref="AddArmor"/>. Armor wears off over time and
-    /// absorbs hits before health. A full magic bar casts the healer's skill. Strikes and skills cast while the next monster is
-    /// still walking in are held and land, in order, once it arrived. The run ends when the hero's health reaches
+    /// fights, dies and is replaced by a stronger one; every Nth monster is a boss. Matched gems change the battle step by
+    /// step through <see cref="ApplyStep"/>; items through <see cref="Heal"/> and <see cref="AddArmor"/>. Armor wears off over
+    /// time and absorbs hits before health. A full magic bar casts the healer's skill. Strikes and skills swing first and land
+    /// <see cref="BattleTuning.AttackWindup"/> later, in order; cast while the next monster is still walking in, they wait
+    /// for it to arrive. The run ends when the hero's health reaches
     /// zero (<see cref="IsOver"/>). Every change is reported as
     /// <see cref="BattleEvent"/>s carrying the values after it.
     /// </summary>
@@ -129,19 +130,17 @@ namespace Game.Systems.Gameplay
                 return;
             }
 
-            // Held strikes land first; the fight waits for them.
+            // Strikes swinging land when their windup is over; the automatic fight goes on meanwhile.
             if (_held.Count > 0)
             {
                 _releaseLeft -= seconds;
-                if (_releaseLeft > 0f)
+                if (_releaseLeft <= 0f)
                 {
-                    return;
-                }
-
-                ReleaseHeld(events);
-                if (!IsFighting)
-                {
-                    return;
+                    ReleaseHeld(events);
+                    if (!IsFighting)
+                    {
+                        return;
+                    }
                 }
             }
 
@@ -179,16 +178,16 @@ namespace Game.Systems.Gameplay
             }
         }
 
-        /// <summary>Applies a board action's matched gems, kind by kind in gem order, and adds their score.</summary>
-        internal void ApplyBoard(BoardResolution resolution, List<BattleEvent> events)
+        /// <summary>Applies the gems one cascade step cleared, kind by kind in gem order, and adds their score.</summary>
+        internal void ApplyStep(CascadeStep step, List<BattleEvent> events)
         {
-            if (IsOver || !resolution.Valid)
+            if (IsOver)
             {
                 return;
             }
 
-            Score += GemPayout.Score(resolution, _tuning);
-            float[] powers = GemPayout.Powers(resolution, _gems.Count, _tuning);
+            Score += GemPayout.Score(step, _tuning);
+            float[] powers = GemPayout.Powers(step, _gems.Count, _tuning);
             for (int gem = 0; gem < powers.Length && !IsOver; gem++)
             {
                 if (powers[gem] > 0f)
@@ -254,7 +253,8 @@ namespace Game.Systems.Gameplay
             StrikeMonster(damage, BattleEventKind.HealerSkill, gem, healed, events);
         }
 
-        // A strike lands at once on a monster in reach; otherwise (or behind strikes already waiting) it is held.
+        // A strike swings at once on a monster in reach (joining strikes already swinging) and lands after the windup;
+        // otherwise it waits for the monster to arrive.
         private void StrikeMonster(float damage, BattleEventKind kind, int gem, float healed, List<BattleEvent> events)
         {
             if (MonsterIndex < 0 || damage <= 0f)
@@ -262,14 +262,25 @@ namespace Game.Systems.Gameplay
                 return;
             }
 
-            if (IsFighting && _held.Count == 0)
+            bool swinging = _held.Count > 0;
+            _held.Add(new HeldStrike(kind, damage, gem));
+            if (!IsFighting)
             {
-                DamageMonster(damage, kind, gem, healed, events);
+                events.Add(Event(BattleEventKind.StrikeHeld, damage, healed, (int)kind, gem));
                 return;
             }
 
-            _held.Add(new HeldStrike(kind, damage, gem));
-            events.Add(Event(BattleEventKind.StrikeHeld, damage, healed, (int)kind, gem));
+            if (!swinging)
+            {
+                _releaseLeft = _tuning.AttackWindup;
+            }
+
+            events.Add(Event(BattleEventKind.StrikeWindup, damage, healed, KindBit(kind), gem));
+        }
+
+        private static int KindBit(BattleEventKind kind)
+        {
+            return kind == BattleEventKind.HealerSkill ? 2 : 1;
         }
 
         private void StartRelease(List<BattleEvent> events)
@@ -279,7 +290,7 @@ namespace Game.Systems.Gameplay
             foreach (HeldStrike held in _held)
             {
                 damage += held.Damage;
-                kinds |= held.Kind == BattleEventKind.HealerSkill ? 2 : 1;
+                kinds |= KindBit(held.Kind);
             }
 
             _releaseLeft = _tuning.AttackWindup;

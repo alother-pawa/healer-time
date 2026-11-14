@@ -8,6 +8,7 @@ namespace Game.Tests.Editor
     internal sealed class BattleTests
     {
         private const float Approach = 1.4f;
+        private const float Windup = 0.3f;
 
         private static readonly MonsterTemplate Grunt = new MonsterTemplate(30f, 10f, 2f, 5, 100, false, 0, 1f);
         private static readonly MonsterTemplate Boss = new MonsterTemplate(100f, 20f, 2f, 20, 500, true, 0, 1f);
@@ -96,6 +97,8 @@ namespace Game.Tests.Editor
             Battle battle = NewBattle();
             battle.Tick(Approach, _events);
             battle.Strike(30f, 0, _events);
+            Assert.That(battle.Kills, Is.EqualTo(0), "the strike swings first");
+            battle.Tick(Windup, _events);
             Assert.That(battle.Kills, Is.EqualTo(1));
             Assert.That(battle.Coins, Is.EqualTo(5));
             Assert.That(battle.Score, Is.EqualTo(100));
@@ -104,7 +107,8 @@ namespace Game.Tests.Editor
             Assert.That(battle.IsFighting, Is.False, "the next monster walks in");
             Assert.That(_events.Select(e => e.Kind), Is.EqualTo(new[]
             {
-                BattleEventKind.MonsterSpawned, BattleEventKind.HeroStrike, BattleEventKind.MonsterDied, BattleEventKind.MonsterSpawned,
+                BattleEventKind.MonsterSpawned, BattleEventKind.StrikeWindup, BattleEventKind.HeroStrike, BattleEventKind.MonsterDied,
+                BattleEventKind.MonsterSpawned,
             }));
         }
 
@@ -117,12 +121,14 @@ namespace Game.Tests.Editor
                 Assert.That(battle.MonsterIsBoss, Is.False, $"monster {i}");
                 battle.Tick(Approach, _events);
                 battle.Strike(10000f, 0, _events);
+                battle.Tick(Windup, _events);
             }
 
             Assert.That(battle.MonsterIndex, Is.EqualTo(4));
             Assert.That(battle.MonsterIsBoss, Is.True);
             battle.Tick(Approach, _events);
             battle.Strike(10000f, 0, _events);
+            battle.Tick(Windup, _events);
             Assert.That(battle.MonsterIsBoss, Is.False);
         }
 
@@ -135,6 +141,7 @@ namespace Game.Tests.Editor
             Assert.That(battle.Magic, Is.EqualTo(60f));
             battle.ChargeMagic(60f, 3, _events);
             Assert.That(battle.Magic, Is.EqualTo(0f));
+            battle.Tick(Windup, _events);
             BattleEvent skill = _events.Single(e => e.Kind == BattleEventKind.HealerSkill);
             Assert.That(skill.Amount, Is.EqualTo(30f), "the skill deals 50 but the monster only had 30");
             Assert.That(battle.Kills, Is.EqualTo(1));
@@ -213,30 +220,29 @@ namespace Game.Tests.Editor
         }
 
         [Test]
-        public void BoardMatchesApplyInGemOrderWithComboAndSizeBonus()
+        public void EveryCascadeStepAppliesAsItPopsWithComboAndSizeBonus()
         {
             Battle battle = NewBattle(heroHealth: 100f);
             battle.Tick(Approach, _events);
             _events.Clear();
             var cells = new List<Cell> { new Cell(0, 0), new Cell(0, 1), new Cell(0, 2) };
             var four = new List<Cell> { new Cell(1, 0), new Cell(1, 1), new Cell(1, 2), new Cell(1, 3) };
-            var resolution = new BoardResolution(true, true, new Cell(0, 0), new Cell(0, 1), new[]
-            {
-                new CascadeStep(0, new[] { new GemGroup(2, cells, 3), new GemGroup(0, four, 4) }, new GemMove[0]),
-                new CascadeStep(1, new[] { new GemGroup(0, cells, 3) }, new GemMove[0]),
-            }, null, false);
+            var first = new CascadeStep(0, new[] { new GemGroup(2, cells, 3), new GemGroup(0, four, 4) }, new GemMove[0]);
+            var combo = new CascadeStep(1, new[] { new GemGroup(0, cells, 3) }, new GemMove[0]);
             var tuning = new BattleTuning();
-            float[] powers = GemPayout.Powers(resolution, 4, tuning);
-            float expectedAttack = 4f * (1f + tuning.LargeMatchBonus) + 3f * (1f + tuning.ComboBonus);
-            Assert.That(powers[0], Is.EqualTo(expectedAttack).Within(0.001f));
-            Assert.That(powers[2], Is.EqualTo(3f));
+            Assert.That(GemPayout.Powers(first, 4, tuning)[0], Is.EqualTo(4f * (1f + tuning.LargeMatchBonus)).Within(0.001f));
+            Assert.That(GemPayout.Powers(first, 4, tuning)[2], Is.EqualTo(3f));
+            Assert.That(GemPayout.Powers(combo, 4, tuning)[0], Is.EqualTo(3f * (1f + tuning.ComboBonus)).Within(0.001f));
 
-            battle.ApplyBoard(resolution, _events);
-            Assert.That(_events[0].Kind, Is.EqualTo(BattleEventKind.HeroStrike), "Attack (gem 0) applies before Defense (gem 2)");
+            battle.ApplyStep(first, _events);
+            Assert.That(_events[0].Kind, Is.EqualTo(BattleEventKind.StrikeWindup), "Attack (gem 0) applies before Defense (gem 2)");
             Assert.That(_events[0].Gem, Is.EqualTo(0));
-            Assert.That(_events.Any(e => e.Kind == BattleEventKind.ArmorGained && e.Gem == 2 && e.Amount == 15f));
-            Assert.That(battle.Kills, Is.EqualTo(1), "the strike kills the 30-health grunt");
-            Assert.That(battle.Score, Is.EqualTo(GemPayout.Score(resolution, tuning) + Grunt.Score));
+            Assert.That(_events.Any(e => e.Kind == BattleEventKind.ArmorGained && e.Gem == 2 && e.Amount == 15f), "armor at once");
+            battle.ApplyStep(combo, _events);
+            battle.Tick(Windup, _events);
+            Assert.That(_events.Count(e => e.Kind == BattleEventKind.HeroStrike), Is.EqualTo(2), "one strike per step");
+            Assert.That(battle.Kills, Is.EqualTo(1), "the two strikes kill the 30-health grunt");
+            Assert.That(battle.Score, Is.EqualTo(GemPayout.Score(first, tuning) + GemPayout.Score(combo, tuning) + Grunt.Score));
         }
 
         private Battle NewBattle(float heroHealth = 100f)

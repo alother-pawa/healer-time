@@ -24,7 +24,7 @@ namespace Game.Systems.Gameplay
         /// <summary>The healer's bar filled up (Amount: magic added).</summary>
         MagicCharged = 6,
 
-        /// <summary>The healer's skill hit the monster (Amount: damage; Absorbed: health given to the hero).</summary>
+        /// <summary>The healer's skill hit the monster (Amount: damage; the health it gave is on its StrikeWindup or StrikeHeld).</summary>
         HealerSkill = 7,
 
         /// <summary>The monster died (Amount: coins earned; Value: score earned; Boss flag).</summary>
@@ -47,8 +47,9 @@ namespace Game.Systems.Gameplay
         StrikeHeld = 13,
 
         /// <summary>
-        /// The monster arrived and the held strikes start; they land <see cref="BattleTuning.AttackWindup"/> later (Amount: damage
-        /// held; Value: 1 if a hero strike is held, plus 2 if a healer skill is).
+        /// Strikes start swinging (cast on a monster in reach, or held ones once the monster arrived); they land
+        /// <see cref="BattleTuning.AttackWindup"/> later (Amount: damage; Absorbed: health a skill gave the hero at once;
+        /// Value: 1 if a hero strike swings, plus 2 if a healer skill does).
         /// </summary>
         StrikeWindup = 14,
     }

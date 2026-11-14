@@ -14,9 +14,9 @@ namespace Game.Systems.Gameplay
     /// <c>Play*</c> methods replay what a <see cref="BoardResolution"/> did (swap, pops, falls, new gems dropping in, shuffle)
     /// and always end by rendering the final board, so a skipped, interrupted or switched-off animation leaves the same
     /// picture. Input: drag a gem towards a neighbour, or click one gem then a neighbour (<see cref="SwapRequested"/>);
-    /// while targeting, a click picks a cell (<see cref="CellPicked"/>). The mask dims the board while effects play.
+    /// while targeting, a click picks a cell (<see cref="CellPicked"/>). Each step pops with <see cref="StepPopped"/>.
     /// REFERENCES: <c>_area</c> holds the cells and gems (clipped); <c>_cellTemplate</c> and <c>_gemTemplate</c> are inactive
-    /// templates; <c>_selection</c> frames the chosen gem; <c>_mask</c> dims the board; <c>_targetHint</c> shows while a
+    /// templates; <c>_selection</c> frames the chosen gem; <c>_targetHint</c> shows while a
     /// target is being picked.
     /// </summary>
     internal sealed class BoardView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
@@ -26,14 +26,11 @@ namespace Game.Systems.Gameplay
         private const float FallSecondsPerRow = 0.06f;
         private const float MinFallSeconds = 0.16f;
         private const float ShuffleSeconds = 0.45f;
-        private const float MaskSeconds = 0.18f;
-        private const float MaskAlpha = 1f;
 
         [SerializeField] private RectTransform _area;
         [SerializeField] private Image _cellTemplate;
         [SerializeField] private Image _gemTemplate;
         [SerializeField] private RectTransform _selection;
-        [SerializeField] private CanvasGroup _mask;
         [SerializeField] private GameObject _targetHint;
 
         private readonly List<Image> _pool = new List<Image>();
@@ -56,7 +53,7 @@ namespace Game.Systems.Gameplay
         /// <summary>The player picked a cell while targeting.</summary>
         internal event Action<Cell> CellPicked;
 
-        /// <summary>A cascade step's gems popped (for sounds and the combo counter).</summary>
+        /// <summary>A cascade step's gems popped: the battle applies its gems now.</summary>
         internal event Action<CascadeStep> StepPopped;
 
         /// <summary>When false, pointer input is ignored (effects playing, paused, run over).</summary>
@@ -90,7 +87,6 @@ namespace Game.Systems.Gameplay
             _selection.SetAsLastSibling();
             ClearSelection();
             SetTargeting(false);
-            SetMasked(false, false);
         }
 
         /// <summary>Draws <paramref name="board"/> exactly: every gem at its cell, full size and opaque.</summary>
@@ -199,22 +195,6 @@ namespace Game.Systems.Gameplay
             }
 
             Render(board);
-        }
-
-        /// <summary>Dims the board and blocks it while effects play; instant when animations are off.</summary>
-        internal void SetMasked(bool masked, bool animate = true)
-        {
-            DOTween.Kill(_mask);
-            _mask.blocksRaycasts = masked;
-            _mask.gameObject.SetActive(true);
-            float target = masked ? MaskAlpha : 0f;
-            if (!animate || !Animate)
-            {
-                _mask.alpha = target;
-                return;
-            }
-
-            _mask.DOFade(target, MaskSeconds).SetTarget(_mask).SetLink(gameObject).Gate(_animations);
         }
 
         /// <summary>Targeting mode: the next click on the board picks a cell instead of selecting a gem.</summary>

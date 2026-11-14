@@ -2,7 +2,10 @@ using System.Collections.Generic;
 
 namespace Game.Systems.Gameplay
 {
-    /// <summary>The result of one player action in a run: what the board did, then what the battle did because of it.</summary>
+    /// <summary>
+    /// The result of one player action in a run: what the board did (its steps reach the battle as they pop, see
+    /// <see cref="Run.ApplySteps"/>) and what the battle did at once (an item's heal or armor).
+    /// </summary>
     internal sealed class RunStep
     {
         internal RunStep(BoardResolution board, List<BattleEvent> events)
