@@ -166,7 +166,7 @@ namespace Game.Editor.Builders
             bool created = Missing(path);
             ScriptableObject asset = BuildUtility.Asset(GameTypes.MonsterDefinition, path);
             Fields.Set(asset, ("_id", monster.id), ("_nameKey", $"monster.{monster.id}.name"), ("_controller", Controller(monster.id)),
-                ("_isBoss", monster.boss));
+                ("_height", SheetHeight(monster.id)), ("_isBoss", monster.boss));
             if (created)
             {
                 Fields.Set(asset, ("_tint", BuildUtility.Hex(monster.tint)), ("_scale", monster.scale), ("_health", monster.health),
@@ -208,11 +208,11 @@ namespace Game.Editor.Builders
             return asset;
         }
 
-        // Id, texts, the sheet's animator and its idle frames for menu previews.
+        // Id, texts, the sheet's animator, its idle frames for menu previews and its idle height.
         private static void Character(CharacterDefinition asset, string kind, string id, string sheet)
         {
             Fields.Set(asset, ("_id", id), ("_nameKey", $"{kind}.{id}.name"), ("_descriptionKey", $"{kind}.{id}.description"),
-                ("_controller", Controller(sheet)), ("_previewFrames", IdleFrames(sheet)));
+                ("_controller", Controller(sheet)), ("_previewFrames", IdleFrames(sheet)), ("_height", SheetHeight(sheet)));
         }
 
         private static RuntimeAnimatorController Controller(string sheet)
@@ -239,6 +239,12 @@ namespace Game.Editor.Builders
         private static string SheetPath(string sheet)
         {
             return ArtSpec.Load().sheets.Single(spec => spec.Name == sheet).path;
+        }
+
+        private static float SheetHeight(string sheet)
+        {
+            float height = ArtSpec.Load().sheets.Single(spec => spec.Name == sheet).height;
+            return height > 0f ? height : throw new InvalidOperationException($"Sheet {sheet} has no height in the art spec.");
         }
 
         private static bool Missing(string path)

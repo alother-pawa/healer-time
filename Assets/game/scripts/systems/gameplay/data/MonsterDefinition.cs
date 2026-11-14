@@ -14,6 +14,8 @@ namespace Game.Systems.Gameplay
         [SerializeField] private RuntimeAnimatorController _controller;
         [SerializeField] private Color _tint = Color.white;
         [Min(0.1f)] [SerializeField] private float _scale = 1f;
+        [Tooltip("Height of the idle pose over the feet in world units at scale 1 (from the sheet); bars sit over it.")]
+        [Min(0.1f)] [SerializeField] private float _height = 1f;
         [Min(1f)] [SerializeField] private float _health = 30f;
         [Min(0f)] [SerializeField] private float _damage = 6f;
         [Min(0.1f)] [SerializeField] private float _attackInterval = 2f;
@@ -33,6 +35,8 @@ namespace Game.Systems.Gameplay
         internal Color Tint => _tint;
 
         internal float Scale => _scale;
+
+        internal float Height => _height;
 
         internal bool IsBoss => _isBoss;
 

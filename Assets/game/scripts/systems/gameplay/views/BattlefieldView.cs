@@ -88,8 +88,8 @@ namespace Game.Systems.Gameplay
         {
             _looks = looks;
             _animations = animations;
-            _hero.Setup(hero.Controller, hero.Tint, hero.Scale);
-            _healer.Setup(healer.Controller, healer.Tint, healer.Scale);
+            _hero.Setup(hero.Controller, hero.Tint, hero.Scale, hero.Height);
+            _healer.Setup(healer.Controller, healer.Tint, healer.Scale, healer.Height);
             foreach (CharacterView monster in _monsters)
             {
                 monster.SetVisible(false);
@@ -123,7 +123,7 @@ namespace Game.Systems.Gameplay
                 next.SetVisible(true);
                 next.ShowBarsVisible(true);
                 MonsterDefinition look = _looks[kind];
-                next.Setup(look.Controller, look.Tint, look.Scale);
+                next.Setup(look.Controller, look.Tint, look.Scale, look.Height);
                 _shownIndex = index;
             }
 
@@ -132,11 +132,12 @@ namespace Game.Systems.Gameplay
             monster.SetLoop(approach < 1f ? CharacterView.Walk : CharacterView.Idle);
         }
 
-        /// <summary>Bars of the hero and the monster on the field.</summary>
+        /// <summary>Bars of the hero and the monster on the field, and the healer's magic bar.</summary>
         internal void ShowStats(BattleSnapshot snapshot)
         {
             _hero.ShowBars(snapshot.HeroHealth, snapshot.HeroMaxHealth, snapshot.Armor);
             _monsters[_current].ShowBars(snapshot.MonsterHealth, snapshot.MonsterMaxHealth, 0f);
+            _healer.ShowBars(snapshot.Magic, snapshot.MagicCapacity, 0f);
         }
 
         /// <summary>Plays an action state on a character (nothing with animations off).</summary>
@@ -246,7 +247,7 @@ namespace Game.Systems.Gameplay
         /// <summary>World position of a character's middle (for effects that start or end there).</summary>
         internal Vector3 Middle(Target target)
         {
-            return ViewOf(target).transform.position + Vector3.up * 0.55f * ViewOf(target).Scale;
+            return ViewOf(target).transform.position + Vector3.up * 0.5f * ViewOf(target).Height;
         }
 
         /// <summary>Everything transient stops and hides at once (animations switched off, leaving the scene).</summary>
@@ -309,7 +310,7 @@ namespace Game.Systems.Gameplay
 
         private Vector3 Above(Target target)
         {
-            return ViewOf(target).transform.position + Vector3.up * 1.25f * ViewOf(target).Scale;
+            return ViewOf(target).transform.position + Vector3.up * (ViewOf(target).Height + 0.35f);
         }
 
         private static T Take<T>(List<T> pool, T template) where T : Component

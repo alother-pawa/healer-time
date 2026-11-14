@@ -89,7 +89,6 @@ Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.
 | `board-cell.png` | 66×66 | rounded | 12 | giữa | Ô nền của bàn ghép | Mega Cozy UI Pack (dobo_ui, bản demo): `Inventory/ItemSlots/ItemSlotsDefault/SlotDefaultl1_cream.png` ×2 |
 | `board-cell-selected.png` | 70×70 | outline | 14 | giữa | Ô đang chọn trên bàn ghép | Mega Cozy UI Pack (dobo_ui, bản demo): `Inventory/ItemSlots/ItemSlotsSelected/SlotHover1_cream.png` ×2 |
 | `board-frame.png` | 284×268 | outline | 44 | giữa | Khung gỗ quanh bàn ghép (chỉ vẽ viền) | Fantasy UI free: `freefantasy.png` vùng (165, 72, 236, 139) ×4 |
-| `board-mask.png` | 128×128 | rect | — | giữa | Lớp che bàn ghép khi đang diễn hiệu ứng | lớp màu phẳng (không cần art) |
 | `item-slot.png` | 132×132 | rounded | 24 | giữa | Ô item | Mega Cozy UI Pack (dobo_ui, bản demo): `Inventory/ItemSlots/ItemSlotsDefault/SlotDefaultl1_cream.png` ×4 |
 | `item-potion.png` | 96×96 | rect | — | giữa | Item bình máu | Raven Fantasy Icons (Clockwork Raven): ô (17, 8) ×3 |
 | `item-bomb.png` | 96×96 | ellipse | — | giữa | Item bom xoá một vùng 3×3 | Raven Fantasy Icons (Clockwork Raven): ô (47, 11) ×3 |
@@ -97,8 +96,6 @@ Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.
 | `item-armor.png` | 96×96 | rect | — | giữa | Item tăng giáp tức thì | Raven Fantasy Icons (Clockwork Raven): ô (53, 7) ×3 |
 | `icon-plus.png` | 56×56 | rounded | — | giữa | Nút + trên ô item hết (mua bằng coin) | Fantasy UI free: `freefantasy.png` vùng (1, 193, 15, 207) ×4 |
 | `button-pause.png` | 84×84 | rounded | — | giữa | Nút Pause | Fantasy UI free: `freefantasy.png` vùng (33, 177, 47, 191) ×6 |
-| `bar-track.png` | 64×32 | bar | 12 | giữa | Rãnh thanh Magic của healer | lớp màu phẳng (không cần art) |
-| `bar-fill-magic.png` | 64×32 | bar | 12 | giữa | Phần đầy thanh Magic | lớp màu phẳng (không cần art) |
 | `enemy-bar-empty.png` | 448×128 | bar | — | giữa | Thanh máu quái trên HUD: khung rỗng | Fantasy UI free: `Dragonhpbar.png` vùng (784, 0, 896, 32) ×4 |
 | `enemy-bar-full.png` | 448×128 | bar | — | giữa | Thanh máu quái trên HUD: đầy (cắt theo máu còn lại) | Fantasy UI free: `Dragonhpbar.png` vùng (0, 0, 112, 32) ×4 |
 
@@ -112,6 +109,7 @@ Glyph phím/tay cầm (`ui-glyphs/`) cũng là placeholder, ít ưu tiên.
 | `hp-bar-track.png` | 64×32 | bar | 12 | giữa | Rãnh thanh máu trên đầu nhân vật | lớp màu phẳng (không cần art) |
 | `hp-bar-fill.png` | 64×32 | bar | 12 | 0.0, 0.5 | Máu của hero | lớp màu phẳng (không cần art) |
 | `hp-bar-fill-enemy.png` | 64×32 | bar | 12 | 0.0, 0.5 | Máu của quái | lớp màu phẳng (không cần art) |
+| `magic-bar-fill.png` | 64×32 | bar | 12 | 0.0, 0.5 | Thanh Magic trên đầu healer | lớp màu phẳng (không cần art) |
 | `armor-bar-fill.png` | 64×32 | bar | 12 | 0.0, 0.5 | Giáp ảo của hero (chồng trên thanh máu) | lớp màu phẳng (không cần art) |
 
 ## `game/effects`

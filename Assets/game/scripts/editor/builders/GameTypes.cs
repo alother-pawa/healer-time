@@ -53,7 +53,6 @@ namespace Game.Editor.Builders
         internal static Type EnemyBarView => Resolve(Gameplay, Gameplay, "EnemyBarView");
         internal static Type ItemBarView => Resolve(Gameplay, Gameplay, "ItemBarView");
         internal static Type ItemSlotView => Resolve(Gameplay, Gameplay, "ItemSlotView");
-        internal static Type UiBar => Resolve(Gameplay, Gameplay, "UiBar");
         internal static Type ShowcaseBanner => Resolve(Gameplay, Gameplay, "ShowcaseBanner");
         internal static Type BattlefieldView => Resolve(Gameplay, Gameplay, "BattlefieldView");
         internal static Type CharacterView => Resolve(Gameplay, Gameplay, "CharacterView");

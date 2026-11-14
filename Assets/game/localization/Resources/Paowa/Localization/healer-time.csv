@@ -155,7 +155,6 @@ gameplay.hud.kills,Defeated {0},撃破 {0}
 gameplay.hud.coins,{0},{0}
 gameplay.hud.monster,Monster {0},モンスター {0}
 gameplay.hud.boss,Boss! (#{0}),ボス！(#{0})
-gameplay.hud.magic,Magic,マジック
 # Showcase captions over the board ({0} = amount; combo {0} = cascade steps)
 gameplay.showcase.attack,Attack! {0},アタック！ {0}
 gameplay.showcase.heal,Heal +{0},回復 +{0}

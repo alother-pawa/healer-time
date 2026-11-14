@@ -5,7 +5,7 @@ namespace Game.Contracts.Roster
     /// <summary>
     /// What every playable character shares: a stable id (saved as the selection), name and description keys, the animator
     /// of its sheet for the battlefield, idle frames for menu previews, and a tint and scale over the sheet (so one sheet
-    /// can serve several characters). Subclasses add the battle numbers.
+    /// can serve several characters), and the height of its idle pose. Subclasses add the battle numbers.
     /// </summary>
     public abstract class CharacterDefinition : ScriptableObject
     {
@@ -20,6 +20,8 @@ namespace Game.Contracts.Roster
         [Min(0.02f)] [SerializeField] private float _previewFrameSeconds = 0.12f;
         [SerializeField] private Color _tint = Color.white;
         [Min(0.1f)] [SerializeField] private float _scale = 1f;
+        [Tooltip("Height of the idle pose over the feet in world units at scale 1 (from the sheet); bars sit over it.")]
+        [Min(0.1f)] [SerializeField] private float _height = 1f;
 
         public string Id => _id;
 
@@ -36,5 +38,7 @@ namespace Game.Contracts.Roster
         public Color Tint => _tint;
 
         public float Scale => _scale;
+
+        public float Height => _height;
     }
 }

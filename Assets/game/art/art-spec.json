@@ -512,21 +512,6 @@
       ]
     },
     {
-      "path": "screens/gameplay/board-mask",
-      "width": 128,
-      "height": 128,
-      "border": [
-        0,
-        0,
-        0,
-        0
-      ],
-      "pivot": [
-        0.5,
-        0.5
-      ]
-    },
-    {
       "path": "screens/gameplay/item-slot",
       "width": 132,
       "height": 132,
@@ -625,36 +610,6 @@
         0,
         0,
         0
-      ],
-      "pivot": [
-        0.5,
-        0.5
-      ]
-    },
-    {
-      "path": "screens/gameplay/bar-track",
-      "width": 64,
-      "height": 32,
-      "border": [
-        12,
-        12,
-        12,
-        12
-      ],
-      "pivot": [
-        0.5,
-        0.5
-      ]
-    },
-    {
-      "path": "screens/gameplay/bar-fill-magic",
-      "width": 64,
-      "height": 32,
-      "border": [
-        12,
-        12,
-        12,
-        12
       ],
       "pivot": [
         0.5,
@@ -768,6 +723,21 @@
     },
     {
       "path": "game/props/hp-bar-fill-enemy",
+      "width": 64,
+      "height": 32,
+      "border": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "pivot": [
+        0.0,
+        0.5
+      ]
+    },
+    {
+      "path": "game/props/magic-bar-fill",
       "width": 64,
       "height": 32,
       "border": [
@@ -1468,6 +1438,7 @@
       ],
       "pixelsPerUnit": 32.0,
       "point": true,
+      "height": 1.625,
       "tags": [
         {
           "name": "idle",
@@ -1517,6 +1488,7 @@
       ],
       "pixelsPerUnit": 32.0,
       "point": true,
+      "height": 1.4062,
       "tags": [
         {
           "name": "idle",
@@ -1566,6 +1538,7 @@
       ],
       "pixelsPerUnit": 32.0,
       "point": true,
+      "height": 1.5938,
       "tags": [
         {
           "name": "idle",
@@ -1615,6 +1588,7 @@
       ],
       "pixelsPerUnit": 32.0,
       "point": true,
+      "height": 1.3125,
       "tags": [
         {
           "name": "idle",
@@ -1664,6 +1638,7 @@
       ],
       "pixelsPerUnit": 42.6667,
       "point": true,
+      "height": 2.2266,
       "tags": [
         {
           "name": "idle",
@@ -1695,6 +1670,7 @@
       ],
       "pixelsPerUnit": 21.3333,
       "point": true,
+      "height": 2.4844,
       "tags": [
         {
           "name": "idle",
@@ -1726,6 +1702,7 @@
       ],
       "pixelsPerUnit": 25.6,
       "point": true,
+      "height": 1.4062,
       "tags": [
         {
           "name": "idle",
@@ -1769,6 +1746,7 @@
       ],
       "pixelsPerUnit": 32.0,
       "point": true,
+      "height": 1.5938,
       "tags": [
         {
           "name": "idle",
@@ -1812,6 +1790,7 @@
       ],
       "pixelsPerUnit": 25.6,
       "point": true,
+      "height": 1.4453,
       "tags": [
         {
           "name": "idle",
@@ -1855,6 +1834,7 @@
       ],
       "pixelsPerUnit": 25.6,
       "point": true,
+      "height": 1.2109,
       "tags": [
         {
           "name": "idle",
@@ -1898,6 +1878,7 @@
       ],
       "pixelsPerUnit": 32.0,
       "point": true,
+      "height": 1.2812,
       "tags": [
         {
           "name": "idle",
@@ -1941,6 +1922,7 @@
       ],
       "pixelsPerUnit": 25.6,
       "point": true,
+      "height": 2.1094,
       "tags": [
         {
           "name": "idle",

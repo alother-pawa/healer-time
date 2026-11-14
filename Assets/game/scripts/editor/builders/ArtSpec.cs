@@ -55,6 +55,9 @@ namespace Game.Editor.Builders
         /// <summary>Point (nearest) filtering, for pixel art shown larger than its texture.</summary>
         public bool point;
 
+        /// <summary>World height of the idle pose over the feet (characters: bars and effects sit by it); 0 when unknown.</summary>
+        public float height;
+
         /// <summary>Widest row in frames.</summary>
         internal int Columns
         {

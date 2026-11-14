@@ -113,6 +113,7 @@ class Sheet:
     art: Art = None
     ppu: float = 0.0      # texture pixels per world unit of this sheet (0: PIXELS_PER_UNIT); pixel art shown large uses fewer
     point: bool = False   # nearest filtering (pixel art shown larger than its texture)
+    height: float = 0.0   # world height of the idle pose over the feet (bars and effects sit by it)
 
 
 def units(width, height):
@@ -150,7 +151,8 @@ def strip_sheet(path, folder, tags, scale, note, colour=CHARACTER, frame_width=0
     A character sheet from a folder of animation strips (one PNG per animation, frames left to right, square unless
     `frame_width` says otherwise): one row per
     tag, every frame cut to the box holding the character in every frame of these strips (2 px margin), pivot under the
-    feet of the first tag (idle). Shown `scale` screen pixels per texture pixel (point filtered).
+    feet of the first tag (idle). Shown `scale` screen pixels per texture pixel (point filtered). Its height is the first
+    idle frame's, from the feet to the top of the head.
     tags: (name, strip file without extension, ms per frame, loop).
     """
     root = PACKS / CHARACTERS / folder
@@ -181,6 +183,7 @@ def strip_sheet(path, folder, tags, scale, note, colour=CHARACTER, frame_width=0
         frame = (right - left, bottom - top)
         pivot = (round(((idle[0] + idle[2]) / 2 - left) / frame[0], 4), round((bottom - idle[3]) / frame[1], 4))
         art = Art(CHARACTERS, file=folder, strips=files, frame_width=frame_width, crop=(left, top, right, bottom))
+        height = round((idle[3] - idle[1]) * scale / PIXELS_PER_UNIT, 4)
     else:
         old = previous_sheet(path)
         if old is None:
@@ -188,9 +191,10 @@ def strip_sheet(path, folder, tags, scale, note, colour=CHARACTER, frame_width=0
         counts = [tag["frames"] for tag in old["tags"]]
         frame = (old["frameWidth"], old["frameHeight"])
         pivot = tuple(old["pivot"])
+        height = old.get("height", 0.0)
     return Sheet(path, frame, "rounded", colour, note,
                  tags=[Tag(name, count, ms, loop) for (name, _, ms, loop), count in zip(tags, counts)],
-                 pivot=pivot, art=art, ppu=round(PIXELS_PER_UNIT / scale, 4), point=True)
+                 pivot=pivot, art=art, ppu=round(PIXELS_PER_UNIT / scale, 4), point=True, height=height)
 
 
 # Sizes are the size the art is drawn at: the size shown at the 1920x1080 reference for pictures, the source size
@@ -264,7 +268,6 @@ SPRITES = [
            art=cozy("Inventory/ItemSlots/ItemSlotsSelected/SlotHover1_cream.png", 2)),
     Sprite("screens/gameplay/board-frame", (284, 268), "outline", WOOD, "Khung gỗ quanh bàn ghép (chỉ vẽ viền)", border=44,
            art=fantasy(HANGING_BOARD, 4)),
-    Sprite("screens/gameplay/board-mask", S, "rect", "#000000", "Lớp che bàn ghép khi đang diễn hiệu ứng", opacity=0.7, plain=True),
     Sprite("screens/gameplay/item-slot", (132, 132), "rounded", CREAM, "Ô item", border=24,
            art=cozy("Inventory/ItemSlots/ItemSlotsDefault/SlotDefaultl1_cream.png", 4)),
     Sprite("screens/gameplay/item-potion", ICON, "rect", HEALTH, "Item bình máu", art=raven(17, 8, 3)),
@@ -274,8 +277,6 @@ SPRITES = [
     Sprite("screens/gameplay/icon-plus", px(56), "rounded", LEAF, "Nút + trên ô item hết (mua bằng coin)",
            art=fantasy((1, 193, 15, 207), 4)),
     Sprite("screens/gameplay/button-pause", px(84), "rounded", WOOD, "Nút Pause", art=fantasy((33, 177, 47, 191), 6)),
-    Sprite("screens/gameplay/bar-track", BAR, "bar", WOOD_DARK, "Rãnh thanh Magic của healer", border=12, plain=True),
-    Sprite("screens/gameplay/bar-fill-magic", BAR, "bar", MAGIC, "Phần đầy thanh Magic", border=12, plain=True),
     Sprite("screens/gameplay/enemy-bar-empty", (448, 128), "bar", WOOD_DARK, "Thanh máu quái trên HUD: khung rỗng",
            art=fantasy(DRAGON_BAR_EMPTY, 4, file="Dragonhpbar.png")),
     Sprite("screens/gameplay/enemy-bar-full", (448, 128), "bar", HEALTH, "Thanh máu quái trên HUD: đầy (cắt theo máu còn lại)",
@@ -291,6 +292,7 @@ SPRITES = [
     Sprite("game/props/hp-bar-track", BAR, "bar", WOOD_DARK, "Rãnh thanh máu trên đầu nhân vật", border=12, plain=True),
     Sprite("game/props/hp-bar-fill", BAR, "bar", "#46A758", "Máu của hero", border=12, pivot=(0.0, 0.5), plain=True),
     Sprite("game/props/hp-bar-fill-enemy", BAR, "bar", HEALTH, "Máu của quái", border=12, pivot=(0.0, 0.5), plain=True),
+    Sprite("game/props/magic-bar-fill", BAR, "bar", MAGIC, "Thanh Magic trên đầu healer", border=12, pivot=(0.0, 0.5), plain=True),
     Sprite("game/props/armor-bar-fill", BAR, "bar", ARMOR, "Giáp ảo của hero (chồng trên thanh máu)", border=12, pivot=(0.0, 0.5),
            plain=True),
     Sprite("game/effects/fx-hit", px(128), "ellipse", "#FF9A3C", "Hiệu ứng trúng đòn", art=raven(47, 14, 4)),
@@ -568,7 +570,7 @@ def spec():
         ],
         "sheets": [
             {"path": s.path, "frameWidth": s.frame[0], "frameHeight": s.frame[1], "pivot": list(s.pivot),
-             "pixelsPerUnit": s.ppu, "point": s.point,
+             "pixelsPerUnit": s.ppu, "point": s.point, "height": s.height,
              "tags": [{"name": t.name, "frames": t.frames, "frameMs": t.frame_ms, "loop": t.loop} for t in s.tags]}
             for s in SHEETS
         ],

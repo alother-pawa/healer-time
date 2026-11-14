@@ -23,12 +23,10 @@ namespace Game.Editor.Builders
         private const float PromptRowHeight = 56f;
         private const float BoardSide = 864f;
         private const float FramePadding = 44f;
-        private const float SlotSize = 144f;
-        private const float SlotSpacing = 162f;
-        private const float ItemRowY = 400f;
-        private const float HealerX = 1760f;
+        private const float SlotSize = 184f;
+        private const float SlotSpacing = 208f;
         private static readonly Vector2 BoardCenter = new Vector2(480f, 498f);
-        private static readonly Vector2 ItemRowCenter = new Vector2(1300f, ItemRowY);
+        private static readonly Vector2 ItemRowCenter = new Vector2(1440f, 280f);
         private const string OutlineMaterial = "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Outline.mat";
         private static readonly Vector2 PausePanelSize = new Vector2(760f, 700f);
         private static readonly Vector2 MenuButtonSize = new Vector2(520f, 88f);
@@ -36,10 +34,10 @@ namespace Game.Editor.Builders
         // World layout in units (camera at the origin, 128 px per unit, 1080 px = 8.4375 units tall): reference pixel (x, y)
         // from the bottom-left is ((x - 960) / 128, (y - 540) / 128).
         private const float GroundY = (600f - 540f) / 128f;
-        private static readonly Vector3 HeroSpot = new Vector3((1730f - 960f) / 128f, GroundY, 0f);
-        private static readonly Vector3 MonsterSpot = new Vector3((1450f - 960f) / 128f, GroundY, 0f);
+        private static readonly Vector3 HeroSpot = new Vector3((1570f - 960f) / 128f, GroundY, 0f);
+        private static readonly Vector3 HealerSpot = new Vector3((1790f - 960f) / 128f, GroundY, 0f);
+        private static readonly Vector3 MonsterSpot = new Vector3((1310f - 960f) / 128f, GroundY, 0f);
         private static readonly Vector3 MonsterEntry = new Vector3(0f, GroundY, 0f);
-        private static readonly Vector3 HealerSpot = new Vector3((HealerX - 960f) / 128f, (130f - 540f) / 128f, 0f);
 
         /// <summary>Pause menu buttons, top to bottom: child name, sprite, label key.</summary>
         private static readonly (string name, string sprite, string key)[] PauseButtons =
@@ -127,7 +125,7 @@ namespace Game.Editor.Builders
             BuildUtility.SavePrefab(root, BuildPaths.PopupResult);
         }
 
-        // Screen host and run controller on Screen; HUD in Header; board, items, magic bar and banner in Body; templates.
+        // Screen host and run controller on Screen; HUD in Header; board, items and banner in Body; templates.
         // No full-screen background: the battlefield and the camp are world art drawn by the camera behind the canvas.
         internal static void BuildCanvas()
         {
@@ -147,11 +145,10 @@ namespace Game.Editor.Builders
             Component enemy = BuildEnemyBar(parts.Header);
             Component board = BuildBoard(parts);
             Component items = BuildItemBar(parts.Body);
-            Component magic = BuildMagicBar(parts.Body);
             Component banner = BuildBanner(parts.Body);
 
             Fields.Set(run, ("_screen", screen), ("_config", config), ("_board", board), ("_hud", hud), ("_enemyBar", enemy), ("_items", items),
-                ("_magicBar", magic), ("_banner", banner), ("_comboKey", "gameplay.showcase.combo"),
+                ("_banner", banner), ("_comboKey", "gameplay.showcase.combo"),
                 ("_boughtKey", "gameplay.item.bought"), ("_noCoinsKey", "gameplay.item.no-coins"),
                 ("_cannotUseKey", "gameplay.item.cannot-use"), ("_pickTargetKey", "gameplay.item.pick-target"));
             BuildUtility.SavePrefab(canvas.gameObject, BuildPaths.GameplayCanvas);
@@ -201,8 +198,8 @@ namespace Game.Editor.Builders
             return bar;
         }
 
-        // Frame with the gem area (clipped) and the selection frame; the mask and the targeting frame are siblings above it,
-        // so their raycasts never reach the board's pointer handlers. Cell and gem templates are inactive.
+        // Frame with the gem area (clipped) and the selection frame; the targeting frame is a sibling above it, so its raycasts
+        // never reach the board's pointer handlers. Cell and gem templates are inactive.
         private static Component BuildBoard(ScreenParts parts)
         {
             float frameSide = BoardSide + 2f * FramePadding;
@@ -226,24 +223,17 @@ namespace Game.Editor.Builders
             gem.raycastTarget = false;
             gem.preserveAspect = true;
 
-            RectTransform maskRect = UiFactory.Rect("BoardMask", parts.Body)
-                .Place(UiFactory.BottomLeft, BoardCenter, new Vector2(BoardSide, BoardSide), UiFactory.Center);
-            UiFactory.AddImage(maskRect, BuildUtility.Sprite("screens/gameplay/board-mask"));
-            var mask = maskRect.gameObject.AddComponent<CanvasGroup>();
-            mask.alpha = 0f;
-            mask.blocksRaycasts = false;
-
             RectTransform hint = UiFactory.Rect("TargetHint", parts.Body)
                 .Place(UiFactory.BottomLeft, BoardCenter, new Vector2(BoardSide + 24f, BoardSide + 24f), UiFactory.Center);
             UiFactory.AddImage(hint, BuildUtility.Sprite("ui-common/focus-frame")).raycastTarget = false;
             hint.gameObject.SetActive(false);
 
-            Fields.Set(board, ("_area", area), ("_cellTemplate", cell), ("_gemTemplate", gem), ("_selection", selection), ("_mask", mask),
+            Fields.Set(board, ("_area", area), ("_cellTemplate", cell), ("_gemTemplate", gem), ("_selection", selection),
                 ("_targetHint", hint.gameObject));
             return board;
         }
 
-        // One slot per item key, left to right, at the bottom of the right half (the healer stands to their right).
+        // One slot per item key, left to right, alone in the bottom of the right half (the supports).
         private static Component BuildItemBar(RectTransform body)
         {
             const int slots = 4;
@@ -257,7 +247,7 @@ namespace Game.Editor.Builders
                 float x = i * SlotSpacing - SlotSpacing * (slots - 1) * 0.5f;
                 RectTransform slot = UiFactory.Rect($"ItemSlot{i + 1}", column).Place(UiFactory.Center, new Vector2(x, 0f), new Vector2(SlotSize, SlotSize));
                 Button button = UiFactory.AddButton(slot, BuildUtility.Sprite("screens/gameplay/item-slot"));
-                Image icon = UiFactory.AddImage(UiFactory.Rect("Icon", slot).Place(UiFactory.Center, Vector2.zero, new Vector2(96f, 96f)),
+                Image icon = UiFactory.AddImage(UiFactory.Rect("Icon", slot).Place(UiFactory.Center, Vector2.zero, new Vector2(124f, 124f)),
                     BuildUtility.Sprite("screens/gameplay/item-potion"));
                 icon.raycastTarget = false;
                 icon.preserveAspect = true;
@@ -284,26 +274,6 @@ namespace Game.Editor.Builders
             return bar;
         }
 
-        // Under the healer (bottom right): caption and bar.
-        private static Component BuildMagicBar(RectTransform body)
-        {
-            RectTransform root = UiFactory.Rect("MagicBar", body)
-                .Place(UiFactory.BottomLeft, new Vector2(HealerX, 62f), new Vector2(300f, 100f), UiFactory.Center);
-            TextMeshProUGUI caption = UiFactory.AddText(UiFactory.Rect("MagicLabel", root).TopStretch(0f, 44f), string.Empty, 34f,
-                Palette.White).Localize("gameplay.hud.magic");
-            caption.raycastTarget = false;
-            Outlined(caption);
-            RectTransform track = UiFactory.Rect("Track", root).BottomStretch(0f, 44f);
-            UiFactory.AddImage(track, BuildUtility.Sprite("screens/gameplay/bar-track")).raycastTarget = false;
-            RectTransform fill = UiFactory.Rect("Fill", track).Stretch(4f, 4f, 4f, 4f);
-            UiFactory.AddImage(fill, BuildUtility.Sprite("screens/gameplay/bar-fill-magic")).raycastTarget = false;
-            fill.pivot = new Vector2(0f, 0.5f);
-            Component bar = root.gameObject.AddComponent(GameTypes.UiBar);
-            Fields.Set(bar, ("_fill", fill));
-            return bar;
-        }
-
-        // Over the middle of the board: gem icon, caption, combo caption.
         private static Component BuildBanner(RectTransform body)
         {
             RectTransform root = UiFactory.Rect("ShowcaseBanner", body)
@@ -328,8 +298,9 @@ namespace Game.Editor.Builders
         }
 
         /// <summary>
-        /// The world part of the gameplay scene: the backdrops under the UI (board, camp) and the healer stay still; the stage
-        /// (battlefield art, the hero facing left, two monster views, spots, numbers and bursts) is what screen shake moves.
+        /// The world part of the gameplay scene: the backdrops under the UI (board, camp) stay still; the stage (battlefield
+        /// art, the hero facing left with the healer behind it and its magic bar over its head, two monster views, spots,
+        /// numbers and bursts) is what screen shake moves.
         /// The battlefield art bleeds under the still backdrops and past the screen edge, so a shake shows no edge.
         /// </summary>
         internal static void BuildBattlefield()
@@ -340,12 +311,12 @@ namespace Game.Editor.Builders
             Transform environment = WorldFactory.Child("Environment", root.transform).transform;
             Backdrop(environment, "BoardBackdrop", "game/props/board-backdrop", new Vector3(-3.75f, 0f, 0f), -18);
             Backdrop(environment, "Camp", "game/props/camp", new Vector3(3.75f, (280f - 540f) / 128f, 0f), -18);
-            Component healer = Character(root.transform, "Healer", HealerSpot, true, false, 2, bars: false);
 
             Transform stage = WorldFactory.Child("Stage", root.transform).transform;
             Backdrop(stage, "Battlefield", "game/props/battlefield", new Vector3(3.75f, (820f - 540f) / 128f, 0f), -19);
             Transform characters = WorldFactory.Child("Characters", stage).transform;
             Component hero = Character(characters, "Hero", HeroSpot, true, true, 2);
+            Component healer = Character(characters, "Healer", HealerSpot, true, false, 1, "game/props/magic-bar-fill");
             var monsters = new Object[]
             {
                 Character(characters, "Monster1", MonsterEntry, false, false, 1),
@@ -379,9 +350,9 @@ namespace Game.Editor.Builders
             BuildUtility.SavePrefab(root, BuildPaths.Battlefield);
         }
 
-        // A character root at its feet: Body (sprite and animator), and bars over the head.
+        // A character root at its feet: Body (sprite and animator), and bars over the head (health, or the healer's magic).
         private static Component Character(Transform parent, string name, Vector3 position, bool faceLeft, bool armor, int order,
-            bool bars = true)
+            string fill = null)
         {
             GameObject root = WorldFactory.Child(name, parent, position);
             GameObject body = WorldFactory.Child("Body", root.transform);
@@ -389,7 +360,8 @@ namespace Game.Editor.Builders
             renderer.sortingOrder = order;
             var animator = body.AddComponent<Animator>();
             Component view = root.AddComponent(GameTypes.CharacterView);
-            Component health = bars ? Bar(root.transform, "HealthBar", faceLeft ? "game/props/hp-bar-fill" : "game/props/hp-bar-fill-enemy", 1.05f) : null;
+            fill = fill ?? (faceLeft ? "game/props/hp-bar-fill" : "game/props/hp-bar-fill-enemy");
+            Component health = Bar(root.transform, "HealthBar", fill, 1.05f);
             Component armorBar = armor ? Bar(root.transform, "ArmorBar", "game/props/armor-bar-fill", 1.05f, overlay: true) : null;
             Fields.Set(view, ("_body", renderer), ("_animator", animator), ("_health", health), ("_armor", armorBar),
                 ("_faceLeft", faceLeft));

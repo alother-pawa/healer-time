@@ -7,7 +7,7 @@ namespace Game.Systems.Gameplay
     /// bars. Action animations (attack, hurt, cast) go back to idle when they end; death stays on its last frame. The
     /// character faces right unless <c>_faceLeft</c> (the hero stands on the right). Bars sit just above the frame.
     /// REFERENCES: <c>_body</c> draws the sheet; <c>_animator</c> plays it; <c>_health</c> and <c>_armor</c> are its bars (the
-    /// armor bar is optional).
+    /// armor bar is optional; the healer's health bar shows its magic).
     /// </summary>
     internal sealed class CharacterView : MonoBehaviour
     {
@@ -29,19 +29,24 @@ namespace Game.Systems.Gameplay
         private string _state = Idle;
         private int _stateHash = Animator.StringToHash(Idle);
         private string _loop = Idle;
-        private bool _barsPlaced;
+        private float _height = 1f;
 
-        /// <summary>Size of the body relative to its sheet (bars keep their size and sit over the head).</summary>
-        internal float Scale => _body.transform.localScale.y;
+        /// <summary>World height of the idle pose over the feet, scale included.</summary>
+        internal float Height => _height;
 
-        /// <summary>The look of a character: animator, tint and scale (1 = sheet size).</summary>
-        internal void Setup(RuntimeAnimatorController controller, Color tint, float scale)
+        /// <summary>
+        /// The look of a character: animator, tint, scale (1 = sheet size) and the idle pose's height at scale 1. Bars sit just
+        /// over the head (not over the frame, which also holds the reach of attacks and spells).
+        /// </summary>
+        internal void Setup(RuntimeAnimatorController controller, Color tint, float scale, float height)
         {
             _animator.runtimeAnimatorController = controller;
             _body.color = tint;
             _body.flipX = _faceLeft;
             _body.transform.localScale = new Vector3(scale, scale, 1f);
-            _barsPlaced = false;
+            _height = height * scale;
+            PlaceBar(_health, _height + BarGap);
+            PlaceBar(_armor, _height + BarGap);
             _loop = Idle;
             Play(Idle);
         }
@@ -121,20 +126,6 @@ namespace Game.Systems.Gameplay
             {
                 _armor.gameObject.SetActive(visible);
             }
-        }
-
-        // Bars sit just above the character's frame (its sprite's top), once the animator has shown a first frame.
-        private void LateUpdate()
-        {
-            if (_barsPlaced || _body.sprite == null)
-            {
-                return;
-            }
-
-            _barsPlaced = true;
-            float top = _body.sprite.bounds.max.y * Scale + BarGap;
-            PlaceBar(_health, top);
-            PlaceBar(_armor, top);
         }
 
         private static void PlaceBar(WorldBar bar, float y)
