@@ -15,7 +15,8 @@ namespace Game.Systems.Gameplay
     /// the Menu cursor policy over the gameplay one, and <c>_resumeAction</c> (<c>Menu/Pause</c>: Escape, Start) resumes
     /// while the menu's scope has owned focus since the previous frame (not while Settings or a dialog is on top, nor in the
     /// frame the Escape that closed one of them arrives); Cancel/Back closes it through the
-    /// desktop popup handler. Hiding by any path reports to the host, so the pause is always released.
+    /// desktop popup handler. Hiding by any path reports to the host, so the pause is always released. A web build has no
+    /// Quit to desktop (the page stays open).
     /// REFERENCES: the four buttons; the root carries the <c>FocusScope</c> (Resume first) and an <c>InputContextRequest</c>
     /// for the Menu context.
     /// </summary>
@@ -46,6 +47,7 @@ namespace Game.Systems.Gameplay
             _settingsButton.onClick.AddListener(() => Forward(host => host.OpenSettings()));
             _quitToMenuButton.onClick.AddListener(() => Forward(host => host.QuitToMenu()));
             _quitToDesktopButton.onClick.AddListener(() => Forward(host => host.QuitToDesktop()));
+            _quitToDesktopButton.gameObject.SetActive(Application.platform != RuntimePlatform.WebGLPlayer);
         }
 
         protected override void OnDestroy()

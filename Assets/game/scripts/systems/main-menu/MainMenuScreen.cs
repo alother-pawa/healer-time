@@ -28,7 +28,8 @@ namespace Game.Systems.MainMenu
     /// <see cref="CharacterPage"/>, sliding in from the right; Back (or Cancel) slides home back in from the left. The open
     /// page is state (<c>_onCharacters</c>): positions are set from it at once with animations off. Cancel on the home
     /// page opens the same Quit question (the screen is a Cancel handler below the UI package's popup handler). While shown
-    /// it requests the Menu cursor policy, plays the menu music and shows Core's <see cref="BuildInfo.DisplayText"/>.
+    /// it requests the Menu cursor policy, plays the menu music and shows Core's <see cref="BuildInfo.DisplayText"/>. A web
+    /// build cannot quit (the page stays open): it has no Quit button and Cancel asks nothing.
     /// REFERENCES: <c>_pages</c> holds both pages (home over its full width, characters one width to the right) and slides
     /// by its anchors; the buttons and labels; <c>_coin</c> is the currency shown; <c>_gameplayScene</c> is the scene Play
     /// opens; <c>_music</c> and <c>_swipe</c> are sounds; the <c>*Key</c> fields are the texts of the Quit question.
@@ -74,6 +75,8 @@ namespace Game.Systems.MainMenu
 
         int IUICancelHandler.Priority => QuitCancelPriority;
 
+        private static bool CanQuit => Application.platform != RuntimePlatform.WebGLPlayer;
+
         bool IUICancelHandler.TryCancel()
         {
             if (_onCharacters)
@@ -84,7 +87,7 @@ namespace Game.Systems.MainMenu
 
             // Without the dialog a stray Escape must never quit (only the Quit button does then); while a Quit confirmation
             // is still being answered the press is not ours.
-            if (_confirmingQuit || !CoreServiceLocator.IsRegistered<IConfirmDialog>())
+            if (_confirmingQuit || !CanQuit || !CoreServiceLocator.IsRegistered<IConfirmDialog>())
             {
                 return false;
             }
@@ -108,6 +111,7 @@ namespace Game.Systems.MainMenu
             _backButton.onClick.AddListener(() => ShowPage(false));
             _settingsButton.onClick.AddListener(OpenSettings);
             _quitButton.onClick.AddListener(() => _ = QuitAsync());
+            _quitButton.gameObject.SetActive(CanQuit);
             if (_roster != null)
             {
                 _characters.Init(_roster);

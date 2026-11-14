@@ -356,7 +356,7 @@ for csv_path in GAME.rglob("Localization/*.csv"):
         view_ids.update(re.findall(r'(?:Toggle|Slider|Choice|Button|Binding)\(\w+,\s*"\w+",\s*"([\w.-]+)"', texts[path]))
         builder_keys.update(k for k in re.findall(r'"([a-z][a-z0-9.-]*)"', texts[path]) if KEY_SHAPE.match(k))
     for key in sorted(builder_keys - view_ids - set(keys)):
-        if not re.search(r"\.(asset|prefab|unity|png|csv)$|^(game|paowa|com)\.", key):
+        if not re.search(r"\.(asset|prefab|unity|png|csv|html)$|^(game|paowa|com)\.", key):
             problem(f"builder string {key} looks like a localization key but is not in {csv_path.name}")
 
 # 9. Input actions.

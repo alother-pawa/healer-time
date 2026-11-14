@@ -12,7 +12,8 @@ namespace Game.Editor.Builders
     /// (<see cref="AtlasBuilder"/>), animation clips of the sprite sheets (<see cref="AnimationBuilder"/>), sound import from
     /// the sound spec (<see cref="AudioImport"/>),
     /// the Japanese fallback font, Player Settings of a desktop
-    /// game (identity, borderless fullscreen, resizable window, single instance, no Unity splash screen) and the Build
+    /// game (identity, borderless fullscreen, resizable window, single instance, no Unity splash screen; for the web build
+    /// gzip with decompression fallback and a 16:9 canvas) and the Build
     /// Settings scene list. Active Input Handling and the render pipeline are not scriptable; this step only reports
     /// when Active Input Handling is not "Input System Package (New)".
     /// </summary>
@@ -67,6 +68,13 @@ namespace Game.Editor.Builders
             PlayerSettings.visibleInBackground = true;
             PlayerSettings.runInBackground = false;
             PlayerSettings.forceSingleInstance = true;
+
+            // Web (itch.io): gzip files that the loader can unpack itself, so a host that sends no Content-Encoding header
+            // still serves them; a 16:9 canvas.
+            PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
+            PlayerSettings.WebGL.decompressionFallback = true;
+            PlayerSettings.defaultWebScreenWidth = 1280;
+            PlayerSettings.defaultWebScreenHeight = 720;
 
             PlayerSettings.SplashScreen.show = false;
             PlayerSettings.SplashScreen.showUnityLogo = false;

@@ -12,14 +12,17 @@ using Debug = UnityEngine.Debug;
 namespace Game.Editor.Builders
 {
     /// <summary>
-    /// Player builds: menu <c>Game › Build › Windows (Development | Release)</c> and the command line entry
-    /// <see cref="BuildFromCommandLine"/>. The project must already be built (<c>Game › Build All</c>): the enabled Build
+    /// Player builds for Windows (Steam) and the web (itch.io): menu <c>Game › Build › Windows | Web (Development | Release)</c>
+    /// and the command line entry <see cref="BuildFromCommandLine"/> (platform = the active build target, set by
+    /// <c>-buildTarget</c>). The project must already be built (<c>Game › Build All</c>): the enabled Build
     /// Settings scenes must exist and start with Boot. Before <c>BuildPipeline.BuildPlayer</c> the build stamp
     /// <c>Resources/Paowa/BuildInfo</c> is written (build number from <c>BUILD_NUMBER</c> or a local counter in
     /// <c>Library/</c>, commit from <c>git rev-parse --short HEAD</c>, UTC date); it is removed (or its earlier text put
-    /// back) after the build, success or not. The version is <c>PlayerSettings.bundleVersion</c>. Output:
-    /// <c>Builds/Windows/&lt;Development|Release&gt;/&lt;Product&gt;.exe</c> unless <c>-output</c> says otherwise. In batch
-    /// mode the editor exits with 0 on success and 1 on any failure.
+    /// back) after the build, success or not. The version is <c>PlayerSettings.bundleVersion</c>. Output, unless
+    /// <c>-output</c> says otherwise: <c>Builds/Windows/&lt;Development|Release&gt;/&lt;Product&gt;.exe</c>, or the folder
+    /// <c>Builds/Web/&lt;Development|Release&gt;</c> holding <c>index.html</c> (its loader syncs <c>persistentDataPath</c> to
+    /// the browser's storage after every write, so saves survive a reload). In batch mode the editor exits with 0 on
+    /// success and 1 on any failure.
     /// </summary>
     public static class BuildPipelineMenu
     {
@@ -28,21 +31,36 @@ namespace Game.Editor.Builders
         private const string CounterPath = "Library/Game/BuildNumber.txt";
         private const int GitTimeoutMilliseconds = 5000;
 
+        private const string WebConfigStart = "var config = {";
+        private const string WebAutoSync = "autoSyncPersistentDataPath: true,";
+
         [MenuItem(Menu + "Windows (Development)", priority = 40)]
         private static void BuildDevelopmentMenu()
         {
-            BuildFromMenu(true);
+            BuildFromMenu(true, false);
         }
 
         [MenuItem(Menu + "Windows (Release)", priority = 41)]
         private static void BuildReleaseMenu()
         {
-            BuildFromMenu(false);
+            BuildFromMenu(false, false);
+        }
+
+        [MenuItem(Menu + "Web (Development)", priority = 42)]
+        private static void BuildWebDevelopmentMenu()
+        {
+            BuildFromMenu(true, true);
+        }
+
+        [MenuItem(Menu + "Web (Release)", priority = 43)]
+        private static void BuildWebReleaseMenu()
+        {
+            BuildFromMenu(false, true);
         }
 
         /// <summary>
         /// Command line entry:
-        /// <c>Unity -batchmode -nographics -projectPath . -buildTarget Win64 -executeMethod
+        /// <c>Unity -batchmode -nographics -projectPath . -buildTarget Win64|WebGL -executeMethod
         /// Game.Editor.Builders.BuildPipelineMenu.BuildFromCommandLine -release|-development [-output &lt;dir&gt;] -logFile build.log</c>.
         /// </summary>
         public static void BuildFromCommandLine()
@@ -57,7 +75,8 @@ namespace Game.Editor.Builders
                 }
                 else
                 {
-                    succeeded = Build(options.Development, options.OutputDirectory, out _);
+                    bool web = EditorUserBuildSettings.activeBuildTarget == BuildTarget.WebGL;
+                    succeeded = Build(options.Development, web, options.OutputDirectory, out _);
                 }
             }
             catch (Exception exception)
@@ -71,7 +90,7 @@ namespace Game.Editor.Builders
             }
         }
 
-        private static void BuildFromMenu(bool development)
+        private static void BuildFromMenu(bool development, bool web)
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling)
             {
@@ -84,7 +103,7 @@ namespace Game.Editor.Builders
                 return;
             }
 
-            if (Build(development, null, out string executable))
+            if (Build(development, web, null, out string executable))
             {
                 EditorUtility.RevealInFinder(executable);
             }
@@ -94,12 +113,14 @@ namespace Game.Editor.Builders
             }
         }
 
-        /// <summary>Builds the Windows player; returns false (logged) on any failure.</summary>
-        private static bool Build(bool development, string outputDirectory, out string executable)
+        /// <summary>Builds the Windows or web player; returns false (logged) on any failure.</summary>
+        private static bool Build(bool development, bool web, string outputDirectory, out string executable)
         {
             string config = development ? "Development" : "Release";
-            string folder = string.IsNullOrEmpty(outputDirectory) ? Path.Combine("Builds", "Windows", config) : outputDirectory;
-            executable = Path.Combine(folder, PlayerSettings.productName + ".exe");
+            string folder = string.IsNullOrEmpty(outputDirectory)
+                ? Path.Combine("Builds", web ? "Web" : "Windows", config)
+                : outputDirectory;
+            executable = web ? folder : Path.Combine(folder, PlayerSettings.productName + ".exe");
 
             string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(scene => scene.path).ToArray();
             string invalid = ValidateScenes(scenes);
@@ -127,8 +148,8 @@ namespace Game.Editor.Builders
                 {
                     scenes = scenes,
                     locationPathName = executable,
-                    target = BuildTarget.StandaloneWindows64,
-                    targetGroup = BuildTargetGroup.Standalone,
+                    target = web ? BuildTarget.WebGL : BuildTarget.StandaloneWindows64,
+                    targetGroup = web ? BuildTargetGroup.WebGL : BuildTargetGroup.Standalone,
                     options = development ? BuildOptions.Development : BuildOptions.None,
                 };
                 Debug.Log(LogPrefix + $"Building {logLine} ({config}) to {executable}");
@@ -137,6 +158,11 @@ namespace Game.Editor.Builders
                 if (summary.result != BuildResult.Succeeded)
                 {
                     Debug.LogError(LogPrefix + $"Build {summary.result}: {summary.totalErrors} error(s). {logLine}");
+                    return false;
+                }
+
+                if (web && !EnableWebAutoSync(Path.Combine(folder, "index.html")))
+                {
                     return false;
                 }
 
@@ -151,7 +177,29 @@ namespace Game.Editor.Builders
             }
         }
 
-        // Enabled scenes exist and Boot comes first (it loads the UI scene and the splash).
+        // The web loader keeps files written under persistentDataPath only in memory unless it syncs them to the browser's
+        // storage; the default template does not ask for that, so the setting goes into its loader config.
+        private static bool EnableWebAutoSync(string indexPath)
+        {
+            string html = File.Exists(indexPath) ? File.ReadAllText(indexPath) : string.Empty;
+            if (html.Contains(WebAutoSync))
+            {
+                return true;
+            }
+
+            int at = html.IndexOf(WebConfigStart, StringComparison.Ordinal);
+            if (at < 0)
+            {
+                Debug.LogError(LogPrefix + $"Build: no '{WebConfigStart}' in {indexPath}; saves would not survive a reload.");
+                return false;
+            }
+
+            at += WebConfigStart.Length;
+            File.WriteAllText(indexPath, html.Substring(0, at) + "\n        " + WebAutoSync + html.Substring(at));
+            return true;
+        }
+
+        // Enabled scenes exist and Boot comes first (it loads the UI scene, then the first screen).
         private static string ValidateScenes(string[] scenes)
         {
             if (scenes.Length == 0)
