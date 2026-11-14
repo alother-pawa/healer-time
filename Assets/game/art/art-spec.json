@@ -63,13 +63,13 @@
     },
     {
       "path": "ui-common/popup-background",
-      "width": 136,
-      "height": 136,
+      "width": 284,
+      "height": 268,
       "border": [
-        32,
-        32,
-        32,
-        32
+        44,
+        44,
+        44,
+        44
       ],
       "pivot": [
         0.5,
@@ -123,13 +123,13 @@
     },
     {
       "path": "ui-common/panel-wood",
-      "width": 264,
-      "height": 148,
+      "width": 135,
+      "height": 87,
       "border": [
-        32,
-        32,
-        32,
-        32
+        24,
+        24,
+        24,
+        24
       ],
       "pivot": [
         0.5,
@@ -408,8 +408,8 @@
     },
     {
       "path": "screens/gameplay/gem-attack",
-      "width": 64,
-      "height": 64,
+      "width": 96,
+      "height": 96,
       "border": [
         0,
         0,
@@ -423,8 +423,8 @@
     },
     {
       "path": "screens/gameplay/gem-heal",
-      "width": 64,
-      "height": 64,
+      "width": 96,
+      "height": 96,
       "border": [
         0,
         0,
@@ -438,8 +438,8 @@
     },
     {
       "path": "screens/gameplay/gem-defense",
-      "width": 64,
-      "height": 64,
+      "width": 96,
+      "height": 96,
       "border": [
         0,
         0,
@@ -453,8 +453,8 @@
     },
     {
       "path": "screens/gameplay/gem-magic",
-      "width": 64,
-      "height": 64,
+      "width": 96,
+      "height": 96,
       "border": [
         0,
         0,
@@ -498,13 +498,13 @@
     },
     {
       "path": "screens/gameplay/board-frame",
-      "width": 358,
-      "height": 132,
+      "width": 284,
+      "height": 268,
       "border": [
-        24,
-        24,
-        24,
-        24
+        44,
+        44,
+        44,
+        44
       ],
       "pivot": [
         0.5,
@@ -543,8 +543,8 @@
     },
     {
       "path": "screens/gameplay/item-potion",
-      "width": 64,
-      "height": 64,
+      "width": 96,
+      "height": 96,
       "border": [
         0,
         0,
@@ -558,8 +558,8 @@
     },
     {
       "path": "screens/gameplay/item-bomb",
-      "width": 64,
-      "height": 64,
+      "width": 96,
+      "height": 96,
       "border": [
         0,
         0,
@@ -573,8 +573,8 @@
     },
     {
       "path": "screens/gameplay/item-shuffle",
-      "width": 64,
-      "height": 64,
+      "width": 96,
+      "height": 96,
       "border": [
         0,
         0,
@@ -588,8 +588,8 @@
     },
     {
       "path": "screens/gameplay/item-armor",
-      "width": 64,
-      "height": 64,
+      "width": 96,
+      "height": 96,
       "border": [
         0,
         0,
@@ -603,8 +603,8 @@
     },
     {
       "path": "screens/gameplay/icon-plus",
-      "width": 48,
-      "height": 48,
+      "width": 56,
+      "height": 56,
       "border": [
         0,
         0,
@@ -617,9 +617,9 @@
       ]
     },
     {
-      "path": "screens/gameplay/icon-pause",
-      "width": 48,
-      "height": 54,
+      "path": "screens/gameplay/button-pause",
+      "width": 84,
+      "height": 84,
       "border": [
         0,
         0,
@@ -662,9 +662,39 @@
       ]
     },
     {
+      "path": "screens/gameplay/enemy-bar-empty",
+      "width": 448,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "screens/gameplay/enemy-bar-full",
+      "width": 448,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
       "path": "game/props/battlefield",
-      "width": 1920,
-      "height": 448,
+      "width": 960,
+      "height": 520,
       "border": [
         0,
         0,
@@ -678,8 +708,23 @@
     },
     {
       "path": "game/props/camp",
-      "width": 1920,
-      "height": 704,
+      "width": 960,
+      "height": 560,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "path": "game/props/board-backdrop",
+      "width": 960,
+      "height": 1080,
       "border": [
         0,
         0,
@@ -813,8 +858,8 @@
     },
     {
       "path": "game/effects/fx-magic-orb",
-      "width": 96,
-      "height": 96,
+      "width": 150,
+      "height": 150,
       "border": [
         0,
         0,
@@ -1414,24 +1459,26 @@
   ],
   "sheets": [
     {
-      "path": "game/characters/soldier/soldier",
-      "frameWidth": 336,
-      "frameHeight": 264,
+      "path": "game/characters/martial-hero/martial-hero",
+      "frameWidth": 132,
+      "frameHeight": 73,
       "pivot": [
-        0.4375,
-        0.25
+        0.2311,
+        0.0274
       ],
+      "pixelsPerUnit": 32.0,
+      "point": true,
       "tags": [
         {
           "name": "idle",
-          "frames": 6,
-          "frameMs": 100,
+          "frames": 8,
+          "frameMs": 90,
           "loop": true
         },
         {
-          "name": "walk",
+          "name": "run",
           "frames": 8,
-          "frameMs": 90,
+          "frameMs": 80,
           "loop": true
         },
         {
@@ -1454,84 +1501,475 @@
         },
         {
           "name": "death",
-          "frames": 4,
-          "frameMs": 140,
+          "frames": 6,
+          "frameMs": 110,
           "loop": false
         }
       ]
     },
     {
-      "path": "game/characters/orc/orc",
-      "frameWidth": 336,
-      "frameHeight": 264,
+      "path": "game/characters/fantasy-warrior/fantasy-warrior",
+      "frameWidth": 141,
+      "frameHeight": 103,
       "pivot": [
-        0.4375,
-        0.25
+        0.4362,
+        0.0194
       ],
+      "pixelsPerUnit": 32.0,
+      "point": true,
       "tags": [
         {
           "name": "idle",
-          "frames": 6,
-          "frameMs": 100,
-          "loop": true
-        },
-        {
-          "name": "walk",
-          "frames": 8,
+          "frames": 10,
           "frameMs": 90,
           "loop": true
         },
         {
-          "name": "attack",
-          "frames": 6,
+          "name": "run",
+          "frames": 8,
           "frameMs": 80,
+          "loop": true
+        },
+        {
+          "name": "attack",
+          "frames": 7,
+          "frameMs": 70,
           "loop": false
         },
         {
           "name": "attack-heavy",
-          "frames": 6,
-          "frameMs": 80,
-          "loop": false
-        },
-        {
-          "name": "hurt",
-          "frames": 4,
-          "frameMs": 80,
-          "loop": false
-        },
-        {
-          "name": "death",
-          "frames": 4,
-          "frameMs": 140,
-          "loop": false
-        }
-      ]
-    },
-    {
-      "path": "game/characters/healer/healer",
-      "frameWidth": 128,
-      "frameHeight": 192,
-      "pivot": [
-        0.5,
-        0.0
-      ],
-      "tags": [
-        {
-          "name": "idle",
-          "frames": 4,
-          "frameMs": 160,
-          "loop": true
-        },
-        {
-          "name": "cast",
-          "frames": 6,
-          "frameMs": 80,
+          "frames": 8,
+          "frameMs": 70,
           "loop": false
         },
         {
           "name": "hurt",
           "frames": 3,
           "frameMs": 80,
+          "loop": false
+        },
+        {
+          "name": "death",
+          "frames": 7,
+          "frameMs": 110,
+          "loop": false
+        }
+      ]
+    },
+    {
+      "path": "game/characters/hero-knight/hero-knight",
+      "frameWidth": 135,
+      "frameHeight": 85,
+      "pivot": [
+        0.3815,
+        0.0353
+      ],
+      "pixelsPerUnit": 32.0,
+      "point": true,
+      "tags": [
+        {
+          "name": "idle",
+          "frames": 11,
+          "frameMs": 90,
+          "loop": true
+        },
+        {
+          "name": "run",
+          "frames": 8,
+          "frameMs": 80,
+          "loop": true
+        },
+        {
+          "name": "attack",
+          "frames": 7,
+          "frameMs": 70,
+          "loop": false
+        },
+        {
+          "name": "attack-heavy",
+          "frames": 7,
+          "frameMs": 70,
+          "loop": false
+        },
+        {
+          "name": "hurt",
+          "frames": 4,
+          "frameMs": 80,
+          "loop": false
+        },
+        {
+          "name": "death",
+          "frames": 11,
+          "frameMs": 110,
+          "loop": false
+        }
+      ]
+    },
+    {
+      "path": "game/characters/huntress/huntress",
+      "frameWidth": 95,
+      "frameHeight": 69,
+      "pivot": [
+        0.4895,
+        0.029
+      ],
+      "pixelsPerUnit": 32.0,
+      "point": true,
+      "tags": [
+        {
+          "name": "idle",
+          "frames": 8,
+          "frameMs": 90,
+          "loop": true
+        },
+        {
+          "name": "run",
+          "frames": 8,
+          "frameMs": 80,
+          "loop": true
+        },
+        {
+          "name": "attack",
+          "frames": 5,
+          "frameMs": 70,
+          "loop": false
+        },
+        {
+          "name": "attack-heavy",
+          "frames": 7,
+          "frameMs": 70,
+          "loop": false
+        },
+        {
+          "name": "hurt",
+          "frames": 3,
+          "frameMs": 80,
+          "loop": false
+        },
+        {
+          "name": "death",
+          "frames": 8,
+          "frameMs": 110,
+          "loop": false
+        }
+      ]
+    },
+    {
+      "path": "game/characters/evil-wizard-2/evil-wizard-2",
+      "frameWidth": 166,
+      "frameHeight": 145,
+      "pivot": [
+        0.3193,
+        0.0138
+      ],
+      "pixelsPerUnit": 42.6667,
+      "point": true,
+      "tags": [
+        {
+          "name": "idle",
+          "frames": 8,
+          "frameMs": 100,
+          "loop": true
+        },
+        {
+          "name": "cast",
+          "frames": 8,
+          "frameMs": 70,
+          "loop": false
+        },
+        {
+          "name": "hurt",
+          "frames": 3,
+          "frameMs": 80,
+          "loop": false
+        }
+      ]
+    },
+    {
+      "path": "game/characters/evil-wizard-3/evil-wizard-3",
+      "frameWidth": 92,
+      "frameHeight": 70,
+      "pivot": [
+        0.2554,
+        0.0286
+      ],
+      "pixelsPerUnit": 21.3333,
+      "point": true,
+      "tags": [
+        {
+          "name": "idle",
+          "frames": 10,
+          "frameMs": 100,
+          "loop": true
+        },
+        {
+          "name": "cast",
+          "frames": 13,
+          "frameMs": 70,
+          "loop": false
+        },
+        {
+          "name": "hurt",
+          "frames": 3,
+          "frameMs": 80,
+          "loop": false
+        }
+      ]
+    },
+    {
+      "path": "game/characters/goblin/goblin",
+      "frameWidth": 92,
+      "frameHeight": 50,
+      "pivot": [
+        0.4837,
+        0.04
+      ],
+      "pixelsPerUnit": 25.6,
+      "point": true,
+      "tags": [
+        {
+          "name": "idle",
+          "frames": 4,
+          "frameMs": 100,
+          "loop": true
+        },
+        {
+          "name": "run",
+          "frames": 8,
+          "frameMs": 80,
+          "loop": true
+        },
+        {
+          "name": "attack",
+          "frames": 8,
+          "frameMs": 75,
+          "loop": false
+        },
+        {
+          "name": "hurt",
+          "frames": 4,
+          "frameMs": 80,
+          "loop": false
+        },
+        {
+          "name": "death",
+          "frames": 4,
+          "frameMs": 110,
+          "loop": false
+        }
+      ]
+    },
+    {
+      "path": "game/characters/skeleton/skeleton",
+      "frameWidth": 102,
+      "frameHeight": 63,
+      "pivot": [
+        0.299,
+        0.0635
+      ],
+      "pixelsPerUnit": 32.0,
+      "point": true,
+      "tags": [
+        {
+          "name": "idle",
+          "frames": 4,
+          "frameMs": 100,
+          "loop": true
+        },
+        {
+          "name": "run",
+          "frames": 4,
+          "frameMs": 80,
+          "loop": true
+        },
+        {
+          "name": "attack",
+          "frames": 8,
+          "frameMs": 75,
+          "loop": false
+        },
+        {
+          "name": "hurt",
+          "frames": 4,
+          "frameMs": 80,
+          "loop": false
+        },
+        {
+          "name": "death",
+          "frames": 4,
+          "frameMs": 110,
+          "loop": false
+        }
+      ]
+    },
+    {
+      "path": "game/characters/mushroom/mushroom",
+      "frameWidth": 75,
+      "frameHeight": 49,
+      "pivot": [
+        0.4333,
+        0.0408
+      ],
+      "pixelsPerUnit": 25.6,
+      "point": true,
+      "tags": [
+        {
+          "name": "idle",
+          "frames": 4,
+          "frameMs": 100,
+          "loop": true
+        },
+        {
+          "name": "run",
+          "frames": 8,
+          "frameMs": 80,
+          "loop": true
+        },
+        {
+          "name": "attack",
+          "frames": 8,
+          "frameMs": 75,
+          "loop": false
+        },
+        {
+          "name": "hurt",
+          "frames": 4,
+          "frameMs": 80,
+          "loop": false
+        },
+        {
+          "name": "death",
+          "frames": 4,
+          "frameMs": 110,
+          "loop": false
+        }
+      ]
+    },
+    {
+      "path": "game/characters/flying-eye/flying-eye",
+      "frameWidth": 60,
+      "frameHeight": 45,
+      "pivot": [
+        0.55,
+        0.2444
+      ],
+      "pixelsPerUnit": 25.6,
+      "point": true,
+      "tags": [
+        {
+          "name": "idle",
+          "frames": 8,
+          "frameMs": 100,
+          "loop": true
+        },
+        {
+          "name": "run",
+          "frames": 8,
+          "frameMs": 80,
+          "loop": true
+        },
+        {
+          "name": "attack",
+          "frames": 8,
+          "frameMs": 75,
+          "loop": false
+        },
+        {
+          "name": "hurt",
+          "frames": 4,
+          "frameMs": 80,
+          "loop": false
+        },
+        {
+          "name": "death",
+          "frames": 4,
+          "frameMs": 110,
+          "loop": false
+        }
+      ]
+    },
+    {
+      "path": "game/characters/fire-worm/fire-worm",
+      "frameWidth": 79,
+      "frameHeight": 58,
+      "pivot": [
+        0.3734,
+        0.0345
+      ],
+      "pixelsPerUnit": 32.0,
+      "point": true,
+      "tags": [
+        {
+          "name": "idle",
+          "frames": 9,
+          "frameMs": 100,
+          "loop": true
+        },
+        {
+          "name": "run",
+          "frames": 9,
+          "frameMs": 80,
+          "loop": true
+        },
+        {
+          "name": "attack",
+          "frames": 16,
+          "frameMs": 75,
+          "loop": false
+        },
+        {
+          "name": "hurt",
+          "frames": 3,
+          "frameMs": 80,
+          "loop": false
+        },
+        {
+          "name": "death",
+          "frames": 8,
+          "frameMs": 110,
+          "loop": false
+        }
+      ]
+    },
+    {
+      "path": "game/characters/fallen-king/fallen-king",
+      "frameWidth": 114,
+      "frameHeight": 72,
+      "pivot": [
+        0.3333,
+        0.0278
+      ],
+      "pixelsPerUnit": 25.6,
+      "point": true,
+      "tags": [
+        {
+          "name": "idle",
+          "frames": 8,
+          "frameMs": 90,
+          "loop": true
+        },
+        {
+          "name": "run",
+          "frames": 8,
+          "frameMs": 80,
+          "loop": true
+        },
+        {
+          "name": "attack",
+          "frames": 4,
+          "frameMs": 75,
+          "loop": false
+        },
+        {
+          "name": "hurt",
+          "frames": 4,
+          "frameMs": 80,
+          "loop": false
+        },
+        {
+          "name": "death",
+          "frames": 6,
+          "frameMs": 110,
           "loop": false
         }
       ]

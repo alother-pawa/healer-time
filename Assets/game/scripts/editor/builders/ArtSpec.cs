@@ -49,6 +49,12 @@ namespace Game.Editor.Builders
         public float[] pivot = { 0.5f, 0f };
         public TagSpec[] tags = Array.Empty<TagSpec>();
 
+        /// <summary>Texture pixels per world unit of this sheet; 0 uses the spec's. Pixel art drawn small uses fewer.</summary>
+        public float pixelsPerUnit;
+
+        /// <summary>Point (nearest) filtering, for pixel art shown larger than its texture.</summary>
+        public bool point;
+
         /// <summary>Widest row in frames.</summary>
         internal int Columns
         {

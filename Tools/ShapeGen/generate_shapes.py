@@ -58,10 +58,10 @@ CHARACTER = "#C9A7F2"
 # Third-party packs (each pack's licence is in its folder; Docs/ART_SPEC.md names the pack of every image).
 COZY = "DEMO_MegaCozyUIPack_doboui - copia/DEMO_MegaCozyUIPack_doboui - copia"
 RAVEN = "Free - Raven Fantasy Icons/Free - Raven Fantasy Icons/Full Spritesheet/32x32.png"
-TINY_RPG = ("Tiny RPG Character Asset Pack v1.03b -Free Soldier&Orc/Tiny RPG Character Asset Pack v1.03 -Free Soldier&Orc/"
-            "Characters(100x100)")
+FANTASY_UI = "FantasyUIfree/FantasyUIfree"
+CHARACTERS = "character-for-healer-time"
 PACK_NAMES = {COZY: "Mega Cozy UI Pack (dobo_ui, bản demo)", RAVEN: "Raven Fantasy Icons (Clockwork Raven)",
-              TINY_RPG: "Tiny RPG Character Pack (Soldier & Orc)"}
+              FANTASY_UI: "Fantasy UI free", CHARACTERS: "character-for-healer-time (LuizMelo, CC0)"}
 
 
 @dataclass(frozen=True)
@@ -70,11 +70,13 @@ class Art:
     pack: str
     file: str = ""
     cell: tuple = None          # Raven icon (row, column) on the 32 px sheet
+    box: tuple = None           # (left, top, right, bottom) taken from the file
     scale: int = 1
     hue: int = 0
     clear_inset: int = 0        # >0: pixels this far inside the edge become transparent (a frame from a filled box)
-    rows: tuple = ()            # sheets: source rows of a character sheet, in tag order
-    crop: tuple = None          # sheets: (left, top, right, bottom) inside each 100x100 source cell
+    strips: tuple = ()          # sheets: one animation strip file per tag (frames left to right), in tag order
+    frame_width: int = 0        # sheets: width of a frame in the strips (0: square frames, as wide as the strip is high)
+    crop: tuple = None          # sheets: (left, top, right, bottom) taken from every frame of the strips
 
 
 @dataclass
@@ -88,7 +90,7 @@ class Sprite:
     pivot: tuple = CENTER
     opacity: float = 1.0
     art: Art = None
-    plain: bool = False   # a flat colour layer that needs no art (dimmers): drawn without its name
+    plain: bool = False   # a flat colour shape that needs no art (dimmers, simple bars): drawn without its name
 
 
 @dataclass
@@ -109,6 +111,8 @@ class Sheet:
     tags: list = field(default_factory=list)
     pivot: tuple = BOTTOM
     art: Art = None
+    ppu: float = 0.0      # texture pixels per world unit of this sheet (0: PIXELS_PER_UNIT); pixel art shown large uses fewer
+    point: bool = False   # nearest filtering (pixel art shown larger than its texture)
 
 
 def units(width, height):
@@ -128,19 +132,77 @@ def raven(row, column, scale, hue=0):
     return Art(RAVEN, cell=(row, column), scale=scale, hue=hue)
 
 
+def fantasy(box, scale, file="freefantasy.png"):
+    return Art(FANTASY_UI, file=file, box=box, scale=scale)
+
+
+def previous_sheet(path):
+    """The sheet's entry in the art spec already written (used when the packs are not on this machine)."""
+    if SPEC_JSON.exists():
+        for sheet in json.loads(SPEC_JSON.read_text(encoding="utf-8")).get("sheets", []):
+            if sheet["path"] == path:
+                return sheet
+    return None
+
+
+def strip_sheet(path, folder, tags, scale, note, colour=CHARACTER, frame_width=0):
+    """
+    A character sheet from a folder of animation strips (one PNG per animation, frames left to right, square unless
+    `frame_width` says otherwise): one row per
+    tag, every frame cut to the box holding the character in every frame of these strips (2 px margin), pivot under the
+    feet of the first tag (idle). Shown `scale` screen pixels per texture pixel (point filtered).
+    tags: (name, strip file without extension, ms per frame, loop).
+    """
+    root = PACKS / CHARACTERS / folder
+    files = tuple(f"{file}.png" for _, file, _, _ in tags)
+    art = Art(CHARACTERS, file=folder, strips=files, frame_width=frame_width)
+    if root.exists():
+        counts, union, idle = [], None, None
+        for index, file in enumerate(files):
+            image = Image.open(root / file).convert("RGBA")
+            side, wide = image.height, frame_width or image.height
+            counts.append(image.width // wide)
+            strip_box = None
+            for column in range(image.width // wide):
+                box = image.crop((column * wide, 0, column * wide + wide, side)).getbbox()
+                if box:
+                    strip_box = box if strip_box is None else (min(strip_box[0], box[0]), min(strip_box[1], box[1]),
+                                                                max(strip_box[2], box[2]), max(strip_box[3], box[3]))
+            if index == 0:
+                # The feet: the opaque columns of the lowest 8 rows of the first idle frame (capes and weapons left out).
+                first = image.crop((0, 0, wide, side))
+                first_box = first.getbbox()
+                feet = first.crop((0, first_box[3] - 8, wide, first_box[3])).getbbox()
+                idle = (feet[0], first_box[1], feet[2], first_box[3])
+            union = strip_box if union is None else (min(union[0], strip_box[0]), min(union[1], strip_box[1]),
+                                                     max(union[2], strip_box[2]), max(union[3], strip_box[3]))
+        left, top = max(0, union[0] - 2), max(0, union[1] - 2)
+        right, bottom = min(wide, union[2] + 2), min(side, union[3] + 2)
+        frame = (right - left, bottom - top)
+        pivot = (round(((idle[0] + idle[2]) / 2 - left) / frame[0], 4), round((bottom - idle[3]) / frame[1], 4))
+        art = Art(CHARACTERS, file=folder, strips=files, frame_width=frame_width, crop=(left, top, right, bottom))
+    else:
+        old = previous_sheet(path)
+        if old is None:
+            raise FileNotFoundError(f"{path}: pack folder {root} missing and no earlier spec entry")
+        counts = [tag["frames"] for tag in old["tags"]]
+        frame = (old["frameWidth"], old["frameHeight"])
+        pivot = tuple(old["pivot"])
+    return Sheet(path, frame, "rounded", colour, note,
+                 tags=[Tag(name, count, ms, loop) for (name, _, ms, loop), count in zip(tags, counts)],
+                 pivot=pivot, art=art, ppu=round(PIXELS_PER_UNIT / scale, 4), point=True)
+
+
 # Sizes are the size the art is drawn at: the size shown at the 1920x1080 reference for pictures, the source size
 # (with its border) for 9-slice frames. Pixel art is scaled by a whole factor, so its declared size is a multiple of the
 # source. Glyphs show at 48 px and are drawn at 64 for sharper downscaling.
 S, BAR, GLYPH = (128, 128), (64, 32), (64, 64)
 PILL, TRIGGER = (64, 40), (64, 48)
 SCREEN = (1920, 1080)
-GEM, ICON = px(64), px(64)
-# Character frames: a 56x44 window of the 100x100 source cells (feet at y 57), six times larger.
-CHARACTER_SCALE = 6
-CHARACTER_CROP = (24, 24, 80, 68)
-CHARACTER_FRAME = ((CHARACTER_CROP[2] - CHARACTER_CROP[0]) * CHARACTER_SCALE, (CHARACTER_CROP[3] - CHARACTER_CROP[1]) * CHARACTER_SCALE)
-CHARACTER_PIVOT = (round((48.5 - CHARACTER_CROP[0]) / (CHARACTER_CROP[2] - CHARACTER_CROP[0]), 4),
-                   round((CHARACTER_CROP[3] - 57) / (CHARACTER_CROP[3] - CHARACTER_CROP[1]), 4))
+GEM, ICON = px(96), px(96)
+HANGING_BOARD = (165, 72, 236, 139)       # the blank hanging board of freefantasy.png, without its chain
+DRAGON_BAR_FULL = (0, 0, 112, 32)         # first and last of the eight states of Dragonhpbar.png
+DRAGON_BAR_EMPTY = (784, 0, 896, 32)
 
 SPRITES = [
     # ui-common: shared UI (several screens).
@@ -151,17 +213,17 @@ SPRITES = [
     Sprite("ui-common/focus-frame", (136, 136), "outline", FOCUS, "Khung quanh control đang chọn (phím/tay cầm)", border=32,
            art=cozy("Frames/Frame1_yellow.png", 4, clear_inset=5)),
     Sprite("ui-common/popup-backdrop", S, "rect", "#000000", "Nền mờ phía sau popup", opacity=0.6, plain=True),
-    Sprite("ui-common/popup-background", (136, 136), "rounded", CREAM, "Khung panel của popup", border=32,
-           art=cozy("Frames/Frame1_wood.png", 4)),
+    Sprite("ui-common/popup-background", (284, 268), "rounded", WOOD, "Khung panel của popup (bảng gỗ)", border=44,
+           art=fantasy(HANGING_BOARD, 4)),
     Sprite("ui-common/popup-header", (424, 84), "rounded", LEAF, "Dải tiêu đề popup (ruy băng)", border=(56, 0, 56, 0),
            art=cozy("Headers/Header1_green.png", 4)),
     Sprite("ui-common/toast-background", (264, 148), "rounded", CREAM, "Nền thông báo nhỏ (toast)", border=32,
            art=cozy("Containers/SimpleColorContainers/SimpleColorContainer1_cream.png", 4)),
     Sprite("ui-common/row-background", (264, 148), "rounded", CREAM, "Nền một hàng danh sách (settings)", border=32,
            art=cozy("Containers/DoubleStripeContainer/DoubleStripeContainer1_cream.png", 4)),
-    Sprite("ui-common/panel-wood", (264, 148), "rounded", WOOD, "Nền ô thông tin (HUD, ví coin)", border=32,
-           art=cozy("Containers/SimpleColorContainers/SimpleColorContainer1_wood.png", 4)),
-    Sprite("ui-common/coin-icon", ICON, "ellipse", FOCUS, "Icon đồng coin", art=raven(8, 2, 2)),
+    Sprite("ui-common/panel-wood", (135, 87), "rounded", WOOD, "Biển gỗ của ô thông tin (HUD, ví coin)", border=24,
+           art=fantasy((138, 2, 183, 31), 3)),
+    Sprite("ui-common/coin-icon", px(64), "ellipse", FOCUS, "Icon đồng coin", art=raven(8, 2, 2)),
     # backgrounds: full screen, never packed.
     Sprite("backgrounds/splash-background", SCREEN, "rect", "#F3DDB3", "Nền splash"),
     Sprite("backgrounds/menu-background", SCREEN, "rect", "#F3DDB3", "Nền Main Menu (đồng cỏ, trời)"),
@@ -169,13 +231,13 @@ SPRITES = [
     # screens/splash
     Sprite("screens/splash/splash-logo", px(320), "rounded", MAGIC, "Logo studio"),
     # screens/loading
-    Sprite("screens/loading/loading-bar-track", BAR, "bar", WOOD_DARK, "Rãnh thanh tiến độ", border=12),
-    Sprite("screens/loading/loading-bar-mask", BAR, "bar", "#FFFFFF", "Mặt nạ bo đầu thanh (không hiện)", border=12),
-    Sprite("screens/loading/loading-bar-fill", S, "rect", LEAF, "Phần đầy của thanh tiến độ"),
+    Sprite("screens/loading/loading-bar-track", BAR, "bar", WOOD_DARK, "Rãnh thanh tiến độ", border=12, plain=True),
+    Sprite("screens/loading/loading-bar-mask", BAR, "bar", "#FFFFFF", "Mặt nạ bo đầu thanh (không hiện)", border=12, plain=True),
+    Sprite("screens/loading/loading-bar-fill", S, "rect", LEAF, "Phần đầy của thanh tiến độ", plain=True),
     # screens/settings
-    Sprite("screens/settings/slider-track", BAR, "bar", WOOD_DARK, "Rãnh thanh trượt", border=12),
-    Sprite("screens/settings/slider-fill", BAR, "bar", "#3A9C8F", "Phần đầy thanh trượt", border=12),
-    Sprite("screens/settings/slider-handle", px(40), "ellipse", LIGHT, "Núm thanh trượt"),
+    Sprite("screens/settings/slider-track", BAR, "bar", WOOD_DARK, "Rãnh thanh trượt", border=12, plain=True),
+    Sprite("screens/settings/slider-fill", BAR, "bar", "#3A9C8F", "Phần đầy thanh trượt", border=12, plain=True),
+    Sprite("screens/settings/slider-handle", px(40), "ellipse", LIGHT, "Núm thanh trượt", plain=True),
     Sprite("screens/settings/stepper-left", (54, 102), "rect", LIGHT, "Mũi tên trái của ô chọn ◄ giá trị ►",
            art=cozy("Arrows/Arrow6_cream.png", 3)),
     Sprite("screens/settings/stepper-right", (54, 102), "rect", LIGHT, "Mũi tên phải của ô chọn ◄ giá trị ►",
@@ -189,44 +251,52 @@ SPRITES = [
            art=cozy("Arrows/Arrow3_wood.png", 3)),
     Sprite("screens/main-menu/arrow-right", (102, 102), "rect", WOOD, "Nút sang trang nhân vật",
            art=cozy("Arrows/Arrow4_wood.png", 3)),
-    Sprite("screens/main-menu/stage", (528, 120), "ellipse", "#7FB548", "Bệ đứng của nhân vật ở menu (bóng cỏ)", opacity=0.8),
+    Sprite("screens/main-menu/stage", (528, 120), "ellipse", "#7FB548", "Bệ đứng của nhân vật ở menu (bóng cỏ)", opacity=0.8,
+           plain=True),
     # screens/gameplay: board, items, bars, HUD.
-    Sprite("screens/gameplay/gem-attack", GEM, "rect", HEALTH, "Gem Attack: đỏ, hình thoi", art=raven(10, 4, 2, hue=140)),
-    Sprite("screens/gameplay/gem-heal", GEM, "ellipse", "#46A758", "Gem Heal: xanh lá, hình tròn", art=raven(10, 6, 2)),
-    Sprite("screens/gameplay/gem-defense", GEM, "rect", ARMOR, "Gem Defense: xanh dương, hình khiên vuông", art=raven(10, 0, 2)),
-    Sprite("screens/gameplay/gem-magic", GEM, "rect", MAGIC, "Gem Magic: tím, hình tam giác (tinh thể nhọn)", art=raven(10, 12, 2)),
+    Sprite("screens/gameplay/gem-attack", GEM, "rect", HEALTH, "Gem Attack: đỏ, hình thoi", art=raven(10, 4, 3, hue=140)),
+    Sprite("screens/gameplay/gem-heal", GEM, "ellipse", "#46A758", "Gem Heal: xanh lá, hình tròn", art=raven(10, 6, 3)),
+    Sprite("screens/gameplay/gem-defense", GEM, "rect", ARMOR, "Gem Defense: xanh dương, hình khiên vuông", art=raven(10, 0, 3)),
+    Sprite("screens/gameplay/gem-magic", GEM, "rect", MAGIC, "Gem Magic: tím, hình tam giác (tinh thể nhọn)", art=raven(10, 12, 3)),
     Sprite("screens/gameplay/board-cell", (66, 66), "rounded", CREAM, "Ô nền của bàn ghép", border=12,
            art=cozy("Inventory/ItemSlots/ItemSlotsDefault/SlotDefaultl1_cream.png", 2)),
     Sprite("screens/gameplay/board-cell-selected", (70, 70), "outline", FOCUS, "Ô đang chọn trên bàn ghép", border=14,
            art=cozy("Inventory/ItemSlots/ItemSlotsSelected/SlotHover1_cream.png", 2)),
-    Sprite("screens/gameplay/board-frame", (358, 132), "outline", WOOD, "Khung gỗ quanh bàn ghép", border=24,
-           art=cozy("Frames/EmptyWoodenFrame.png", 2)),
+    Sprite("screens/gameplay/board-frame", (284, 268), "outline", WOOD, "Khung gỗ quanh bàn ghép (chỉ vẽ viền)", border=44,
+           art=fantasy(HANGING_BOARD, 4)),
     Sprite("screens/gameplay/board-mask", S, "rect", "#000000", "Lớp che bàn ghép khi đang diễn hiệu ứng", opacity=0.7, plain=True),
     Sprite("screens/gameplay/item-slot", (132, 132), "rounded", CREAM, "Ô item", border=24,
            art=cozy("Inventory/ItemSlots/ItemSlotsDefault/SlotDefaultl1_cream.png", 4)),
-    Sprite("screens/gameplay/item-potion", ICON, "rect", HEALTH, "Item bình máu", art=raven(17, 8, 2)),
-    Sprite("screens/gameplay/item-bomb", ICON, "ellipse", PANEL, "Item bom xoá một vùng 3×3", art=raven(47, 11, 2)),
-    Sprite("screens/gameplay/item-shuffle", ICON, "ellipse", ARMOR, "Item xáo trộn bàn", art=raven(49, 1, 2)),
-    Sprite("screens/gameplay/item-armor", ICON, "rect", ARMOR, "Item tăng giáp tức thì", art=raven(53, 7, 2)),
-    Sprite("screens/gameplay/icon-plus", px(48), "rounded", LEAF, "Dấu + trên ô item hết (mua bằng coin)"),
-    Sprite("screens/gameplay/icon-pause", (48, 54), "rect", LIGHT, "Icon nút Pause", art=cozy("Icons/IconsFlat_16px/IconFlat10.png", 3)),
-    Sprite("screens/gameplay/bar-track", BAR, "bar", WOOD_DARK, "Rãnh thanh Magic của healer", border=12),
-    Sprite("screens/gameplay/bar-fill-magic", BAR, "bar", MAGIC, "Phần đầy thanh Magic", border=12),
-    # game: world images. Size from the world size; bars are sliced, characters are sheets (below).
-    Sprite("game/props/battlefield", (1920, 448), "rect", SKY, "Nền chiến trường nhìn ngang (trời, cỏ), mặt đất ở 1/3 dưới",
+    Sprite("screens/gameplay/item-potion", ICON, "rect", HEALTH, "Item bình máu", art=raven(17, 8, 3)),
+    Sprite("screens/gameplay/item-bomb", ICON, "ellipse", PANEL, "Item bom xoá một vùng 3×3", art=raven(47, 11, 3)),
+    Sprite("screens/gameplay/item-shuffle", ICON, "ellipse", ARMOR, "Item xáo trộn bàn", art=raven(49, 1, 3)),
+    Sprite("screens/gameplay/item-armor", ICON, "rect", ARMOR, "Item tăng giáp tức thì", art=raven(53, 7, 3)),
+    Sprite("screens/gameplay/icon-plus", px(56), "rounded", LEAF, "Nút + trên ô item hết (mua bằng coin)",
+           art=fantasy((1, 193, 15, 207), 4)),
+    Sprite("screens/gameplay/button-pause", px(84), "rounded", WOOD, "Nút Pause", art=fantasy((33, 177, 47, 191), 6)),
+    Sprite("screens/gameplay/bar-track", BAR, "bar", WOOD_DARK, "Rãnh thanh Magic của healer", border=12, plain=True),
+    Sprite("screens/gameplay/bar-fill-magic", BAR, "bar", MAGIC, "Phần đầy thanh Magic", border=12, plain=True),
+    Sprite("screens/gameplay/enemy-bar-empty", (448, 128), "bar", WOOD_DARK, "Thanh máu quái trên HUD: khung rỗng",
+           art=fantasy(DRAGON_BAR_EMPTY, 4, file="Dragonhpbar.png")),
+    Sprite("screens/gameplay/enemy-bar-full", (448, 128), "bar", HEALTH, "Thanh máu quái trên HUD: đầy (cắt theo máu còn lại)",
+           art=fantasy(DRAGON_BAR_FULL, 4, file="Dragonhpbar.png")),
+    # game: world images. Backgrounds at their screen size; bars are sliced; characters are sheets (below).
+    Sprite("game/props/battlefield", (960, 520), "rect", SKY, "Nền chiến trường (nửa phải, phía trên), mặt đất cách đáy 40 px",
            pivot=CENTER),
-    Sprite("game/props/camp", (1920, 704), "rect", "#8C5A3C", "Nền phần dưới màn gameplay: trại của healer, sau bàn ghép và item",
+    Sprite("game/props/camp", (960, 560), "rect", "#8C5A3C", "Nền trại của healer (nửa phải, phía dưới: item, healer)",
            pivot=CENTER),
-    Sprite("game/props/hp-bar-track", BAR, "bar", WOOD_DARK, "Rãnh thanh máu trên đầu nhân vật", border=12),
-    Sprite("game/props/hp-bar-fill", BAR, "bar", "#46A758", "Máu của hero", border=12, pivot=(0.0, 0.5)),
-    Sprite("game/props/hp-bar-fill-enemy", BAR, "bar", HEALTH, "Máu của quái", border=12, pivot=(0.0, 0.5)),
-    Sprite("game/props/armor-bar-fill", BAR, "bar", ARMOR, "Giáp ảo của hero (chồng trên thanh máu)", border=12, pivot=(0.0, 0.5)),
+    Sprite("game/props/board-backdrop", (960, 1080), "rect", "#5B3A2B", "Nền sau bàn ghép (nửa trái)", pivot=CENTER),
+    Sprite("game/props/hp-bar-track", BAR, "bar", WOOD_DARK, "Rãnh thanh máu trên đầu nhân vật", border=12, plain=True),
+    Sprite("game/props/hp-bar-fill", BAR, "bar", "#46A758", "Máu của hero", border=12, pivot=(0.0, 0.5), plain=True),
+    Sprite("game/props/hp-bar-fill-enemy", BAR, "bar", HEALTH, "Máu của quái", border=12, pivot=(0.0, 0.5), plain=True),
+    Sprite("game/props/armor-bar-fill", BAR, "bar", ARMOR, "Giáp ảo của hero (chồng trên thanh máu)", border=12, pivot=(0.0, 0.5),
+           plain=True),
     Sprite("game/effects/fx-hit", px(128), "ellipse", "#FF9A3C", "Hiệu ứng trúng đòn", art=raven(47, 14, 4)),
     Sprite("game/effects/fx-heal", px(128), "ellipse", "#46A758", "Hiệu ứng hồi máu", art=raven(48, 12, 4)),
     Sprite("game/effects/fx-shield", px(128), "rect", ARMOR, "Hiệu ứng nhận giáp", art=raven(53, 7, 4)),
     Sprite("game/effects/fx-magic", px(128), "ellipse", MAGIC, "Hiệu ứng phép của healer nổ trên quái", art=raven(48, 5, 4)),
-    Sprite("game/effects/fx-magic-orb", px(96), "ellipse", MAGIC, "Viên phép bay (gem Magic → healer, healer → quái)",
-           art=raven(48, 1, 3)),
+    Sprite("game/effects/fx-magic-orb", px(150), "ellipse", MAGIC, "Viên phép bay (gem Magic → healer, healer → quái)",
+           art=Art(CHARACTERS, file="Evil Wizard 3/Evil Wizard 3/Sprites/Projectile/Moving.png", box=(0, 0, 50, 50), scale=3)),
 ] + [
     # ui-glyphs: button prompts. A glyph with a border is a frame the prompt writes the key or button name on.
     Sprite("ui-glyphs/key", GLYPH, "rounded", PANEL, "Phím bàn phím (chữ phím do prompt viết)", border=16),
@@ -255,19 +325,44 @@ SPRITES = [
     Sprite("ui-glyphs/gamepad-select", PILL, "rounded", "#5B5677", "Nút Select/View", border=16),
 ]
 
+
+def hero(name, folder, heavy, hurt):
+    return strip_sheet(f"game/characters/{name}/{name}", folder,
+                       [("idle", "Idle", 90, True), ("run", "Run", 80, True), ("attack", "Attack1", 70, False),
+                        ("attack-heavy", heavy, 70, False), ("hurt", hurt, 80, False), ("death", "Death", 110, False)],
+                       4, "Hero (quay phải; game lật khi đứng bên phải)", ARMOR)
+
+
+def healer(name, folder, cast, hurt, scale):
+    return strip_sheet(f"game/characters/{name}/{name}", folder,
+                       [("idle", "Idle", 100, True), ("cast", cast, 70, False), ("hurt", hurt, 80, False)],
+                       scale, "Healer (đứng cạnh thanh Magic, quay trái)", CHARACTER)
+
+
+def monster(name, folder, idle, run, hurt, scale, note="Quái (quay phải, đi vào từ trái)"):
+    return strip_sheet(f"game/characters/{name}/{name}", folder,
+                       [("idle", idle, 100, True), ("run", run, 80, True), ("attack", "Attack", 75, False),
+                        ("hurt", hurt, 80, False), ("death", "Death", 110, False)],
+                       scale, note, HEALTH)
+
+
+MONSTERS = "Monsters_Creatures_Fantasy/Monsters_Creatures_Fantasy/"
 SHEETS = [
-    Sheet("game/characters/soldier/soldier", CHARACTER_FRAME, "rounded", ARMOR, "Hero Soldier (quay phải; game lật khi đứng bên phải)",
-          tags=[Tag("idle", 6, 100), Tag("walk", 8, 90), Tag("attack", 6, 70, loop=False), Tag("attack-heavy", 6, 70, loop=False),
-                Tag("hurt", 4, 80, loop=False), Tag("death", 4, 140, loop=False)],
-          pivot=CHARACTER_PIVOT, art=Art(TINY_RPG, file="Soldier/Soldier/Soldier.png", scale=CHARACTER_SCALE,
-                                         rows=(0, 1, 2, 3, 5, 6), crop=CHARACTER_CROP)),
-    Sheet("game/characters/orc/orc", CHARACTER_FRAME, "rounded", HEALTH, "Quái Orc (mọi loại quái và boss dùng chung, đổi màu và cỡ)",
-          tags=[Tag("idle", 6, 100), Tag("walk", 8, 90), Tag("attack", 6, 80, loop=False), Tag("attack-heavy", 6, 80, loop=False),
-                Tag("hurt", 4, 80, loop=False), Tag("death", 4, 140, loop=False)],
-          pivot=CHARACTER_PIVOT, art=Art(TINY_RPG, file="Orc/Orc/Orc.png", scale=CHARACTER_SCALE,
-                                         rows=(0, 1, 2, 3, 4, 5), crop=CHARACTER_CROP)),
-    Sheet("game/characters/healer/healer", (128, 192), "rounded", CHARACTER, "Healer (khối tím nhạt, khác dáng hero)",
-          tags=[Tag("idle", 4, 160), Tag("cast", 6, 80, loop=False), Tag("hurt", 3, 80, loop=False)]),
+    hero("martial-hero", "Martial Hero/Martial Hero/Sprites", "Attack2", "Take Hit"),
+    hero("fantasy-warrior", "Fantasy Warrior/Fantasy Warrior/Sprites", "Attack3", "Take hit"),
+    hero("hero-knight", "Hero Knight/Hero Knight/Sprites", "Attack2", "Take Hit"),
+    hero("huntress", "Huntress/Huntress/Sprites", "Attack3", "Take hit"),
+    healer("evil-wizard-2", "EVil Wizard 2/EVil Wizard 2/Sprites", "Attack1", "Take hit", 3),
+    healer("evil-wizard-3", "Evil Wizard 3/Evil Wizard 3/Sprites", "Attack", "Get hit", 6),
+    monster("goblin", MONSTERS + "Goblin", "Idle", "Run", "Take Hit", 5),
+    monster("skeleton", MONSTERS + "Skeleton", "Idle", "Walk", "Take Hit", 4),
+    monster("mushroom", MONSTERS + "Mushroom", "Idle", "Run", "Take Hit", 5),
+    monster("flying-eye", MONSTERS + "Flying eye", "Flight", "Flight", "Take Hit", 5),
+    monster("fire-worm", "Fire Worm/Fire Worm/Sprites/Worm", "Idle", "Walk", "Get Hit", 4),
+    strip_sheet("game/characters/fallen-king/fallen-king", "Medieval King Pack 2/Medieval King Pack 2/Sprites",
+                [("idle", "Idle", 90, True), ("run", "Run", 80, True), ("attack", "Attack1", 75, False),
+                 ("hurt", "Take Hit", 80, False), ("death", "Death", 110, False)],
+                5, "Boss (quay phải)", HEALTH, frame_width=160),
 ]
 
 
@@ -408,12 +503,14 @@ def shift_hue(image, degrees):
 
 
 def art_sprite(sprite, path):
-    """The pack image scaled by its whole factor and centred on a transparent canvas of the declared size."""
+    """The pack image (or its icon cell, or a box of it) scaled by its whole factor, centred on a canvas of the declared size."""
     art = sprite.art
     image = Image.open(path).convert("RGBA")
     if art.cell:
         row, column = art.cell
         image = image.crop((column * 32, row * 32, column * 32 + 32, row * 32 + 32))
+    if art.box:
+        image = image.crop(art.box)
     if art.hue:
         image = shift_hue(image, art.hue)
     if art.clear_inset:
@@ -431,19 +528,17 @@ def art_sprite(sprite, path):
 
 
 def art_sheet(sheet, path):
-    """Rows of a 100x100-cell character sheet in tag order, each cell cropped to the window and scaled."""
+    """One row per tag from its animation strip, every frame cut to the sheet's box (texture pixels, unscaled)."""
     art = sheet.art
-    source_image = Image.open(path).convert("RGBA")
     fw, fh = sheet.frame
     columns = max(tag.frames for tag in sheet.tags)
     image = Image.new("RGBA", (fw * columns, fh * len(sheet.tags)), (0, 0, 0, 0))
     left, top, right, bottom = art.crop
-    for row, (tag, source_row) in enumerate(zip(sheet.tags, art.rows)):
+    for row, (tag, file) in enumerate(zip(sheet.tags, art.strips)):
+        strip = Image.open(path / file).convert("RGBA")
+        wide = art.frame_width or strip.height
         for column in range(tag.frames):
-            cell = source_image.crop((column * 100 + left, source_row * 100 + top, column * 100 + right, source_row * 100 + bottom))
-            if cell.getbbox() is None:
-                raise ValueError(f"{sheet.path}: tag {tag.name} frame {column} is empty in the source")
-            cell = cell.resize((fw, fh), Image.NEAREST)
+            cell = strip.crop((column * wide + left, top, column * wide + right, bottom))
             image.paste(cell, (column * fw, row * fh))
     return image
 
@@ -471,6 +566,7 @@ def spec():
         ],
         "sheets": [
             {"path": s.path, "frameWidth": s.frame[0], "frameHeight": s.frame[1], "pivot": list(s.pivot),
+             "pixelsPerUnit": s.ppu, "point": s.point,
              "tags": [{"name": t.name, "frames": t.frames, "frameMs": t.frame_ms, "loop": t.loop} for t in s.tags]}
             for s in SHEETS
         ],
@@ -495,6 +591,8 @@ def source_text(entry):
         return "**placeholder**"
     art = entry.art
     where = f"ô ({art.cell[0]}, {art.cell[1]})" if art.cell else f"`{art.file}`"
+    if art.box:
+        where += f" vùng {art.box}"
     extra = (f", đổi màu {art.hue}°" if art.hue else "") + (", khoét giữa" if art.clear_inset else "")
     return f"{PACK_NAMES[art.pack]}: {where} ×{art.scale}{extra}"
 
@@ -535,7 +633,9 @@ def brief():
             columns = max(t.frames for t in s.tags)
             tags = "; ".join(f"{i + 1}. {t.name}: {t.frames} × {t.frame_ms} ms{'' if t.loop else ', không lặp'}"
                              for i, t in enumerate(s.tags))
-            src = "**placeholder**" if s.art is None else f"{PACK_NAMES[s.art.pack]}: `{s.art.file}` hàng {list(s.art.rows)}, ×{s.art.scale}"
+            scale = PIXELS_PER_UNIT / s.ppu if s.ppu else 1
+            src = "**placeholder**" if s.art is None else (f"{PACK_NAMES[s.art.pack]}: `{s.art.file}` "
+                                                         f"({', '.join(f[:-4] for f in s.art.strips)}), hiện ×{scale:g}")
             out.append(f"| `{s.path}.png` | {s.frame[0]}×{s.frame[1]} | {s.frame[0] * columns}×{s.frame[1] * len(s.tags)} | "
                        f"{pivot_text(s.pivot)} | {tags} | {s.note} | {src} |")
         out.append("")

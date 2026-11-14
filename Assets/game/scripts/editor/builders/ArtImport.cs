@@ -20,6 +20,9 @@ namespace Game.Editor.Builders
     {
         private const string LogPrefix = "[Game] ";
 
+        // Wide animation sheets must not be scaled down on import.
+        private const int MaxTextureSize = 8192;
+
         internal static void Import(ArtSpec spec)
         {
             string prefix = BuildPaths.Sprites + "/";
@@ -51,7 +54,8 @@ namespace Game.Editor.Builders
                 foreach (SheetSpec sheet in spec.sheets)
                 {
                     ConfigureTexture((TextureImporter)AssetImporter.GetAtPath(files[sheet.path]), SpriteImportMode.Multiple,
-                        spec.pixelsPerUnit, TextureImporterCompression.Uncompressed);
+                        sheet.pixelsPerUnit > 0f ? sheet.pixelsPerUnit : spec.pixelsPerUnit, TextureImporterCompression.Uncompressed,
+                        sheet.point ? FilterMode.Point : FilterMode.Bilinear);
                 }
             }
             finally
@@ -97,19 +101,20 @@ namespace Game.Editor.Builders
             importer.SaveAndReimport();
         }
 
-        private static bool IsConfigured(TextureImporter importer, SpriteImportMode mode, int pixelsPerUnit,
-            TextureImporterCompression compression)
+        private static bool IsConfigured(TextureImporter importer, SpriteImportMode mode, float pixelsPerUnit,
+            TextureImporterCompression compression, FilterMode filter = FilterMode.Bilinear)
         {
             return importer.textureType == TextureImporterType.Sprite && importer.spriteImportMode == mode
-                   && Mathf.Approximately(importer.spritePixelsPerUnit, pixelsPerUnit) && importer.filterMode == FilterMode.Bilinear
+                   && Mathf.Approximately(importer.spritePixelsPerUnit, pixelsPerUnit) && importer.filterMode == filter
+                   && importer.maxTextureSize >= MaxTextureSize
                    && importer.wrapMode == TextureWrapMode.Clamp && !importer.mipmapEnabled && importer.alphaIsTransparency
                    && importer.textureCompression == compression;
         }
 
-        private static void ConfigureTexture(TextureImporter importer, SpriteImportMode mode, int pixelsPerUnit,
-            TextureImporterCompression compression)
+        private static void ConfigureTexture(TextureImporter importer, SpriteImportMode mode, float pixelsPerUnit,
+            TextureImporterCompression compression, FilterMode filter = FilterMode.Bilinear)
         {
-            if (IsConfigured(importer, mode, pixelsPerUnit, compression))
+            if (IsConfigured(importer, mode, pixelsPerUnit, compression, filter))
             {
                 return;
             }
@@ -117,7 +122,8 @@ namespace Game.Editor.Builders
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = mode;
             importer.spritePixelsPerUnit = pixelsPerUnit;
-            importer.filterMode = FilterMode.Bilinear;
+            importer.filterMode = filter;
+            importer.maxTextureSize = MaxTextureSize;
             importer.wrapMode = TextureWrapMode.Clamp;
             importer.mipmapEnabled = false;
             importer.alphaIsTransparency = true;
