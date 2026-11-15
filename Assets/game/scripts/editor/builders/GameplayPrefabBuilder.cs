@@ -443,7 +443,7 @@ namespace Game.Editor.Builders
             TextMeshProUGUI text = UiFactory.AddText(UiFactory.Rect(name, parent).Place(UiFactory.TopCenter, position, size), string.Empty,
                 fontSize, color).Localize(key);
             text.raycastTarget = false;
-            text.textWrappingMode = TextWrappingModes.Normal;
+            text.Paragraph();
             return text.GetComponent<LocalizedLabel>();
         }
 

@@ -14,6 +14,8 @@ namespace Game.Editor.Builders
     /// </summary>
     internal static class UiFactory
     {
+        private const float MinAutoSize = 12f;
+
         private const string UiLayerName = "UI";
         private const float Half = 0.5f;
         /// <summary>Canvas scaler match of every canvas: width and height weighted equally.</summary>
@@ -171,7 +173,9 @@ namespace Game.Editor.Builders
 
         /// <summary>
         /// Adds a TextMeshPro UI text in the game's font (<see cref="GameFont"/>), with a <see cref="ScalableText"/> so it follows
-        /// the text size setting.
+        /// the text size setting. One line by default, auto-sized between half the size and the size: a large text size
+        /// setting shrinks a long label to fit its box instead of spilling out or breaking the line. Texts meant to run
+        /// over several lines set <see cref="Paragraph"/>.
         /// </summary>
         internal static TextMeshProUGUI AddText(RectTransform rect, string text, float size, Color color,
             TextAlignmentOptions alignment = TextAlignmentOptions.Center)
@@ -182,8 +186,19 @@ namespace Game.Editor.Builders
             label.fontSize = size;
             label.color = color;
             label.alignment = alignment;
+            label.textWrappingMode = TextWrappingModes.NoWrap;
+            label.enableAutoSizing = true;
+            label.fontSizeMin = Mathf.Max(MinAutoSize, size * 0.5f);
+            label.fontSizeMax = size;
             rect.gameObject.AddComponent<ScalableText>();
             return label;
+        }
+
+        /// <summary>Lets <paramref name="text"/> wrap over several lines (it still shrinks when the lines overflow its box).</summary>
+        internal static TextMeshProUGUI Paragraph(this TextMeshProUGUI text)
+        {
+            text.textWrappingMode = TextWrappingModes.Normal;
+            return text;
         }
 
         /// <summary>Bold, with the game font's dark outline (or <paramref name="material"/>): text drawn straight on art.</summary>

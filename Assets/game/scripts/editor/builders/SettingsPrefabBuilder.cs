@@ -296,6 +296,7 @@ namespace Game.Editor.Builders
             TextMeshProUGUI message = UiFactory.AddText(UiFactory.Rect("MessageLabel", content).Stretch(20f, 130f, 20f, 0f), string.Empty,
                 PopupPrefabBuilder.MessageSize, Palette.Text);
             message.raycastTarget = false;
+            message.Paragraph();
             var messageLabel = message.gameObject.AddComponent<LocalizedLabel>();
             Fields.Set(messageLabel, ("_label", message));
             Button keep = PopupPrefabBuilder.DialogButton(parts.Footer, "KeepButton", -180f, "ui-common/button-primary",
@@ -366,6 +367,7 @@ namespace Game.Editor.Builders
             TextMeshProUGUI bodyText = UiFactory.AddText(UiFactory.Rect("DescriptionLabel", holder).Stretch(RowInset, RowInset, RowInset, 96f),
                 string.Empty, DescriptionBodySize, Palette.TextMuted, TextAlignmentOptions.TopLeft);
             bodyText.raycastTarget = false;
+            bodyText.Paragraph();
             text = bodyText.gameObject.AddComponent<LocalizedLabel>();
             Fields.Set(text, ("_label", bodyText));
             holder.gameObject.SetActive(false);

@@ -199,7 +199,7 @@ namespace Game.Editor.Builders
             TextMeshProUGUI description = UiFactory.AddText(UiFactory.Rect("DescriptionLabel", detail).Place(UiFactory.Center, new Vector2(0f, -150f),
                 new Vector2(640f, 90f)), string.Empty, 32f, Palette.Text).Localize("hero.martial-hero.description");
             description.raycastTarget = false;
-            description.textWrappingMode = TextWrappingModes.Normal;
+            description.Paragraph();
             TextMeshProUGUI stats = UiFactory.AddText(UiFactory.Rect("StatsLabel", detail).Place(UiFactory.Center, new Vector2(0f, -240f),
                 new Vector2(640f, 60f)), string.Empty, 30f, Palette.TextMuted).Localize("characters.stats.hero");
             stats.raycastTarget = false;

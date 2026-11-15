@@ -88,6 +88,7 @@ namespace Game.Editor.Builders
             TextMeshProUGUI message = UiFactory.AddText(UiFactory.Rect("MessageLabel", parts.Body).Stretch(20f, 130f, 20f, 0f), string.Empty,
                 MessageSize, Palette.Text);
             message.raycastTarget = false;
+            message.Paragraph();
             var messageLabel = message.gameObject.AddComponent<LocalizedLabel>();
             Fields.Set(messageLabel, ("_label", message));
 

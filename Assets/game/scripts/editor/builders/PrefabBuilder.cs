@@ -109,6 +109,7 @@ namespace Game.Editor.Builders
             label.fontSizeMin = ToastLabelMinSize;
             label.fontSizeMax = ToastLabelSize;
             label.raycastTarget = false;
+            label.Paragraph();
 
             Fields.Set(toast, ("_canvasGroup", group), ("_body", body), ("_label", label),
                 ("_animation", BuildUtility.Load<ToastAnimationConfig>(BuildPaths.ToastAnimation)));
