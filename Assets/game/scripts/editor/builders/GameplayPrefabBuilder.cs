@@ -25,6 +25,8 @@ namespace Game.Editor.Builders
         private const float FramePadding = 44f;
         private const float SlotSize = 184f;
         private const float SlotSpacing = 208f;
+        /// <summary>Width of the item slot art's frame at <see cref="SlotSize"/> (12 of its 132 pixels).</summary>
+        private const float SlotFrame = SlotSize * 12f / 132f;
         private static readonly Vector2 BoardCenter = new Vector2(480f, 498f);
         private static readonly Vector2 ItemRowCenter = new Vector2(1440f, 280f);
         private static readonly Vector2 PausePanelSize = new Vector2(760f, 860f);
@@ -106,14 +108,14 @@ namespace Game.Editor.Builders
             GameObject root = parts.Root;
             Component popup = root.AddComponent(GameTypes.ResultPopup);
 
-            LocalizedLabel score = Text(parts.Body, "ScoreLabel", new Vector2(0f, -20f), new Vector2(780f, 100f), 72f, Palette.Text,
+            LocalizedLabel score = Text(parts.Body, "ScoreLabel", new Vector2(0f, -20f), new Vector2(780f, 100f), 72f, false,
                 "gameplay.result.score");
             score.GetComponent<TextMeshProUGUI>().fontStyle = FontStyles.Bold;
-            LocalizedLabel best = Text(parts.Body, "BestLabel", new Vector2(0f, -120f), new Vector2(780f, 56f), 34f, Palette.TextMuted,
+            LocalizedLabel best = Text(parts.Body, "BestLabel", new Vector2(0f, -120f), new Vector2(780f, 56f), 34f, true,
                 "gameplay.result.best");
-            LocalizedLabel kills = Text(parts.Body, "KillsLabel", new Vector2(0f, -200f), new Vector2(780f, 56f), 38f, Palette.Text,
+            LocalizedLabel kills = Text(parts.Body, "KillsLabel", new Vector2(0f, -200f), new Vector2(780f, 56f), 38f, false,
                 "gameplay.result.kills");
-            LocalizedLabel coins = Text(parts.Body, "CoinsLabel", new Vector2(0f, -260f), new Vector2(780f, 56f), 38f, Palette.Text,
+            LocalizedLabel coins = Text(parts.Body, "CoinsLabel", new Vector2(0f, -260f), new Vector2(780f, 56f), 38f, false,
                 "gameplay.result.coins");
 
             RectTransform badge = UiFactory.Rect("NewBestBadge", parts.Body).Place(UiFactory.TopRight, new Vector2(10f, -6f), new Vector2(260f, 64f),
@@ -256,17 +258,21 @@ namespace Game.Editor.Builders
                     BuildUtility.Sprite("screens/gameplay/item-potion"));
                 icon.raycastTarget = false;
                 icon.preserveAspect = true;
-                TextMeshProUGUI count = UiFactory.AddText(UiFactory.Rect("CountLabel", slot).Place(UiFactory.BottomRight, new Vector2(-10f, 6f),
-                    new Vector2(80f, 50f)), "0", 42f, Palette.Text, TextAlignmentOptions.BottomRight);
+                // Count and key sit inside the slot's frame (SlotFrame on each side), light with a dark outline over the icon.
+                TextMeshProUGUI count = UiFactory.AddText(UiFactory.Rect("CountLabel", slot).Place(UiFactory.BottomRight,
+                    new Vector2(-SlotFrame, SlotFrame - 4f), new Vector2(96f, 64f)), "0", 56f, Palette.TextLight,
+                    TextAlignmentOptions.BottomRight).OnWood();
                 count.raycastTarget = false;
                 count.fontStyle = FontStyles.Bold;
-                RectTransform plus = UiFactory.Rect("PlusIcon", slot).Place(UiFactory.BottomRight, new Vector2(-6f, 6f), new Vector2(56f, 56f));
+                RectTransform plus = UiFactory.Rect("PlusIcon", slot).Place(UiFactory.BottomRight, new Vector2(-SlotFrame, SlotFrame),
+                    new Vector2(56f, 56f));
                 UiFactory.AddImage(plus, BuildUtility.Sprite("screens/gameplay/icon-plus")).raycastTarget = false;
                 RectTransform active = UiFactory.Rect("ActiveFrame", slot).Stretch(-8f, -8f, -8f, -8f);
                 UiFactory.AddImage(active, BuildUtility.Sprite("ui-common/focus-frame")).raycastTarget = false;
                 active.gameObject.SetActive(false);
-                TextMeshProUGUI key = UiFactory.AddText(UiFactory.Rect("KeyLabel", slot).Place(UiFactory.TopLeft, new Vector2(10f, -6f),
-                    new Vector2(48f, 40f)), (i + 1).ToString(), 32f, Palette.TextMuted, TextAlignmentOptions.TopLeft);
+                TextMeshProUGUI key = UiFactory.AddText(UiFactory.Rect("KeyLabel", slot).Place(UiFactory.TopLeft,
+                    new Vector2(SlotFrame + 2f, -SlotFrame + 2f), new Vector2(48f, 44f)), (i + 1).ToString(), 36f, Palette.Text,
+                    TextAlignmentOptions.TopLeft);
                 key.raycastTarget = false;
 
                 Component view = slot.gameObject.AddComponent(GameTypes.ItemSlotView);
@@ -446,11 +452,11 @@ namespace Game.Editor.Builders
             return text.GetComponent<LocalizedLabel>();
         }
 
-        private static LocalizedLabel Text(RectTransform parent, string name, Vector2 position, Vector2 size, float fontSize, Color color,
+        private static LocalizedLabel Text(RectTransform parent, string name, Vector2 position, Vector2 size, float fontSize, bool muted,
             string key)
         {
             TextMeshProUGUI text = UiFactory.AddText(UiFactory.Rect(name, parent).Place(UiFactory.TopCenter, position, size), string.Empty,
-                fontSize, color).Localize(key);
+                fontSize, Palette.TextLight).Localize(key).OnWood(muted);
             text.raycastTarget = false;
             text.Paragraph();
             return text.GetComponent<LocalizedLabel>();

@@ -196,15 +196,15 @@ namespace Game.Editor.Builders
             UiFactory.AddImage(detail, BuildUtility.Sprite("ui-common/popup-background")).raycastTarget = false;
             Component preview = Preview(detail, "Preview", new Vector2(0f, -10f), true, 0.8f);
             TextMeshProUGUI name = UiFactory.AddText(UiFactory.Rect("NameLabel", detail).Place(UiFactory.Center, new Vector2(0f, -70f),
-                new Vector2(640f, 70f)), string.Empty, 54f, Palette.Text).Localize("hero.martial-hero.name");
+                new Vector2(640f, 70f)), string.Empty, 54f, Palette.Text).Localize("hero.martial-hero.name").OnWood();
             name.raycastTarget = false;
             name.fontStyle = FontStyles.Bold;
             TextMeshProUGUI description = UiFactory.AddText(UiFactory.Rect("DescriptionLabel", detail).Place(UiFactory.Center, new Vector2(0f, -150f),
-                new Vector2(640f, 90f)), string.Empty, 32f, Palette.Text).Localize("hero.martial-hero.description");
+                new Vector2(640f, 90f)), string.Empty, 32f, Palette.Text).Localize("hero.martial-hero.description").OnWood();
             description.raycastTarget = false;
             description.Paragraph();
             TextMeshProUGUI stats = UiFactory.AddText(UiFactory.Rect("StatsLabel", detail).Place(UiFactory.Center, new Vector2(0f, -240f),
-                new Vector2(640f, 60f)), string.Empty, 30f, Palette.TextMuted).Localize("characters.stats.hero");
+                new Vector2(640f, 60f)), string.Empty, 30f, Palette.TextMuted).Localize("characters.stats.hero").OnWood(true);
             stats.raycastTarget = false;
 
             Fields.Set(view, ("_heroTab", heroTab), ("_healerTab", healerTab), ("_heroTabMark", heroMark), ("_healerTabMark", healerMark),

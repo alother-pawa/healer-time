@@ -201,6 +201,22 @@ namespace Game.Editor.Builders
             return text;
         }
 
+        /// <summary>
+        /// Light text with the game font's dark outline, readable on wood panels and dark art (<paramref name="muted"/>: a
+        /// dimmer light for captions and hints). The weight is kept, so paragraphs stay regular.
+        /// </summary>
+        internal static TextMeshProUGUI OnWood(this TextMeshProUGUI text, bool muted = false)
+        {
+            text.color = muted ? Palette.TextLightMuted : Palette.TextLight;
+            Material outline = GameFont.Outline;
+            if (outline != null)
+            {
+                text.fontSharedMaterial = outline;
+            }
+
+            return text;
+        }
+
         /// <summary>Bold, with the game font's dark outline (or <paramref name="material"/>): text drawn straight on art.</summary>
         internal static void Outlined(TextMeshProUGUI text, Material material = null)
         {

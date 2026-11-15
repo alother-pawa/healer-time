@@ -298,7 +298,7 @@ namespace Game.Editor.Builders
             RectTransform content = parts.Body;
             Component popup = root.AddComponent(GameTypes.DisplayConfirmPopup);
             TextMeshProUGUI message = UiFactory.AddText(UiFactory.Rect("MessageLabel", content).Stretch(20f, 130f, 20f, 0f), string.Empty,
-                PopupPrefabBuilder.MessageSize, Palette.Text);
+                PopupPrefabBuilder.MessageSize, Palette.Text).OnWood();
             message.raycastTarget = false;
             message.Paragraph();
             var messageLabel = message.gameObject.AddComponent<LocalizedLabel>();

@@ -126,8 +126,9 @@ namespace Game.Editor.Builders
 
             InputGlyphView first = GlyphSlot(root, "Glyph1");
             InputGlyphView second = GlyphSlot(root, "Glyph2");
+            // Prompts sit on wood panels and dark screens alike.
             TextMeshProUGUI label = UiFactory.AddText(UiFactory.Rect("Label", root), string.Empty, PromptLabelSize, Palette.TextMuted,
-                TextAlignmentOptions.MidlineLeft);
+                TextAlignmentOptions.MidlineLeft).OnWood(true);
             label.raycastTarget = false;
             label.Localize("prompt.confirm");
 

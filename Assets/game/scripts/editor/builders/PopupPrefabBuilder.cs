@@ -27,6 +27,9 @@ namespace Game.Editor.Builders
     internal static class PopupPrefabBuilder
     {
         private const float TitleSize = 52f;
+        private const float HeaderHeight = 96f;
+        /// <summary>Share of the header art's height taken by its band, above the hanging tails.</summary>
+        private const float HeaderBandShare = 52f / 84f;
         /// <summary>Text size of dialog messages.</summary>
         internal const float MessageSize = 36f;
         /// <summary>Text size of button labels.</summary>
@@ -79,10 +82,12 @@ namespace Game.Editor.Builders
 
             RectTransform panel = UiFactory.Rect("Panel", root).Place(UiFactory.Center, Vector2.zero, new Vector2(900f, 560f));
             UiFactory.AddImage(UiFactory.Rect("Frame", panel).Stretch(), BuildUtility.Sprite("ui-common/popup-background"));
-            RectTransform header = UiFactory.Rect("Header", panel).TopStretch(-24f, 96f, 24f, 24f);
+            RectTransform header = UiFactory.Rect("Header", panel).TopStretch(-24f, HeaderHeight, 24f, 24f);
             UiFactory.AddImage(header, BuildUtility.Sprite("ui-common/popup-header")).raycastTarget = false;
             // Variants (or the popup's code) set the title's localization key.
-            TextMeshProUGUI title = UiFactory.AddText(UiFactory.Rect("TitleLabel", header).Stretch(), string.Empty, TitleSize, Palette.Text);
+            // Over the ribbon's band only (its top 52 of 84 pixels; the tails hang below), so the title sits centred on it.
+            TextMeshProUGUI title = UiFactory.AddText(UiFactory.Rect("TitleLabel", header).Stretch(48f, HeaderHeight * (1f - HeaderBandShare), 48f, 0f),
+                string.Empty, TitleSize, Palette.Text);
             title.raycastTarget = false;
             Fields.Set(title.gameObject.AddComponent<LocalizedLabel>(), ("_label", title));
             UiFactory.Rect(BodyName, panel).Stretch(BodyInset, BodyInset, BodyInset, BodyTop);
@@ -103,7 +108,7 @@ namespace Game.Editor.Builders
             Component popup = root.AddComponent(GameTypes.ConfirmDialogPopup);
 
             TextMeshProUGUI message = UiFactory.AddText(UiFactory.Rect("MessageLabel", parts.Body).Stretch(20f, 130f, 20f, 0f), string.Empty,
-                MessageSize, Palette.Text);
+                MessageSize, Palette.Text).OnWood();
             message.raycastTarget = false;
             message.Paragraph();
             var messageLabel = message.gameObject.AddComponent<LocalizedLabel>();
@@ -150,7 +155,7 @@ namespace Game.Editor.Builders
                 }
 
                 TextMeshProUGUI text = UiFactory.AddText(UiFactory.Rect("Label", row).Stretch(textLeft, 0f, 0f, 0f), string.Empty,
-                    HelpTextSize, Palette.Text, TextAlignmentOptions.MidlineLeft).Localize(key).Paragraph();
+                    HelpTextSize, Palette.Text, TextAlignmentOptions.MidlineLeft).Localize(key).Paragraph().OnWood();
                 text.raycastTarget = false;
             }
 

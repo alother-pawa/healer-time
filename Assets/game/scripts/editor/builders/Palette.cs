@@ -18,6 +18,8 @@ namespace Game.Editor.Builders
         internal static readonly Color TextMuted = BuildUtility.Hex("#8A6A58");
         /// <summary>Text drawn on wood and dark art (#FFF4D6).</summary>
         internal static readonly Color TextLight = BuildUtility.Hex("#FFF4D6");
+        /// <summary>Captions and hints on wood and dark art (#E8CFA2).</summary>
+        internal static readonly Color TextLightMuted = BuildUtility.Hex("#E8CFA2");
         /// <summary>Untinted sprites and plain text.</summary>
         internal static readonly Color White = Color.white;
         /// <summary>Invisible raycast targets.</summary>
