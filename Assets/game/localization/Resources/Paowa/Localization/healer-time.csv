@@ -166,7 +166,9 @@ gameplay.hud.coins,{0},{0}
 # Showcase captions over the board ({0} = amount; combo {0} = cascade steps)
 gameplay.showcase.attack,Attack! {0},アタック！ {0}
 gameplay.showcase.heal,Heal +{0},回復 +{0}
+gameplay.showcase.heal.full,Full health!,体力満タン！
 gameplay.showcase.defense,Shield +{0},シールド +{0}
+gameplay.showcase.defense.full,Shield full!,シールド満タン！
 gameplay.showcase.magic,Magic +{0},マジック +{0}
 gameplay.showcase.combo,Combo ×{0},コンボ ×{0}
 # Items ({0} in gameplay.item.bought = item name)

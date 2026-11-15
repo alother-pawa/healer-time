@@ -34,6 +34,9 @@ namespace Game.Systems.Gameplay
         private const string BestScoreKey = "game.best-score";
         private const float StuckSeconds = 20f;
         private const float ResultDelaySeconds = 1.4f;
+        /// <summary>Suffix of a gem's showcase key for a match that gained nothing (health or armor already full).</summary>
+        private const string FullKeySuffix = ".full";
+        private const string MaxText = "MAX";
 
         [SerializeField] private GameplayScreen _screen;
         [SerializeField] private GameplayConfig _config;
@@ -458,8 +461,12 @@ namespace Game.Systems.Gameplay
             if (main != null && Animate && main.Kind < _balance.Gems.Length)
             {
                 GemDefinition gem = _balance.Gems[main.Kind];
-                float total = _stepEvents.Where(e => e.Gem == main.Kind && IsGemAmount(e)).Sum(e => e.Amount);
-                _banner.Show(gem.Sprite, gem.ShowcaseKey, Mathf.RoundToInt(total), step.Index + 1, _comboKey, gem.Color);
+                int total = Mathf.RoundToInt(_stepEvents.Where(e => e.Gem == main.Kind && IsGemAmount(e)).Sum(e => e.Amount));
+                // Heal or shield gems matched at full health or armor gain nothing: the banner says "full" rather than "+0".
+                bool full = total <= 0 && _stepEvents.Any(e => e.Gem == main.Kind
+                    && (e.Kind == BattleEventKind.Healed || e.Kind == BattleEventKind.ArmorGained));
+                string key = full ? gem.ShowcaseKey + FullKeySuffix : gem.ShowcaseKey;
+                _banner.Show(gem.Sprite, key, total, step.Index + 1, _comboKey, gem.Color);
             }
         }
 
@@ -580,12 +587,12 @@ namespace Game.Systems.Gameplay
                     break;
                 case BattleEventKind.Healed:
                     _battlefield.Burst(BattlefieldView.Target.Hero, _battlefield.HealFx);
-                    _battlefield.Number(BattlefieldView.Target.Hero, "+" + Mathf.RoundToInt(e.Amount), _battlefield.HealColor);
+                    _battlefield.Number(BattlefieldView.Target.Hero, Gain(e.Amount), _battlefield.HealColor);
                     Play(_sounds.Heal);
                     break;
                 case BattleEventKind.ArmorGained:
                     _battlefield.Burst(BattlefieldView.Target.Hero, _battlefield.ShieldFx);
-                    _battlefield.Number(BattlefieldView.Target.Hero, "+" + Mathf.RoundToInt(e.Amount), _battlefield.ArmorColor);
+                    _battlefield.Number(BattlefieldView.Target.Hero, Gain(e.Amount), _battlefield.ArmorColor);
                     Play(_sounds.Shield);
                     break;
                 case BattleEventKind.HeroDied:
@@ -714,6 +721,13 @@ namespace Game.Systems.Gameplay
         private bool Continue(int generation)
         {
             return generation == _generation && !_abort && this != null;
+        }
+
+        // "+N", or "MAX" when health or armor was already full and nothing was gained.
+        private static string Gain(float amount)
+        {
+            int gained = Mathf.RoundToInt(amount);
+            return gained > 0 ? "+" + gained : MaxText;
         }
 
         private static bool IsGemAmount(BattleEvent e)
