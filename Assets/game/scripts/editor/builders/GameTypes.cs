@@ -22,6 +22,7 @@ namespace Game.Editor.Builders
         internal static Type LoadingTransition => Resolve(UIShell, UIShell, "LoadingTransition");
         internal static Type LoadingTransitionConfig => Resolve(UIShell, UIShell, "LoadingTransitionConfig");
         internal static Type ConfirmDialogPopup => Resolve(UIShell, UIShell, "ConfirmDialogPopup");
+        internal static Type HowToPlayPopup => Resolve(UIShell, UIShell, "HowToPlayPopup");
         internal static Type UIShellConfig => Resolve(UIShell, UIShell, "UIShellConfig");
         internal static Type BootSceneEntry => Resolve(SceneFlow, SceneFlow, "BootSceneEntry");
         internal static Type SettingsPopup => Resolve(Settings, Settings, "SettingsPopup");

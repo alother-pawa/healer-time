@@ -20,7 +20,8 @@ namespace Game.Systems.Gameplay
     /// navigation events off (the board is played with the pointer, no focus scope is active while playing).
     /// Pause (<see cref="PauseController"/>): <c>_pauseAction</c> (Escape, Start) or a focus/controller-lost pause opens the
     /// pause menu popup, which holds the pause; navigation events turn on while it is open. The popup forwards its buttons
-    /// here (<see cref="IPauseMenuHost"/>): Resume, Settings (<see cref="ISettingsMenu"/> over the pause menu), Quit to main
+    /// here (<see cref="IPauseMenuHost"/>): Resume, Settings (<see cref="ISettingsMenu"/> over the pause menu), How to play
+    /// (<see cref="IHowToPlay"/> over the pause menu), Quit to main
     /// menu / Quit to desktop (asked through <see cref="IConfirmDialog"/>; a run is never saved, so the question says the
     /// run ends).
     /// REFERENCES: <c>_config</c> is the gameplay config (pause popup, menu scene); the <c>*Key</c> fields are the texts of the
@@ -65,6 +66,18 @@ namespace Game.Systems.Gameplay
         public void OnResumePressed()
         {
             _controller.OnResumePressed();
+        }
+
+        public void OpenHowToPlay()
+        {
+            if (CoreServiceLocator.TryGet(out IHowToPlay help))
+            {
+                help.Open();
+            }
+            else
+            {
+                Debug.LogWarning("[Game] The UI shell module is not running; How to play does nothing.", this);
+            }
         }
 
         public void OpenSettings()

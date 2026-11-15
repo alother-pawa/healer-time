@@ -59,7 +59,8 @@ namespace Game.Editor.Builders
         internal static void BuildPrefabConfigs()
         {
             Fields.Set(BuildUtility.Asset(GameTypes.UIShellConfig, BuildPaths.UIShellConfig),
-                ("_confirmDialog", BuildUtility.PrefabComponent(BuildPaths.PopupConfirm, GameTypes.ConfirmDialogPopup)));
+                ("_confirmDialog", BuildUtility.PrefabComponent(BuildPaths.PopupConfirm, GameTypes.ConfirmDialogPopup)),
+                ("_howToPlay", BuildUtility.PrefabComponent(BuildPaths.PopupHowToPlay, GameTypes.HowToPlayPopup)));
             Fields.Set(BuildUtility.Asset(GameTypes.SettingsConfig, BuildPaths.SettingsConfig),
                 ("_popup", BuildUtility.PrefabComponent(BuildPaths.PopupSettings, GameTypes.SettingsPopup)),
                 ("_displayConfirmPopup", BuildUtility.PrefabComponent(BuildPaths.PopupDisplayConfirm, GameTypes.DisplayConfirmPopup)));

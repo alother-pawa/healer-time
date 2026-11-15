@@ -10,8 +10,8 @@ namespace Game.Editor.Builders
 {
     /// <summary>
     /// Canvases of the content scenes, one prefab each: the splash (logo, studio name, loading indicator, driven by
-    /// <c>SplashScreen</c>), the main menu (title, Play/Settings/Quit, version, prompt bar, its own selection highlight) and,
-    /// through <see cref="GameplayPrefabBuilder"/>, the gameplay canvas. Content canvases sort at 0, under the persistent UI
+    /// <c>SplashScreen</c>), the main menu (title, Play, Characters/How to play/Settings/Quit, prompt bar, its own selection
+    /// highlight) and, through <see cref="GameplayPrefabBuilder"/>, the gameplay canvas. Content canvases sort at 0, under the persistent UI
     /// scene's canvases.
     /// </summary>
     internal static class MenuPrefabBuilder
@@ -21,15 +21,17 @@ namespace Game.Editor.Builders
         private const float IndicatorSize = 32f;
         private const float TitleSize = 104f;
         private const float MenuButtonLabelSize = 44f;
-        private const float VersionSize = 26f;
-        private const float MenuButtonSpacing = 380f;
+        private const float MenuButtonGap = 40f;
+        private const float CardGap = 20f;
+        private static readonly Vector2 CardSize = new Vector2(168f, 236f);
         private static readonly Vector2 LogoSize = new Vector2(320f, 320f);
         private static readonly Vector2 MenuButtonSize = new Vector2(340f, 96f);
 
-        /// <summary>Main menu buttons, top to bottom: child name, sprite, label key.</summary>
+        /// <summary>Main menu buttons under Play, left to right: child name, sprite, label key.</summary>
         private static readonly (string name, string sprite, string key)[] MenuButtons =
         {
             ("CharactersButton", "ui-common/button-secondary", "menu.characters"),
+            ("HowToPlayButton", "ui-common/button-secondary", "menu.how-to-play"),
             ("SettingsButton", "ui-common/button-secondary", "menu.settings"),
             ("QuitButton", "ui-common/button-secondary", "menu.quit"),
         };
@@ -108,11 +110,16 @@ namespace Game.Editor.Builders
             Button play = UiFactory.AddButton(playRect, BuildUtility.Sprite("ui-common/button-primary"));
             UiFactory.Label(playRect, string.Empty, 64f).Localize("menu.play");
 
+            // A centred row: a button hidden at runtime (Quit on the web) closes up instead of leaving a gap.
+            RectTransform buttonRow = UiFactory.Rect("MenuButtons", home).Place(UiFactory.Center, new Vector2(0f, -370f),
+                new Vector2(1840f, MenuButtonSize.y));
+            HorizontalLayoutGroup rowLayout = UiFactory.AddRow(buttonRow.gameObject, MenuButtonGap, TextAnchor.MiddleCenter);
+            rowLayout.childControlWidth = false;
+            rowLayout.childControlHeight = false;
             var row = new Button[MenuButtons.Length];
             for (int i = 0; i < MenuButtons.Length; i++)
             {
-                RectTransform rect = UiFactory.Rect(MenuButtons[i].name, home)
-                    .Place(UiFactory.Center, new Vector2((i - 1) * MenuButtonSpacing, -370f), MenuButtonSize);
+                RectTransform rect = UiFactory.Rect(MenuButtons[i].name, buttonRow).Place(UiFactory.Center, Vector2.zero, MenuButtonSize);
                 row[i] = UiFactory.AddButton(rect, BuildUtility.Sprite(MenuButtons[i].sprite));
                 UiFactory.Label(rect, string.Empty, MenuButtonLabelSize).Localize(MenuButtons[i].key);
             }
@@ -128,12 +135,6 @@ namespace Game.Editor.Builders
 
             Component characters = BuildCharactersPage(parts, pages, out Button back);
 
-            // The version stamp is written at runtime (Core's BuildInfo); it is not translated.
-            TextMeshProUGUI version = UiFactory.AddText(UiFactory.Rect("VersionLabel", parts.Footer)
-                .Place(UiFactory.BottomLeft, new Vector2(48f, 100f), new Vector2(900f, 40f)), string.Empty, VersionSize, Palette.TextLight,
-                TextAlignmentOptions.MidlineLeft);
-            version.raycastTarget = false;
-
             GameObject bar = PrefabBuilder.PromptBarInstance(parts.Footer, 24f, 64f, PrefabBuilder.Prompts.SwitchTab);
             PrefabBuilder.SetPromptLabel(bar, PrefabBuilder.Prompts.Back, "prompt.back");
 
@@ -142,9 +143,10 @@ namespace Game.Editor.Builders
             Fields.Set(scope, ("_firstSelected", play), ("_trapFocus", true),
                 ("_cancelMode", new EnumName(nameof(FocusCancelMode.PassThrough))));
             Fields.Set(menu, ("_pages", pages), ("_characters", characters),
-                ("_playButton", play), ("_charactersButton", row[0]), ("_settingsButton", row[1]), ("_quitButton", row[2]),
+                ("_playButton", play), ("_charactersButton", row[0]), ("_howToPlayButton", row[1]), ("_settingsButton", row[2]),
+                ("_quitButton", row[3]),
                 ("_backButton", back), ("_heroPreview", heroPreview), ("_healerPreview", healerPreview), ("_coinsText", coins),
-                ("_versionText", version), ("_coin", BuildUtility.Load<ScriptableObject>(BuildPaths.Data + "/economy/Currency_Coin.asset")),
+                ("_coin", BuildUtility.Load<ScriptableObject>(BuildPaths.Data + "/economy/Currency_Coin.asset")),
                 ("_gameplayScene", BuildUtility.Load<SceneKey>(BuildPaths.SceneKeyGameplay)),
                 ("_music", AssetBuilder.Clip("music/menu-theme")), ("_swipe", AssetBuilder.Clip("ui/page-swipe")),
                 ("_quitTitleKey", "quit.title"), ("_quitMessageKey", "quit.message"), ("_quitConfirmKey", "quit.confirm"),
@@ -173,11 +175,12 @@ namespace Game.Editor.Builders
             UiFactory.LinkHorizontal(heroTab, healerTab);
 
             RectTransform list = UiFactory.Rect("CardList", page).Place(UiFactory.Center, new Vector2(-390f, -40f), new Vector2(760f, 300f));
-            HorizontalLayoutGroup layout = UiFactory.AddRow(list.gameObject, 28f, TextAnchor.MiddleCenter);
+            // Four heroes fit side by side in the list, clear of the detail panel.
+            HorizontalLayoutGroup layout = UiFactory.AddRow(list.gameObject, CardGap, TextAnchor.MiddleCenter);
             layout.childControlWidth = false;
             layout.childControlHeight = false;
 
-            RectTransform card = UiFactory.Rect("CardTemplate", parts.Templates).Place(UiFactory.Center, Vector2.zero, new Vector2(200f, 275f));
+            RectTransform card = UiFactory.Rect("CardTemplate", parts.Templates).Place(UiFactory.Center, Vector2.zero, CardSize);
             Button cardButton = UiFactory.AddButton(card, BuildUtility.Sprite("screens/main-menu/character-card"));
             Component cardPreview = Preview(card, "Preview", new Vector2(0f, -40f), false, 0.4f);
             TextMeshProUGUI cardName = UiFactory.AddText(UiFactory.Rect("NameLabel", card).BottomStretch(14f, 56f, 8f, 8f), string.Empty, 30f,

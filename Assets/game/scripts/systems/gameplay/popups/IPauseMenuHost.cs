@@ -12,6 +12,9 @@ namespace Game.Systems.Gameplay
         /// <summary>Settings button.</summary>
         void OpenSettings();
 
+        /// <summary>How to play button.</summary>
+        void OpenHowToPlay();
+
         /// <summary>Quit to main menu button.</summary>
         void QuitToMenu();
 

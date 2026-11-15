@@ -11,8 +11,8 @@ using UnityEngine;
 namespace Game.Systems.UIShell
 {
     /// <summary>
-    /// Registers <see cref="IToastService"/> and <see cref="IConfirmDialog"/> (with the confirmation popup of the
-    /// <see cref="UIShellConfig"/>); the UI scene's behaviours (root, loading screen, toast host) attach to Core at runtime.
+    /// Registers <see cref="IToastService"/>, <see cref="IConfirmDialog"/> and <see cref="IHowToPlay"/> (with the popups of
+    /// the <see cref="UIShellConfig"/>); the UI scene's behaviours (root, loading screen, toast host) attach to Core at runtime.
     /// </summary>
     internal sealed class UIShellModule : ICoreModule
     {
@@ -32,16 +32,18 @@ namespace Game.Systems.UIShell
             CoreServiceLocator.Register<IToastService>(new ToastService(logger));
 
             var config = Resources.Load<UIShellConfig>(UIShellConfig.ResourcePath);
-            if (config == null || config.ConfirmDialog == null)
+            if (config == null || config.ConfirmDialog == null || config.HowToPlay == null)
             {
                 throw new InvalidOperationException(
-                    $"UIShellConfig with a confirmation popup is missing at Resources/{UIShellConfig.ResourcePath}. Run Game › Build All.");
+                    $"UIShellConfig with its confirmation and How to play popups is missing at Resources/{UIShellConfig.ResourcePath}. Run Game › Build All.");
             }
 
             var ui = CoreServiceLocator.Get<IUIManager>();
             ui.RegisterView(config.ConfirmDialog.ViewId, config.ConfirmDialog.gameObject);
             CoreServiceLocator.Register<IConfirmDialog>(
                 new ConfirmDialogService(new PopupConfirmPresenter(ui, config.ConfirmDialog.ViewId), logger));
+            ui.RegisterView(config.HowToPlay.ViewId, config.HowToPlay.gameObject);
+            CoreServiceLocator.Register<IHowToPlay>(new HowToPlayMenu(ui, config.HowToPlay.ViewId));
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]

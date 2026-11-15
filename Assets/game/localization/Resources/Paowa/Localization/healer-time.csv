@@ -27,6 +27,7 @@ prompt.skip,Skip,スキップ
 menu.play,Play,プレイ
 menu.settings,Settings,設定
 menu.characters,Characters,キャラクター
+menu.how-to-play,How to play,遊び方
 menu.quit,Quit,終了
 quit.title,Quit the game?,ゲームを終了しますか？
 quit.message,You will return to the desktop.,デスクトップに戻ります。
@@ -141,6 +142,15 @@ settings.display.keep.revert,Revert,元に戻す
 gameplay.pause.title,Paused,ポーズ中
 gameplay.pause.resume,Resume,再開
 gameplay.pause.settings,Settings,設定
+gameplay.pause.how-to-play,How to play,遊び方
+help.title,How to Play,遊び方
+help.board,"Swap two neighbouring gems to line up 3 or more of a kind. Bigger matches and combos are stronger.",隣り合う宝石を入れ替えて同じ種類を3つ以上並べます。大きな組み合わせや連鎖ほど強くなります。
+help.gem.attack,Attack: your hero lands a heavy strike on the monster.,攻撃：ヒーローがモンスターに強烈な一撃を放ちます。
+help.gem.heal,Heal: restores your hero's health.,回復：ヒーローの体力を回復します。
+help.gem.defense,Defense: armor that soaks up hits and wears off over time.,防御：攻撃を受け止め、時間とともに減っていく鎧を得ます。
+help.gem.magic,"Magic: fills the healer's bar; when it is full, the healer casts a skill that hits the monster and heals your hero.",魔法：ヒーラーのゲージを溜めます。満タンになるとモンスターを攻撃しヒーローを回復するスキルを使います。
+help.items,"Items (keys 1-4): potion, bomb (then pick a cell), shuffle, shield. Out of one? Press + to buy it with coins.",アイテム（キー1～4）：回復薬、爆弾（マスを選ぶ）、シャッフル、盾。切れたら＋を押してコインで購入できます。
+help.battle,"The battle never stops: keep your hero alive as long as you can. Every 5th monster is a boss. Esc pauses.",戦闘は止まりません。できるだけ長くヒーローを生き延びさせましょう。5体ごとにボスが現れます。Escでポーズします。
 gameplay.pause.quit-menu,Quit to main menu,メインメニューに戻る
 gameplay.pause.quit-desktop,Quit to desktop,デスクトップに戻る
 gameplay.quit-menu.title,Quit to the main menu?,メインメニューに戻りますか？

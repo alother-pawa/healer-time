@@ -9,8 +9,12 @@ namespace Game.Systems.UIShell
         internal const string ResourcePath = "game/config/UIShellConfig";
 
         [SerializeField] private ConfirmDialogPopup _confirmDialog;
+        [SerializeField] private HowToPlayPopup _howToPlay;
 
         /// <summary>Prefab of the confirmation popup.</summary>
         internal ConfirmDialogPopup ConfirmDialog => _confirmDialog;
+
+        /// <summary>Prefab of the How to play popup.</summary>
+        internal HowToPlayPopup HowToPlay => _howToPlay;
     }
 }

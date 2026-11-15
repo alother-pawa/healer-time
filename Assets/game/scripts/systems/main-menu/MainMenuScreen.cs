@@ -7,7 +7,6 @@ using Game.Contracts.Roster;
 using Game.Foundation.Tweening;
 using Game.Foundation.UI;
 using Paowa.Audio;
-using Paowa.Core.Foundation.Bootstrap;
 using Paowa.Core.Foundation.Lifecycle;
 using Paowa.Core.Foundation.Services;
 using Paowa.Core.Messaging;
@@ -23,13 +22,13 @@ namespace Game.Systems.MainMenu
 {
     /// <summary>
     /// The main menu, two pages side by side. Home: the chosen hero and healer in the middle, the coins owned, Play (starts a
-    /// run through <see cref="IGameNavigator"/>), Characters, Settings (<see cref="ISettingsMenu"/>) and Quit (asks, then
-    /// quits through <see cref="IAppLifecycleService"/>; leaves Play Mode in the Editor). Characters: the
-    /// <see cref="CharacterPage"/>, sliding in from the right; Back (or Cancel) slides home back in from the left. The open
-    /// page is state (<c>_onCharacters</c>): positions are set from it at once with animations off. Cancel on the home
-    /// page opens the same Quit question (the screen is a Cancel handler below the UI package's popup handler). While shown
-    /// it requests the Menu cursor policy, plays the menu music and shows Core's <see cref="BuildInfo.DisplayText"/>. A web
-    /// build cannot quit (the page stays open): it has no Quit button and Cancel asks nothing.
+    /// run through <see cref="IGameNavigator"/>), Characters, How to play (<see cref="IHowToPlay"/>), Settings
+    /// (<see cref="ISettingsMenu"/>) and Quit (asks, then quits through <see cref="IAppLifecycleService"/>; leaves Play Mode
+    /// in the Editor). Characters: the <see cref="CharacterPage"/>, sliding in from the right; Back (or Cancel) slides home
+    /// back in from the left. The open page is state (<c>_onCharacters</c>): positions are set from it at once with
+    /// animations off. Cancel on the home page opens the same Quit question (the screen is a Cancel handler below the UI
+    /// package's popup handler). While shown it requests the Menu cursor policy and plays the menu music. A web build cannot
+    /// quit (the page stays open): it has no Quit button and Cancel asks nothing.
     /// REFERENCES: <c>_pages</c> holds both pages (home over its full width, characters one width to the right) and slides
     /// by its anchors; the buttons and labels; <c>_coin</c> is the currency shown; <c>_gameplayScene</c> is the scene Play
     /// opens; <c>_music</c> and <c>_swipe</c> are sounds; the <c>*Key</c> fields are the texts of the Quit question.
@@ -44,13 +43,13 @@ namespace Game.Systems.MainMenu
         [SerializeField] private CharacterPage _characters;
         [SerializeField] private Button _playButton;
         [SerializeField] private Button _charactersButton;
+        [SerializeField] private Button _howToPlayButton;
         [SerializeField] private Button _settingsButton;
         [SerializeField] private Button _quitButton;
         [SerializeField] private Button _backButton;
         [SerializeField] private SpriteFlipbook _heroPreview;
         [SerializeField] private SpriteFlipbook _healerPreview;
         [SerializeField] private TMP_Text _coinsText;
-        [SerializeField] private TMP_Text _versionText;
         [SerializeField] private CurrencyDefinition _coin;
         [SerializeField] private SceneKey _gameplayScene;
         [SerializeField] private AudioClip _music;
@@ -109,6 +108,7 @@ namespace Game.Systems.MainMenu
             _playButton.onClick.AddListener(OpenPlay);
             _charactersButton.onClick.AddListener(() => ShowPage(true));
             _backButton.onClick.AddListener(() => ShowPage(false));
+            _howToPlayButton.onClick.AddListener(OpenHowToPlay);
             _settingsButton.onClick.AddListener(OpenSettings);
             _quitButton.onClick.AddListener(() => _ = QuitAsync());
             _quitButton.gameObject.SetActive(CanQuit);
@@ -120,7 +120,6 @@ namespace Game.Systems.MainMenu
 
         private void OnEnable()
         {
-            _versionText.text = BuildInfo.Current.DisplayText;
             if (_cursor != null)
             {
                 _handles.Add(_cursor.Request(CursorPolicy.Menu));
@@ -256,6 +255,18 @@ namespace Game.Systems.MainMenu
             finally
             {
                 _starting = false;
+            }
+        }
+
+        private void OpenHowToPlay()
+        {
+            if (CoreServiceLocator.TryGet(out IHowToPlay help))
+            {
+                help.Open();
+            }
+            else
+            {
+                Debug.LogWarning("[Game] The UI shell module is not running; How to play does nothing.", this);
             }
         }
 

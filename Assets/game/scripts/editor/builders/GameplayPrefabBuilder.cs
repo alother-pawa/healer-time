@@ -27,7 +27,7 @@ namespace Game.Editor.Builders
         private const float SlotSpacing = 208f;
         private static readonly Vector2 BoardCenter = new Vector2(480f, 498f);
         private static readonly Vector2 ItemRowCenter = new Vector2(1440f, 280f);
-        private static readonly Vector2 PausePanelSize = new Vector2(760f, 700f);
+        private static readonly Vector2 PausePanelSize = new Vector2(760f, 860f);
         private static readonly Vector2 MenuButtonSize = new Vector2(520f, 88f);
 
         // World layout in units (camera at the origin, 128 px per unit, 1080 px = 8.4375 units tall): reference pixel (x, y)
@@ -43,6 +43,7 @@ namespace Game.Editor.Builders
         {
             ("ResumeButton", "ui-common/button-primary", "gameplay.pause.resume"),
             ("SettingsButton", "ui-common/button-secondary", "gameplay.pause.settings"),
+            ("HowToPlayButton", "ui-common/button-secondary", "gameplay.pause.how-to-play"),
             ("QuitToMenuButton", "ui-common/button-secondary", "gameplay.pause.quit-menu"),
             ("QuitToDesktopButton", "ui-common/button-secondary", "gameplay.pause.quit-desktop"),
         };
@@ -59,7 +60,8 @@ namespace Game.Editor.Builders
             BuildResult();
         }
 
-        // Resume (first selected), Settings, Quit to main menu, Quit to desktop; Confirm and Resume prompts.
+        // Resume (first selected), Settings, How to play, Quit to main menu, Quit to desktop, in a centred column over the
+        // prompts (a button hidden at runtime, Quit to desktop on the web, closes up); Confirm and Resume prompts.
         private static void BuildPauseMenu()
         {
             PopupParts parts = PopupPrefabBuilder.Variant("Popup_PauseMenu", "gameplay.pause.title", PausePanelSize);
@@ -67,11 +69,18 @@ namespace Game.Editor.Builders
             Component popup = root.AddComponent(GameTypes.PauseMenuPopup);
             root.AddComponent<InputContextRequest>();
 
+            RectTransform column = UiFactory.Rect("Buttons", parts.Body).Stretch(0f, PromptRowHeight + 24f, 0f, 0f);
+            var columnLayout = column.gameObject.AddComponent<VerticalLayoutGroup>();
+            columnLayout.spacing = MenuButtonSpacing - MenuButtonSize.y;
+            columnLayout.childAlignment = TextAnchor.MiddleCenter;
+            columnLayout.childControlWidth = false;
+            columnLayout.childControlHeight = false;
+            columnLayout.childForceExpandWidth = false;
+            columnLayout.childForceExpandHeight = false;
             var buttons = new Button[PauseButtons.Length];
             for (int i = 0; i < PauseButtons.Length; i++)
             {
-                RectTransform rect = UiFactory.Rect(PauseButtons[i].name, parts.Body)
-                    .Place(UiFactory.TopCenter, new Vector2(0f, -10f - i * MenuButtonSpacing), MenuButtonSize);
+                RectTransform rect = UiFactory.Rect(PauseButtons[i].name, column).Place(UiFactory.Center, Vector2.zero, MenuButtonSize);
                 buttons[i] = UiFactory.AddButton(rect, BuildUtility.Sprite(PauseButtons[i].sprite));
                 UiFactory.Label(rect, string.Empty, MenuButtonLabelSize).Localize(PauseButtons[i].key);
             }
@@ -86,7 +95,7 @@ namespace Game.Editor.Builders
 
             PopupPrefabBuilder.SetFirstSelected(root, buttons[0]);
             Fields.Set(popup, ("_viewId", "popup.pause-menu"), ("_resumeButton", buttons[0]), ("_settingsButton", buttons[1]),
-                ("_quitToMenuButton", buttons[2]), ("_quitToDesktopButton", buttons[3]), ("_resumeAction", "Menu/Pause"));
+                ("_howToPlayButton", buttons[2]), ("_quitToMenuButton", buttons[3]), ("_quitToDesktopButton", buttons[4]), ("_resumeAction", "Menu/Pause"));
             BuildUtility.SavePrefab(root, BuildPaths.PopupPauseMenu);
         }
 

@@ -39,11 +39,28 @@ namespace Game.Editor.Builders
         private const float BodyInset = 40f;
         private const float BodyTop = 150f;
         private const float FooterHeight = 140f;
+        private const float HelpTextSize = 30f;
+        private const float HelpRowHeight = 84f;
+        private const float HelpIconSize = 72f;
+        private static readonly Vector2 HowToPlayPanelSize = new Vector2(1300f, 1000f);
+
+        /// <summary>How to play, top to bottom: the icon shown beside the line (none for plain text), the line's key.</summary>
+        private static readonly (string icon, string key)[] HelpRows =
+        {
+            (null, "help.board"),
+            ("screens/gameplay/gem-attack", "help.gem.attack"),
+            ("screens/gameplay/gem-heal", "help.gem.heal"),
+            ("screens/gameplay/gem-defense", "help.gem.defense"),
+            ("screens/gameplay/gem-magic", "help.gem.magic"),
+            ("screens/gameplay/item-potion", "help.items"),
+            (null, "help.battle"),
+        };
 
         internal static void Build()
         {
             BuildBase();
             BuildConfirm();
+            BuildHowToPlay();
             SettingsPrefabBuilder.Build();
             GameplayPrefabBuilder.BuildPopups();
         }
@@ -102,6 +119,45 @@ namespace Game.Editor.Builders
                 ("_message", messageLabel), ("_confirmLabel", confirmLabel), ("_cancelLabel", cancelLabel),
                 ("_confirmButton", confirm), ("_cancelButton", cancel));
             BuildUtility.SavePrefab(root, BuildPaths.PopupConfirm);
+        }
+
+        // A column of lines (each with its gem or item icon when it has one) over a Close button, the first selected.
+        private static void BuildHowToPlay()
+        {
+            PopupParts parts = Variant("Popup_HowToPlay", "help.title", HowToPlayPanelSize);
+            GameObject root = parts.Root;
+            Component popup = root.AddComponent(GameTypes.HowToPlayPopup);
+
+            RectTransform rows = UiFactory.Rect("Rows", parts.Body).Stretch(10f, FooterHeight, 10f, 0f);
+            var layout = rows.gameObject.AddComponent<VerticalLayoutGroup>();
+            layout.spacing = 8f;
+            layout.childAlignment = TextAnchor.UpperLeft;
+            layout.childControlWidth = true;
+            layout.childControlHeight = false;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+            foreach ((string icon, string key) in HelpRows)
+            {
+                RectTransform row = UiFactory.Rect(key, rows).Place(UiFactory.Center, Vector2.zero, new Vector2(0f, HelpRowHeight));
+                float textLeft = 0f;
+                if (icon != null)
+                {
+                    Image image = UiFactory.AddImage(UiFactory.Rect("Icon", row).Place(UiFactory.MiddleLeft, Vector2.zero,
+                        new Vector2(HelpIconSize, HelpIconSize)), BuildUtility.Sprite(icon));
+                    image.raycastTarget = false;
+                    image.preserveAspect = true;
+                    textLeft = HelpIconSize + 20f;
+                }
+
+                TextMeshProUGUI text = UiFactory.AddText(UiFactory.Rect("Label", row).Stretch(textLeft, 0f, 0f, 0f), string.Empty,
+                    HelpTextSize, Palette.Text, TextAlignmentOptions.MidlineLeft).Localize(key).Paragraph();
+                text.raycastTarget = false;
+            }
+
+            Button close = DialogButton(parts.Footer, "CloseButton", 0f, "ui-common/button-primary", "common.close", out _);
+            SetFirstSelected(root, close);
+            Fields.Set(popup, ("_viewId", "popup.how-to-play"), ("_closeButton", close));
+            BuildUtility.SavePrefab(root, BuildPaths.PopupHowToPlay);
         }
 
         // Instance of Popup_Base renamed, with panel size and title key overrides (none when the popup sets its title);

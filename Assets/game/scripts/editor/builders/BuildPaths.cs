@@ -55,6 +55,7 @@ namespace Game.Editor.Builders
         internal const string LoadingCanvas = PrefabsShell + "/LoadingCanvas.prefab";
         internal const string PopupBase = PrefabsPopups + "/Popup_Base.prefab";
         internal const string PopupConfirm = PrefabsPopups + "/Popup_Confirm.prefab";
+        internal const string PopupHowToPlay = PrefabsPopups + "/Popup_HowToPlay.prefab";
         internal const string SettingRowToggle = PrefabsSettings + "/SettingRow_Toggle.prefab";
         internal const string SettingRowSlider = PrefabsSettings + "/SettingRow_Slider.prefab";
         internal const string SettingRowChoice = PrefabsSettings + "/SettingRow_Choice.prefab";
