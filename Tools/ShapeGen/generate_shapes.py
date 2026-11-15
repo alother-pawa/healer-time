@@ -165,13 +165,14 @@ def previous_sheet(path):
     return None
 
 
-def strip_sheet(path, folder, tags, scale, note, colour=CHARACTER, frame_width=0):
+def strip_sheet(path, folder, tags, scale, note, colour=CHARACTER, frame_width=0, head=0):
     """
     A character sheet from a folder of animation strips (one PNG per animation, frames left to right, square unless
     `frame_width` says otherwise): one row per
     tag, every frame cut to the box holding the character in every frame of these strips (2 px margin), pivot under the
     feet of the first tag (idle). Shown `scale` screen pixels per texture pixel (point filtered). Its height is the first
-    idle frame's, from the feet to the top of the head.
+    idle frame's, from the feet to the top of the head; `head` (texture pixels over the feet) replaces it when something
+    the character holds rises above the head (a staff), so bars still sit just over the head.
     tags: (name, strip file without extension, ms per frame, loop).
     """
     root = PACKS / CHARACTERS / folder
@@ -202,7 +203,7 @@ def strip_sheet(path, folder, tags, scale, note, colour=CHARACTER, frame_width=0
         frame = (right - left, bottom - top)
         pivot = (round(((idle[0] + idle[2]) / 2 - left) / frame[0], 4), round((bottom - idle[3]) / frame[1], 4))
         art = Art(CHARACTERS, file=folder, strips=files, frame_width=frame_width, crop=(left, top, right, bottom))
-        height = round((idle[3] - idle[1]) * scale / PIXELS_PER_UNIT, 4)
+        height = round((head or idle[3] - idle[1]) * scale / PIXELS_PER_UNIT, 4)
     else:
         old = previous_sheet(path)
         if old is None:
@@ -354,10 +355,10 @@ def hero(name, folder, heavy, hurt):
                        4, "Hero (quay phải; game lật khi đứng bên phải)", ARMOR)
 
 
-def healer(name, folder, cast, hurt, scale):
+def healer(name, folder, cast, hurt, scale, head=0):
     return strip_sheet(f"game/characters/{name}/{name}", folder,
                        [("idle", "Idle", 100, True), ("cast", cast, 70, False), ("hurt", hurt, 80, False)],
-                       scale, "Healer (đứng cạnh thanh Magic, quay trái)", CHARACTER)
+                       scale, "Healer (đứng sau hero, quay trái)", CHARACTER, head=head)
 
 
 def monster(name, folder, idle, run, hurt, scale, note="Quái (quay phải, đi vào từ trái)"):
@@ -373,8 +374,8 @@ SHEETS = [
     hero("fantasy-warrior", "Fantasy Warrior/Fantasy Warrior/Sprites", "Attack3", "Take hit"),
     hero("hero-knight", "Hero Knight/Hero Knight/Sprites", "Attack2", "Take Hit"),
     hero("huntress", "Huntress/Huntress/Sprites", "Attack3", "Take hit"),
-    healer("evil-wizard-2", "EVil Wizard 2/EVil Wizard 2/Sprites", "Attack1", "Take hit", 3),
-    healer("evil-wizard-3", "Evil Wizard 3/Evil Wizard 3/Sprites", "Attack", "Get hit", 6),
+    healer("evil-wizard-2", "EVil Wizard 2/EVil Wizard 2/Sprites", "Attack1", "Take hit", 4, head=54),
+    healer("evil-wizard-3", "Evil Wizard 3/Evil Wizard 3/Sprites", "Attack", "Get hit", 4),
     monster("goblin", MONSTERS + "Goblin", "Idle", "Run", "Take Hit", 5),
     monster("skeleton", MONSTERS + "Skeleton", "Idle", "Walk", "Take Hit", 4),
     monster("mushroom", MONSTERS + "Mushroom", "Idle", "Run", "Take Hit", 5),

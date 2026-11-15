@@ -1846,9 +1846,9 @@
         0.3193,
         0.0138
       ],
-      "pixelsPerUnit": 42.6667,
+      "pixelsPerUnit": 32.0,
       "point": true,
-      "height": 2.2266,
+      "height": 1.6875,
       "tags": [
         {
           "name": "idle",
@@ -1878,9 +1878,9 @@
         0.2554,
         0.0286
       ],
-      "pixelsPerUnit": 21.3333,
+      "pixelsPerUnit": 32.0,
       "point": true,
-      "height": 2.4844,
+      "height": 1.6562,
       "tags": [
         {
           "name": "idle",
