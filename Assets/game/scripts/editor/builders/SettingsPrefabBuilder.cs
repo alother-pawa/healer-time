@@ -211,11 +211,14 @@ namespace Game.Editor.Builders
             var tabImages = new Image[tabs.Count];
             var pageObjects = new Object[tabs.Count];
             var pages = new Object[tabs.Count];
-            float firstX = -(tabs.Count - 1) * (tabWidth + TabGap) / 2f;
+            // A centred row: tabs hidden at runtime (desktop-only tabs on the web) close up.
+            HorizontalLayoutGroup tabLayout = UiFactory.AddRow(tabRow.gameObject, TabGap, TextAnchor.MiddleCenter);
+            tabLayout.childControlWidth = false;
+            tabLayout.childControlHeight = false;
             for (int i = 0; i < tabs.Count; i++)
             {
                 RectTransform tab = UiFactory.Rect(tabs[i].Id + "-tab", tabRow)
-                    .Place(UiFactory.TopCenter, new Vector2(firstX + i * (tabWidth + TabGap), 0f), new Vector2(tabWidth, TabHeight));
+                    .Place(UiFactory.Center, Vector2.zero, new Vector2(tabWidth, TabHeight));
                 tabButtons[i] = UiFactory.AddButton(tab, BuildUtility.Sprite("ui-common/button-secondary"));
                 tabImages[i] = (Image)tabButtons[i].targetGraphic;
                 UiFactory.Label(tab, string.Empty, TabLabelSize).Localize(tabs[i].LabelKey);
@@ -265,7 +268,8 @@ namespace Game.Editor.Builders
             }
 
             Fields.Set(popup, ("_viewId", "popup.settings"), ("_tabs", tabGroup), ("_pages", pages), ("_tabButtons", tabButtons),
-                ("_tabBackgrounds", tabImages), ("_selectedTabSprite", BuildUtility.Sprite("ui-common/button-primary")),
+                ("_tabBackgrounds", tabImages), ("_desktopOnlyTabs", SettingsCatalogBuilder.DesktopOnlyTabs),
+                ("_selectedTabSprite", BuildUtility.Sprite("ui-common/button-primary")),
                 ("_idleTabSprite", BuildUtility.Sprite("ui-common/button-secondary")),
                 ("_toggleRow", BuildUtility.PrefabComponent(BuildPaths.SettingRowToggle, GameTypes.ToggleSettingRow)),
                 ("_sliderRow", BuildUtility.PrefabComponent(BuildPaths.SettingRowSlider, GameTypes.SliderSettingRow)),

@@ -32,7 +32,7 @@ namespace Game.Systems.Settings
     /// back the frame after the rebind ends, so the key that finished it is not also a Submit). Volume changes play a short
     /// preview in their category while the popup is open.
     /// REFERENCES: <c>_tabs</c> holds the pages and tab buttons; <c>_pages</c>, <c>_tabButtons</c> and <c>_tabBackgrounds</c>
-    /// pair with its pages by index (backgrounds drawn with <c>_selectedTabSprite</c>/<c>_idleTabSprite</c>); the
+    /// pair with its pages by index (backgrounds drawn with <c>_selectedTabSprite</c>/<c>_idleTabSprite</c>); <c>_desktopOnlyTabs</c> are hidden in a web build; the
     /// <c>_*Row</c> fields are the row prefabs per kind; <c>_applyPrompt</c>/<c>_revertPrompt</c> show only while Apply and
     /// Revert are possible; <c>_descriptionPanel</c> holds <c>_descriptionTitle</c> and <c>_descriptionBody</c>;
     /// <c>_rebindBlocker</c> is a transparent cover that catches clicks while a slot listens, with
@@ -50,6 +50,8 @@ namespace Game.Systems.Settings
         [SerializeField] private List<Image> _tabBackgrounds = new List<Image>();
         [SerializeField] private Sprite _selectedTabSprite;
         [SerializeField] private Sprite _idleTabSprite;
+        [Tooltip("Tabs hidden in a web build (controls, key bindings and display settings have no meaning in a browser).")]
+        [SerializeField] private string[] _desktopOnlyTabs = new string[0];
         [SerializeField] private SettingRow _toggleRow;
         [SerializeField] private SettingRow _sliderRow;
         [SerializeField] private SettingRow _choiceRow;
@@ -153,6 +155,7 @@ namespace Game.Systems.Settings
                     new ConfirmRequest(_pendingTitleKey, _pendingMessageKey, _pendingApplyKey, _pendingDiscardKey));
             }
 
+            HideDesktopOnlyTabs();
             foreach (SettingsPage page in _pages)
             {
                 _tabIds.Add(page.TabId);
@@ -306,6 +309,24 @@ namespace Game.Systems.Settings
             }
 
             return rebuilt;
+        }
+
+        // A web build hides the desktop-only tabs' buttons; the tab row's layout group closes the gap and the tab group never
+        // steps onto a tab whose button is hidden.
+        private void HideDesktopOnlyTabs()
+        {
+            if (Application.platform != RuntimePlatform.WebGLPlayer)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _pages.Count && i < _tabButtons.Count; i++)
+            {
+                if (_pages[i] != null && _tabButtons[i] != null && System.Array.IndexOf(_desktopOnlyTabs, _pages[i].TabId) >= 0)
+                {
+                    _tabButtons[i].gameObject.SetActive(false);
+                }
+            }
         }
 
         private SettingRow PrefabFor(SettingRowKind kind)

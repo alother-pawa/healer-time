@@ -40,6 +40,9 @@ namespace Game.Editor.Builders
             (Controls, "settings.tab.controls"), (KeyBindings, "settings.tab.key-bindings"), (Graphics, "settings.tab.graphics"),
         };
 
+        /// <summary>Tabs a web build hides: controls, key bindings and display settings mean nothing in a browser.</summary>
+        internal static readonly string[] DesktopOnlyTabs = { Controls, KeyBindings, Graphics };
+
         // Gameplay actions with a keyboard row: asset name, action, composite part, label key, keyboard slots.
         private static readonly (string name, string action, string part, string labelKey, int slots)[] KeyboardBindings =
         {
